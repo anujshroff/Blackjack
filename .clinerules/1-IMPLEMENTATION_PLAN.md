@@ -10,98 +10,237 @@
 
 ---
 
+## Asset Strategy and Resources
+
+### Generated Assets (Completed)
+
+All core visual assets have been generated using PowerShell scripts and are ready for use:
+
+#### 1. Playing Cards
+- **Location**: `Resources/Images/Cards/`
+- **Content**: All 52 playing cards + card back design
+- **Format**: SVG (scalable vector graphics)
+- **Generation Script**: `create_cards.ps1`
+- **Details**: 
+  - Cards use classic playing card designs
+  - All four suits (Hearts, Diamonds, Clubs, Spades)
+  - All ranks (2-10, Jack, Queen, King, Ace)
+  - Card back design for face-down cards
+
+#### 2. Betting Chips
+- **Location**: `Resources/Images/Chips/`
+- **Content**: 5 chip denominations ($1, $5, $25, $100, $500)
+- **Format**: SVG
+- **Generation Script**: `create_chips.ps1`
+- **Details**:
+  - $1 chip: White with blue accents
+  - $5 chip: Red
+  - $25 chip: Green
+  - $100 chip: Black
+  - $500 chip: Purple
+  - All chips include denomination labels and casino-style designs
+
+#### 3. Table Felt
+- **Location**: `Resources/Images/table_felt.svg`
+- **Format**: SVG (1920x1080, 16:9 ratio)
+- **Generation Script**: `create_table_felt.ps1`
+- **Details**:
+  - Realistic casino green felt with radial gradient
+  - Subtle texture overlay for authentic felt appearance
+  - 7 player betting positions arranged in arc (labeled 1-7)
+  - Dealer area at top with card outline
+  - Insurance line with "INSURANCE PAYS 2:1" text
+  - Professional gold accents (#d4af37)
+  - Decorative corner elements
+  - "BLACKJACK" and "Blackjack Pays 3 to 2" branding
+
+### Icon Strategy (Using Existing Libraries)
+
+Instead of generating custom icons, the application will use **Fluent UI System Icons** and/or **Material Design Icons** for all UI elements:
+
+#### AI Player Avatars
+- **Source**: Fluent UI `Person` icon
+- **Implementation**: Use same Person icon with different color variations to distinguish AI players
+- **Colors**: Assign unique colors (e.g., red, blue, green, yellow, purple, orange) to each AI player
+- **Benefit**: Clean, consistent design without additional asset generation
+
+#### Gameplay Action Buttons
+| Action | Fluent Icon | Material Icon Alternative |
+|--------|-------------|---------------------------|
+| Hit | `arrow_upward` or `add` | `arrow_upward` |
+| Stand | `pan_tool` (hand) | `stop` or `back_hand` |
+| Double Down | `keyboard_double_arrow_down` | `unfold_more` |
+| Split | `call_split` | `unfold_more_horizontal` |
+| Insurance | `shield` | `security` |
+| Confirm | `check` or `check_circle` | `done` |
+| Cancel/Clear | `close` or `cancel` | `clear` |
+
+#### App Interface Icons
+| Element | Fluent Icon | Material Icon Alternative |
+|---------|-------------|---------------------------|
+| Settings | `settings` | `tune` |
+| Statistics | `bar_chart` | `analytics` |
+| Info/Help | `info` | `help` |
+| Sound On | `volume_up` | `volume_up` |
+| Sound Off | `volume_off` | `volume_mute` |
+| Home | `home` | `home` |
+| Menu | `menu` | `menu` |
+| Back | `arrow_back` | `arrow_back` |
+
+### Icon Library Resources
+
+**Fluent UI System Icons**
+- GitHub: https://github.com/microsoft/fluentui-system-icons
+- License: MIT (free for commercial use)
+- Format: SVG, PNG, Font
+- Installation: NuGet package or direct SVG download
+
+**Material Design Icons**
+- Website: https://fonts.google.com/icons
+- License: Apache 2.0 (free for commercial use)
+- Format: SVG, PNG, Font
+- Installation: NuGet package or direct download
+
+### Optional Future Assets
+
+The following assets are not currently required but may be added in future iterations:
+
+- **Custom App Icon**: Replace default dotnet_bot placeholder with blackjack-themed icon
+- **Custom Splash Screen**: Replace default splash with branded casino design
+- **Win/Loss Animations**: Particle effects or celebratory graphics
+- **Game State Indicators**: Custom visual indicators for specific game states
+
+---
+
 ## Implementation Phases
 
-### Phase 1: Core Game Logic (Foundation)
+### Phase 1: Core Game Logic (Foundation) - ✅ COMPLETE
 **Goal**: Build the fundamental game mechanics and data structures
+**Status**: 100% Complete (5 of 5 sections complete)
+**Last Updated**: November 23, 2025, 3:11 AM
 
-- [ ] **Data Models**
-  - [ ] Implement Card model with Suit and Rank enums
-  - [ ] Implement Deck model with 6-deck shoe (312 cards)
-  - [ ] Implement Hand model with value calculation
-  - [ ] Implement Player model with bankroll management
-  - [ ] Implement Dealer model
-  - [ ] Implement GameState model with phase tracking
-  - [ ] Implement GameSettings model
+- [x] **Data Models** ✅ COMPLETE
+  - [x] Implement Card model with Suit and Rank enums
+  - [x] Implement Deck model with 6-deck shoe (312 cards)
+  - [x] Implement Hand model with value calculation
+  - [x] Implement Player model with bankroll management
+  - [x] Implement Dealer model
+  - [x] Implement GameState model with phase tracking
+  - [x] Implement GameSettings model
 
-- [ ] **Deck Management**
-  - [ ] Create 6-deck shoe initialization
-  - [ ] Implement shuffle algorithm
-  - [ ] Add shuffle point detection (75% penetration ~234 cards dealt)
-  - [ ] Implement card dealing logic
+- [x] **Deck Management** ✅ COMPLETE
+  - [x] Create 6-deck shoe initialization
+  - [x] Implement shuffle algorithm (Fisher-Yates)
+  - [x] Add shuffle point detection (75% penetration ~234 cards dealt)
+  - [x] Implement card dealing logic
 
-- [ ] **Hand Evaluation**
-  - [ ] Calculate hand total value
-  - [ ] Detect soft hands (Ace as 11)
-  - [ ] Detect hard hands (Ace as 1 or no Ace)
-  - [ ] Detect blackjack (natural 21)
-  - [ ] Detect bust (over 21)
-  - [ ] Detect pairs for splitting
+- [x] **Hand Evaluation** ✅ COMPLETE
+  - [x] Calculate hand total value (automatic Ace handling)
+  - [x] Detect soft hands (Ace as 11)
+  - [x] Detect hard hands (Ace as 1 or no Ace)
+  - [x] Detect blackjack (natural 21)
+  - [x] Detect bust (over 21)
+  - [x] Detect pairs for splitting
 
-- [ ] **Basic Strategy Tables**
-  - [ ] Build hard totals strategy table (H17 rules)
-  - [ ] Build soft totals strategy table (H17 rules)
-  - [ ] Build pair splitting strategy table
-  - [ ] Create strategy lookup service
+- [x] **Basic Strategy Tables** ✅ COMPLETE
+  - [x] Build hard totals strategy table (H17 rules) - BasicStrategy.cs
+  - [x] Build soft totals strategy table (H17 rules) - BasicStrategy.cs
+  - [x] Build pair splitting strategy table - BasicStrategy.cs
+  - [x] Create strategy lookup service - GetRecommendedAction()
 
-- [ ] **Game Rule Enforcement**
-  - [ ] Implement H17 dealer rule (dealer hits soft 17)
-  - [ ] Implement split rules (max 4 hands, Aces get 1 card)
-  - [ ] Implement double down rules (available after split except Aces)
-  - [ ] Implement insurance logic (2:1 payout)
-  - [ ] Implement even money logic (1:1 on blackjack vs Ace)
-  - [ ] Implement payout calculations (3:2 blackjack, 1:1 win, push)
+- [x] **Game Rule Enforcement** ✅ COMPLETE
+  - [x] Implement H17 dealer rule (dealer hits soft 17) - GameRules.cs
+  - [x] Implement split rules (max 4 hands, Aces get 1 card) - GameRules.cs
+  - [x] Implement double down rules (available after split except Aces) - GameRules.cs
+  - [x] Implement insurance logic (2:1 payout) - GameRules.cs
+  - [x] Implement even money logic (1:1 on blackjack vs Ace) - GameRules.cs
+  - [x] Implement payout calculations (3:2 blackjack, 1:1 win, push) - GameRules.cs
 
-### Phase 2: Basic UI (Visual Foundation)
+### Phase 2: Basic UI (Visual Foundation) - ✅ COMPLETE
 **Goal**: Create the user interface structure and visual components
+**Status**: 100% Complete (8 of 8 tasks complete)
+**Last Updated**: November 23, 2025, 3:11 AM
 
-- [ ] **Asset Acquisition**
-  - [ ] Source open-source card graphics (52 cards + back)
-  - [ ] Create or source avatar graphics for AI players
-  - [ ] Create table felt background (or use open-source)
+- [x] **Asset Acquisition** ✅ COMPLETE
+  - [x] Playing card graphics (52 cards + back) - GENERATED via create_cards.ps1
+  - [x] Betting chip graphics (5 denominations) - GENERATED via create_chips.ps1
+  - [x] Table felt background - GENERATED via create_table_felt.ps1
+  - [x] AI player avatars strategy - USE Fluent UI Person icon with color variations
+  - [x] UI icons strategy - USE Fluent UI / Material Design icon libraries
+  - [x] Integrate Fluent UI icon library into MAUI project - FluentIcons.Maui v1.2.315
 
-- [ ] **MVVM Setup**
-  - [ ] Set up dependency injection in MauiProgram.cs
-  - [ ] Create ViewModelBase class
-  - [ ] Set up navigation shell
+- [x] **MVVM Setup** ✅ COMPLETE
+  - [x] Set up dependency injection in MauiProgram.cs
+  - [x] Create ViewModelBase class (with IsBusy, Title, InitializeAsync)
+  - [x] Set up navigation shell (AppShell.xaml configured with MainMenuPage)
+  - [x] Add CommunityToolkit.Mvvm v8.4.0 for source generators
 
-- [ ] **Main Menu Page**
-  - [ ] Create MainMenuPage.xaml layout
-  - [ ] Create MainMenuViewModel
-  - [ ] Add start game button
-  - [ ] Add settings button
-  - [ ] Add statistics button
+- [x] **Color Theme** ✅ COMPLETE
+  - [x] Updated Colors.xaml with modern blue color palette
+    - Primary (Deep Blue): #1E3A8A
+    - Secondary (Sky Blue): #3B82F6
+    - Tertiary (Light Blue): #DBEAFE
+    - Slate Gray: #64748B
+    - Success (Emerald): #10B981
+    - Warning (Amber): #F59E0B
+    - Error (Rose): #EF4444
+  - [x] Updated Styles.xaml to use new color palette (fixed MidnightBlue and Magenta references)
 
-- [ ] **Seat Selection Interface**
-  - [ ] Create SeatSelectionPage.xaml
-  - [ ] Create SeatSelectionViewModel
-  - [ ] Display 7-seat table layout
-  - [ ] Allow player to select seat (positions 1-7)
-  - [ ] Add AI player count configuration (0-6)
-  - [ ] Show seat positions (first base to third base)
+- [x] **Main Menu Page** ✅ COMPLETE
+  - [x] Create MainMenuPage.xaml layout with modern blue gradient background
+  - [x] Create MainMenuViewModel with RelayCommands
+  - [x] Add start game button with navigation (shows "Coming Soon" placeholder)
+  - [x] Add settings button (shows "Coming Soon" placeholder for Phase 5)
+  - [x] Add statistics button (shows "Coming Soon" placeholder for Phase 5)
+  - [x] Add platform-specific exit button (visible on Windows only)
+  - [x] Add app icon with Cards FluentIcon in circular badge
+  - [x] Add title "Blackjack" and subtitle "Play Vegas-style Blackjack"
+  - [x] Add version footer "v1.0"
+  - [x] Implement dependency injection for ViewModel and Page
 
-- [ ] **Game Table Layout**
-  - [ ] Create GameTablePage.xaml
-  - [ ] Create GameTableViewModel
-  - [ ] Design dealer area (up card, hole card, total)
-  - [ ] Design 7 player position areas
-  - [ ] Add player name/avatar display
-  - [ ] Add bet amount display per seat
-  - [ ] Add hand total display per seat
-  - [ ] Add active player indicator
 
-- [ ] **Betting Interface**
-  - [ ] Create chip buttons ($1, $5, $25, $100, $500)
-  - [ ] Add current bet display
-  - [ ] Add clear bet button
-  - [ ] Add confirm bet button
-  - [ ] Display player bankroll
+- [x] **Seat Selection Interface** ✅ COMPLETE
+  - [x] Create SeatSelectionPage.xaml
+  - [x] Create SeatSelectionViewModel
+  - [x] Display 7-seat table layout
+  - [x] Allow player to select seat (positions 1-7)
+  - [x] Add AI player count configuration (0-6)
+  - [x] Show seat positions (first base to third base)
+  - [x] Implement code-behind for dynamic seat rendering
 
-- [ ] **Card Display Components**
-  - [ ] Create card image component
-  - [ ] Add card positioning logic
-  - [ ] Add face-down card rendering
-  - [ ] Create card animation placeholder
+- [x] **Game Table Layout** ✅ COMPLETE
+  - [x] Create GameTablePage.xaml
+  - [x] Create GameTableViewModel
+  - [x] Design dealer area (up card, hole card, total)
+  - [x] Design 7 player position areas with arc layout
+  - [x] Add player name/avatar display
+  - [x] Add bet amount display per seat
+  - [x] Add hand total display per seat
+  - [x] Add active player indicator
+  - [x] Implement code-behind for dynamic player position rendering
+  - [x] Add action buttons (Hit, Stand, Double, Split, Insurance)
+  - [x] Add status bar with bankroll and menu button
+
+- [x] **Betting Interface** ✅ COMPLETE
+  - [x] Create chip buttons ($1, $5, $25, $100, $500)
+  - [x] Add current bet display with large formatted text
+  - [x] Add clear bet button
+  - [x] Add confirm bet button (DEAL)
+  - [x] Display player bankroll in status bar
+  - [x] Implement bet validation (min/max, bankroll check)
+  - [x] Add GameSettings property to ViewModel
+  - [x] Implement AddChipCommand with validation
+  - [x] Implement ClearBetCommand
+  - [x] Implement ConfirmBetCommand with deduction
+  - [x] Add visual feedback (opacity for disabled state)
+  - [x] Display table limits
+  - [x] Show/hide betting UI based on IsBetting property
+
+- [x] **Card Display Components** ✅ COMPLETE
+  - [x] Create card image component (CardToImageConverter.cs)
+  - [x] Add card positioning logic (CollectionView in GameTablePage.xaml)
+  - [x] Add face-down card rendering (CardFaceConverter.cs for future use)
+  - [x] Create card display system with test data (Dealer shows Ace of Spades + King of Hearts)
 
 ### Phase 3: Game Flow (Integration)
 **Goal**: Connect game logic with UI and implement complete game rounds

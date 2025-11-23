@@ -3,25 +3,20 @@ namespace Blackjack.Services
     /// <summary>
     /// Enforces and validates Blackjack game rules including H17, splits, doubles, insurance, and payouts.
     /// </summary>
-    public class GameRules
+    public class GameRules(Models.GameSettings settings)
     {
-        private readonly Models.GameSettings _settings;
-
-        public GameRules(Models.GameSettings settings)
-        {
-            _settings = settings;
-        }
+        private readonly Models.GameSettings _settings = settings;
 
         #region Action Validation
 
         /// <summary>
         /// Checks if a player can hit on the given hand.
         /// </summary>
-        public bool CanHit(Models.Hand hand)
+        public static bool CanHit(Models.Hand hand)
         {
             // Can hit if not busted and not standing
-            return !hand.IsBusted && 
-                   hand.Status != Models.HandStatus.Busted && 
+            return !hand.IsBusted &&
+                   hand.Status != Models.HandStatus.Busted &&
                    hand.Status != Models.HandStatus.Standing &&
                    hand.Status != Models.HandStatus.Blackjack;
         }
@@ -29,7 +24,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if a player can stand on the given hand.
         /// </summary>
-        public bool CanStand(Models.Hand hand)
+        public static bool CanStand(Models.Hand hand)
         {
             // Can always stand on an active hand
             return hand.Status == Models.HandStatus.Active && !hand.IsBusted;
@@ -38,7 +33,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if a player can double down on the given hand.
         /// </summary>
-        public bool CanDoubleDown(Models.Hand hand, Models.Player player, bool isSplitAce = false)
+        public static bool CanDoubleDown(Models.Hand hand, Models.Player player, bool isSplitAce = false)
         {
             // Cannot double on split Aces
             if (isSplitAce)
@@ -67,7 +62,7 @@ namespace Blackjack.Services
 
             // Check current split count (count how many hands the player has)
             int currentSplitCount = player.Hands.Count - 1; // -1 because original hand doesn't count as a split
-            
+
             // Can split up to 3 times (4 hands total)
             if (currentSplitCount >= _settings.MaxSplits)
                 return false;
@@ -82,7 +77,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if insurance can be offered.
         /// </summary>
-        public bool CanOfferInsurance(Models.Dealer dealer, Models.Player player, Models.Hand hand)
+        public static bool CanOfferInsurance(Models.Dealer dealer, Models.Player player, Models.Hand hand)
         {
             // Dealer must show an Ace
             if (dealer.UpCard?.Rank != Models.Rank.Ace)
@@ -100,7 +95,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if even money can be offered.
         /// </summary>
-        public bool CanOfferEvenMoney(Models.Hand playerHand, Models.Dealer dealer)
+        public static bool CanOfferEvenMoney(Models.Hand playerHand, Models.Dealer dealer)
         {
             // Player must have blackjack
             if (!playerHand.IsBlackjack)
@@ -120,12 +115,12 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if a hand was created from splitting Aces.
         /// </summary>
-        public bool IsSplitAceHand(Models.Hand hand)
+        public static bool IsSplitAceHand(Models.Hand hand)
         {
             // A split Ace hand has exactly 2 cards, one of which is an Ace from the split
             // This would need to be tracked elsewhere (e.g., a flag on Hand)
             // For now, we'll check if hand has an Ace and was likely from a split
-            return hand.Cards.Count == 2 && 
+            return hand.Cards.Count == 2 &&
                    hand.Cards.Any(c => c.Rank == Models.Rank.Ace) &&
                    !hand.IsBlackjack; // Split Aces with 10 don't count as blackjack
         }
@@ -174,7 +169,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Calculates the payout for a regular win (1:1).
         /// </summary>
-        public decimal CalculateWinPayout(decimal bet)
+        public static decimal CalculateWinPayout(decimal bet)
         {
             // 1:1 payout means player gets back bet + bet
             return bet * 2;
@@ -192,7 +187,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Returns the bet on a push (tie).
         /// </summary>
-        public decimal CalculatePushPayout(decimal bet)
+        public static decimal CalculatePushPayout(decimal bet)
         {
             // Return original bet
             return bet;
@@ -201,7 +196,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Calculates even money payout (1:1 on blackjack).
         /// </summary>
-        public decimal CalculateEvenMoneyPayout(decimal bet)
+        public static decimal CalculateEvenMoneyPayout(decimal bet)
         {
             // Even money is 1:1, so player gets back bet + bet
             return bet * 2;
@@ -237,7 +232,7 @@ namespace Blackjack.Services
                 }
                 else
                 {
-                    payout += CalculateWinPayout(playerHand.Bet);
+                    payout += GameRules.CalculateWinPayout(playerHand.Bet);
                     playerHand.Status = Models.HandStatus.Won;
                 }
                 return payout;
@@ -261,7 +256,7 @@ namespace Blackjack.Services
             else if (playerTotal > dealerTotal)
             {
                 // Player total is higher
-                payout += CalculateWinPayout(playerHand.Bet);
+                payout += GameRules.CalculateWinPayout(playerHand.Bet);
                 playerHand.Status = Models.HandStatus.Won;
             }
             else if (playerTotal < dealerTotal)
@@ -272,7 +267,7 @@ namespace Blackjack.Services
             else
             {
                 // Push (tie)
-                payout += CalculatePushPayout(playerHand.Bet);
+                payout += GameRules.CalculatePushPayout(playerHand.Bet);
                 playerHand.Status = Models.HandStatus.Push;
             }
 
@@ -286,7 +281,7 @@ namespace Blackjack.Services
         /// <summary>
         /// Handles even money acceptance (immediate 1:1 payout for blackjack vs dealer Ace).
         /// </summary>
-        public decimal AcceptEvenMoney(Models.Hand playerHand)
+        public static decimal AcceptEvenMoney(Models.Hand playerHand)
         {
             if (!playerHand.IsBlackjack)
             {
@@ -294,7 +289,7 @@ namespace Blackjack.Services
             }
 
             // Pay 1:1 immediately
-            return CalculateEvenMoneyPayout(playerHand.Bet);
+            return GameRules.CalculateEvenMoneyPayout(playerHand.Bet);
         }
 
         #endregion

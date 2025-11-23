@@ -1,16 +1,27 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace Blackjack.Models
 {
     /// <summary>
     /// Represents a player (human or AI) at the Blackjack table.
     /// </summary>
-    public class Player
+    public partial class Player : ObservableObject
     {
-        public string Name { get; set; }
+        [ObservableProperty]
+        private string name = "";
+
         public int SeatPosition { get; set; } // 1-7 (first base to third base)
-        public decimal Bankroll { get; set; }
+
+        [ObservableProperty]
+        private decimal bankroll;
+
         public List<Hand> Hands { get; set; }
-        public bool IsHuman { get; set; }
-        public bool IsActive { get; set; }
+
+        [ObservableProperty]
+        private bool isHuman;
+
+        [ObservableProperty]
+        private bool isActive;
 
         public Player(string name, int seatPosition, decimal startingBankroll, bool isHuman = false)
         {
@@ -24,7 +35,7 @@ namespace Blackjack.Models
             Bankroll = startingBankroll;
             IsHuman = isHuman;
             IsActive = true;
-            Hands = new List<Hand> { new Hand() }; // Start with one hand
+            Hands = [new()]; // Start with one hand
         }
 
         /// <summary>

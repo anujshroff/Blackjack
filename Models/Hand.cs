@@ -117,7 +117,7 @@ namespace Blackjack.Models
 
         public Hand()
         {
-            Cards = new List<Card>();
+            Cards = [];
             Bet = 0;
             Status = HandStatus.Active;
         }

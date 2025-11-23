@@ -8,6 +8,9 @@
 - **Technology Stack**: .NET 10 MAUI (Multi-platform App UI)
 
 ---
+## 0. Absolute Rules
+- DO NOT AUTOMATICALLY BUILD THE PROJECT/SOLUTION
+- DO NOT AUTOMATICALLY RUN THE PROJECT/SOLUTION
 
 ## 1. Project Overview
 

@@ -6,17 +6,17 @@ namespace Blackjack.Models
     public class Dealer
     {
         public Hand Hand { get; set; }
-        
+
         /// <summary>
         /// The dealer's face-up card (visible to all players).
         /// </summary>
         public Card? UpCard => Hand.Cards.Count > 0 ? Hand.Cards[0] : null;
-        
+
         /// <summary>
         /// The dealer's face-down card (hole card, hidden until dealer's turn).
         /// </summary>
         public Card? HoleCard => Hand.Cards.Count > 1 ? Hand.Cards[1] : null;
-        
+
         /// <summary>
         /// True if the hole card has been revealed.
         /// </summary>

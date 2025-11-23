@@ -14,6 +14,7 @@ namespace Blackjack.Models
     /// <summary>
     /// Represents the ranks of playing cards with their numeric values.
     /// </summary>
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Design", "CA1069:Enums values should not be duplicated", Justification = "The values are literallty the same but we need the different keys.")]
     public enum Rank
     {
         Two = 2,
@@ -54,7 +55,15 @@ namespace Blackjack.Models
         {
             Suit = suit;
             Rank = rank;
-            ImagePath = $"Resources/Images/Cards/{rank.ToString().ToLower()}_{suit.ToString().ToLower()}.png";
+
+            // Map rank to file name using enum name
+            string rankName = rank.ToString().ToLower();
+
+            // Handle numeric ranks (Two through Ten become two through ten)
+            // Face cards and Ace are already correct (jack, queen, king, ace)
+
+            string suitName = suit.ToString().ToLower();
+            ImagePath = $"Resources/Images/Cards/{rankName}_{suitName}.svg";
         }
 
         /// <summary>

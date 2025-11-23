@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:models="clr-namespace:Blackjack.Models"
+             xmlns:converters="clr-namespace:Blackjack.Converters"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.GameTablePage"
+             x:DataType="viewmodels:GameTableViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#0A4F2C">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <converters:CardToImageConverter x:Key="CardToImageConverter"/>
+            <converters:CardFaceConverter x:Key="CardFaceConverter"/>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid>
+        <!-- Background: Classic Vegas Green Table -->
+        <Grid>
+            <!-- Base layer: Dark green foundation -->
+            <BoxView BackgroundColor="#0A3A28"/>
+
+            <!-- Primary gradient layer: Rich casino green with texture simulation -->
+            <BoxView>
+                <BoxView.Background>
+                    <RadialGradientBrush Center="0.5,0.4"
+                                         Radius="1.2">
+                        <!-- Center: Bright emerald green -->
+                        <GradientStop Offset="0.0"
+                                      Color="#1A6B4A"/>
+                        <!-- Mid-light: Classic casino green -->
+                        <GradientStop Offset="0.3"
+                                      Color="#0F5438"/>
+                        <!-- Mid: Standard felt green -->
+                        <GradientStop Offset="0.5"
+                                      Color="#0C4A32"/>
+                        <!-- Mid-dark: Deep green -->
+                        <GradientStop Offset="0.7"
+                                      Color="#0A3F2B"/>
+                        <!-- Edge: Very dark green -->
+                        <GradientStop Offset="0.9"
+                                      Color="#073022"/>
+                        <!-- Outer edge: Almost black green -->
+                        <GradientStop Offset="1.0"
+                                      Color="#05241A"/>
+                    </RadialGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+
+            <!-- Subtle highlight overlay for depth -->
+            <BoxView Opacity="0.15">
+                <BoxView.Background>
+                    <LinearGradientBrush StartPoint="0,0"
+                                         EndPoint="1,1">
+                        <GradientStop Offset="0.0"
+                                      Color="#40FFFFFF"/>
+                        <GradientStop Offset="0.5"
+                                      Color="Transparent"/>
+                        <GradientStop Offset="1.0"
+                                      Color="#20000000"/>
+                    </LinearGradientBrush>
+                </BoxView.Background>
+            </BoxView>
+        </Grid>
+
+        <!-- Main Game Layout -->
+        <Grid RowDefinitions="Auto,*,Auto,Auto"
+              RowSpacing="0">
+
+            <!-- Row 0: Dealer Area -->
+            <Border Grid.Row="0"
+                    BackgroundColor="#1A000000"
+                    Margin="20,10"
+                    Padding="15"
+                    StrokeThickness="2"
+                    Stroke="#D4AF37">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+                            Radius="10"
+                            Opacity="0.5"
+                            Offset="0,5"/>
+                </Border.Shadow>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="DEALER"
+                           FontSize="16"
+                           FontAttributes="Bold"
+                           TextColor="#D4AF37"
+                           HorizontalOptions="Center"/>
+
+                    <!-- Dealer Cards -->
+                    <CollectionView x:Name="DealerCardsView"
+                                    ItemsSource="{Binding DealerCards}"
+                                    HorizontalOptions="Center"
+                                    MaximumHeightRequest="100">
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Horizontal"
+                                               ItemSpacing="10"/>
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:Card">
+                                <Border StrokeThickness="0"
+                                        MaximumWidthRequest="70"
+                                        MaximumHeightRequest="100">
+                                    <Border.StrokeShape>
+                                        <RoundRectangle CornerRadius="6"/>
+                                    </Border.StrokeShape>
+                                    <Image Aspect="AspectFit"
+                                           Source="{Binding ., Converter={StaticResource CardToImageConverter}}"/>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+
+                    <Label Text="{Binding DealerTotal, StringFormat='Total: {0}'}"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Row 1: Player Positions (Arc Layout) -->
+            <Grid Grid.Row="1"
+                  x:Name="PlayersGrid"
+                  Margin="10,0">
+                <!-- Players will be dynamically added here in code-behind -->
+            </Grid>
+
+            <!-- Row 2: All Controls in One Row -->
+            <Border Grid.Row="2"
+                    BackgroundColor="#2A000000"
+                    Padding="12,8"
+                    Margin="8,10"
+                    StrokeThickness="2"
+                    Stroke="#D4AF37">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="15"/>
+                </Border.StrokeShape>
+                <Border.Shadow>
+                    <Shadow Brush="Black"
+                            Radius="15"
+                            Opacity="0.6"
+                            Offset="0,8"/>
+                </Border.Shadow>
+
+                <Grid ColumnDefinitions="Auto,Auto,*">
+                    <!-- Left: Chip Selection (Horizontal) -->
+                    <HorizontalStackLayout Grid.Column="0"
+                                           Spacing="5"
+                                           VerticalOptions="Center"
+                                           HorizontalOptions="Start"
+                                           Margin="0,0,15,0">
+                        <!-- $1 Chip -->
+                        <Image Source="chip_1.png"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                      CommandParameter="1"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+
+                        <!-- $5 Chip -->
+                        <Image Source="chip_5.png"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                      CommandParameter="5"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+
+                        <!-- $25 Chip -->
+                        <Image Source="chip_25.png"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                      CommandParameter="25"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+
+                        <!-- $100 Chip -->
+                        <Image Source="chip_100.png"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                      CommandParameter="100"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+
+                        <!-- $500 Chip -->
+                        <Image Source="chip_500.png"
+                               HeightRequest="40"
+                               WidthRequest="40"
+                               Aspect="AspectFit">
+                            <Image.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                      CommandParameter="500"/>
+                            </Image.GestureRecognizers>
+                        </Image>
+                    </HorizontalStackLayout>
+
+                    <!-- Center: Bet Display and Clear/Deal -->
+                    <VerticalStackLayout Grid.Column="1"
+                                         Spacing="5"
+                                         HorizontalOptions="Center"
+                                         VerticalOptions="Center"
+                                         Margin="0,0,15,0">
+                        <Label Text="{Binding CurrentBet, StringFormat='BET: ${0:N0}'}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               HorizontalOptions="Center"/>
+                        <HorizontalStackLayout Spacing="6"
+                                               HorizontalOptions="Center">
+                            <Button Text="CLEAR"
+                                    Command="{Binding ClearBetCommand}"
+                                    BackgroundColor="#EF4444"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    CornerRadius="6"
+                                    Padding="8,6"/>
+                            <Button Text="DEAL"
+                                    Command="{Binding ConfirmBetCommand}"
+                                    BackgroundColor="#10B981"
+                                    TextColor="White"
+                                    FontSize="12"
+                                    FontAttributes="Bold"
+                                    CornerRadius="6"
+                                    Padding="8,6"
+                                    Opacity="{Binding CanConfirmBet, Converter={StaticResource BoolToOpacityConverter}}"/>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+
+                    <!-- Right: All 6 Action Buttons with Icons -->
+                    <Grid Grid.Column="2"
+                          ColumnDefinitions="*,*,*,*,*,*"
+                          RowSpacing="8"
+                          ColumnSpacing="5"
+                          HorizontalOptions="Fill">
+
+                        <!-- Hit Button -->
+                        <Border Grid.Column="0"
+                                BackgroundColor="#3B82F6"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanHit, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding HitCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="ArrowDownload"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="White"/>
+                                <Label Text="HIT"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Stand Button -->
+                        <Border Grid.Column="1"
+                                BackgroundColor="#EF4444"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanStand, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding StandCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="HandRight"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="White"/>
+                                <Label Text="STAND"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Double Button -->
+                        <Border Grid.Column="2"
+                                BackgroundColor="#F59E0B"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanDouble, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding DoubleDownCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="ChevronDoubleDown"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="White"/>
+                                <Label Text="DBL"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Split Button -->
+                        <Border Grid.Column="3"
+                                BackgroundColor="#8B5CF6"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanSplit, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding SplitCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="SplitVertical"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="White"/>
+                                <Label Text="SPLIT"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Insurance Button -->
+                        <Border Grid.Column="4"
+                                BackgroundColor="#22B14C"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanInsure, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding InsuranceCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="Shield"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="White"/>
+                                <Label Text="INS"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="White"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Even Money Button -->
+                        <Border Grid.Column="5"
+                                BackgroundColor="#FFD700"
+                                StrokeThickness="0"
+                                Padding="8,6"
+                                HeightRequest="45"
+                                Opacity="{Binding CanEvenMoney, Converter={StaticResource BoolToOpacityConverter}}">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="8"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding EvenMoneyCommand}"/>
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="4"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                <ic:FluentIcon Icon="Money"
+                                               IconVariant="Filled"
+                                               FontSize="16"
+                                               ForegroundColor="#1C1C1C"/>
+                                <Label Text="EVEN"
+                                       FontSize="12"
+                                       FontAttributes="Bold"
+                                       TextColor="#1C1C1C"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Row 3: Bottom Status Bar -->
+            <Border Grid.Row="3"
+                    BackgroundColor="#1A000000"
+                    Padding="10,8"
+                    StrokeThickness="0">
+                <Grid ColumnDefinitions="Auto,*,Auto">
+
+                    <!-- Bankroll Display -->
+                    <Border Grid.Column="0"
+                            BackgroundColor="#2A10B981"
+                            Padding="12,8"
+                            StrokeThickness="1"
+                            Stroke="#4010B981">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <HorizontalStackLayout Spacing="6">
+                            <ic:FluentIcon Icon="Money"
+                                           IconVariant="Filled"
+                                           FontSize="16"
+                                           ForegroundColor="#10B981"/>
+                            <Label Text="BANKROLL"
+                                   FontSize="9"
+                                   TextColor="#80FFFFFF"
+                                   VerticalOptions="Center"/>
+                            <Label Text="{Binding PlayerBankroll, StringFormat='${0:N0}'}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- Game Message -->
+                    <Label Grid.Column="1"
+                           Text="{Binding GameMessage}"
+                           FontSize="12"
+                           FontAttributes="Italic"
+                           TextColor="#D4AF37"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"/>
+
+                    <!-- Menu Button -->
+                    <Border Grid.Column="2"
+                            BackgroundColor="#2A64748B"
+                            Padding="8,5"
+                            HorizontalOptions="End">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="8"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToMenuCommand}"/>
+                        </Border.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="4">
+                            <ic:FluentIcon Icon="Home"
+                                           IconVariant="Regular"
+                                           FontSize="16"
+                                           ForegroundColor="White"/>
+                            <Label Text="MENU"
+                                   FontSize="12"
+                                   FontAttributes="Bold"
+                                   TextColor="White"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

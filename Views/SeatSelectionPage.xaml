@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:models="clr-namespace:Blackjack.Models"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.SeatSelectionPage"
+             x:DataType="viewmodels:SeatSelectionViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False">
+
+    <!-- No custom resources needed -->
+
+    <Grid>
+        <!-- Background -->
+        <BoxView Color="{StaticResource CasinoGreen}"/>
+
+        <!-- Radial gradient overlay for depth -->
+        <Grid>
+            <Grid.Background>
+                <RadialGradientBrush Center="0.5,0.3"
+                                     Radius="1.0">
+                    <GradientStop Color="#40000000"
+                                  Offset="0.0"/>
+                    <GradientStop Color="Transparent"
+                                  Offset="1.0"/>
+                </RadialGradientBrush>
+            </Grid.Background>
+        </Grid>
+
+        <!-- Main Content - Grid Layout (NO SCROLLVIEW) -->
+        <Grid Padding="10,8"
+              RowSpacing="6"
+              RowDefinitions="Auto,*,Auto,Auto,Auto">
+
+            <!-- Row 0: Header -->
+            <VerticalStackLayout Grid.Row="0"
+                                 Spacing="2">
+                <Label
+                    Text="Choose Your Seat"
+                    FontSize="24"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource White}"
+                    HorizontalOptions="Center"/>
+                <Label
+                    Text="Select your position at the table"
+                    FontSize="13"
+                    TextColor="{StaticResource Gray200}"
+                    HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <!-- Row 1: Seat Selection Area -->
+            <Border Grid.Row="1"
+                    BackgroundColor="#20FFFFFF"
+                    Padding="8"
+                    StrokeThickness="0"
+                    VerticalOptions="Fill">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+
+                <Grid RowDefinitions="Auto,*">
+                    <!-- Info text -->
+                    <Label Grid.Row="0"
+                           Text="Tap a seat to select your position"
+                           FontSize="11"
+                           FontAttributes="Italic"
+                           TextColor="{StaticResource Gray200}"
+                           HorizontalOptions="Center"
+                           Margin="0,0,0,3"/>
+
+                    <!-- All 7 Seats -->
+                    <FlexLayout Grid.Row="1"
+                                x:Name="SeatsContainer"
+                                Direction="Row"
+                                JustifyContent="Center"
+                                AlignItems="Center"
+                                Wrap="Wrap"
+                                VerticalOptions="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Row 2: AI Configuration -->
+            <Border Grid.Row="2"
+                    BackgroundColor="{StaticResource White}"
+                    Padding="8"
+                    StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="12"/>
+                </Border.StrokeShape>
+
+                <Grid ColumnDefinitions="*,Auto,*"
+                      RowDefinitions="Auto,Auto,Auto"
+                      RowSpacing="5">
+                    <Label Grid.Row="0"
+                           Grid.ColumnSpan="3"
+                           Text="Number of AI Players"
+                           FontSize="15"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Gray900}"
+                           HorizontalOptions="Center"/>
+
+                    <HorizontalStackLayout Grid.Row="1"
+                                           Grid.ColumnSpan="3"
+                                           HorizontalOptions="Center"
+                                           Spacing="15">
+
+                        <!-- Decrease Button -->
+                        <Border BackgroundColor="{StaticResource Primary}"
+                                HeightRequest="40"
+                                WidthRequest="40"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnDecreaseAI"/>
+                            </Border.GestureRecognizers>
+                            <ic:FluentIcon
+                                Icon="Subtract"
+                                IconVariant="Filled"
+                                FontSize="20"
+                                ForegroundColor="{StaticResource White}"/>
+                        </Border>
+
+                        <!-- Count Display -->
+                        <Label Text="{Binding AiPlayerCount}"
+                               FontSize="28"
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource Primary}"
+                               VerticalOptions="Center"
+                               WidthRequest="50"
+                               HorizontalTextAlignment="Center"/>
+
+                        <!-- Increase Button -->
+                        <Border BackgroundColor="{StaticResource Primary}"
+                                HeightRequest="40"
+                                WidthRequest="40"
+                                StrokeThickness="0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="20"/>
+                            </Border.StrokeShape>
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnIncreaseAI"/>
+                            </Border.GestureRecognizers>
+                            <ic:FluentIcon
+                                Icon="Add"
+                                IconVariant="Filled"
+                                FontSize="20"
+                                ForegroundColor="{StaticResource White}"/>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                    <Label Grid.Row="2"
+                           Grid.ColumnSpan="3"
+                           Text="AI players will be randomly placed at available seats"
+                           FontSize="10"
+                           FontAttributes="Italic"
+                           TextColor="{StaticResource Gray500}"
+                           HorizontalOptions="Center"
+                           HorizontalTextAlignment="Center"/>
+                </Grid>
+            </Border>
+
+            <!-- Row 3: Legend -->
+            <Border Grid.Row="3"
+                    BackgroundColor="#20FFFFFF"
+                    Padding="6"
+                    StrokeThickness="0">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8"/>
+                </Border.StrokeShape>
+
+                <HorizontalStackLayout HorizontalOptions="Center"
+                                       Spacing="20">
+
+                    <!-- Player Legend -->
+                    <HorizontalStackLayout Spacing="5">
+                        <Border BackgroundColor="{StaticResource White}"
+                                Stroke="{StaticResource Primary}"
+                                StrokeThickness="2"
+                                HeightRequest="24"
+                                WidthRequest="24"
+                                StrokeShape="RoundRectangle 4">
+                            <ic:FluentIcon
+                                Icon="Person"
+                                IconVariant="Filled"
+                                FontSize="14"
+                                ForegroundColor="{StaticResource Primary}"/>
+                        </Border>
+                        <Label Text="You"
+                               FontSize="12"
+                               TextColor="{StaticResource White}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <!-- AI Legend -->
+                    <HorizontalStackLayout Spacing="5">
+                        <Border BackgroundColor="{StaticResource Secondary}"
+                                StrokeThickness="0"
+                                HeightRequest="24"
+                                WidthRequest="24"
+                                StrokeShape="RoundRectangle 4">
+                            <ic:FluentIcon
+                                Icon="Person"
+                                IconVariant="Filled"
+                                FontSize="14"
+                                ForegroundColor="{StaticResource White}"/>
+                        </Border>
+                        <Label Text="AI"
+                               FontSize="12"
+                               TextColor="{StaticResource White}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+
+                    <!-- Empty Legend -->
+                    <HorizontalStackLayout Spacing="5">
+                        <Border BackgroundColor="Transparent"
+                                Stroke="{StaticResource Gray400}"
+                                StrokeThickness="2"
+                                StrokeDashArray="2,2"
+                                HeightRequest="24"
+                                WidthRequest="24"
+                                StrokeShape="RoundRectangle 4">
+                            <ic:FluentIcon
+                                Icon="PersonCircle"
+                                IconVariant="Regular"
+                                FontSize="14"
+                                ForegroundColor="{StaticResource Gray400}"
+                                Opacity="0.5"/>
+                        </Border>
+                        <Label Text="Empty"
+                               FontSize="12"
+                               TextColor="{StaticResource White}"
+                               VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- Row 4: Action Buttons -->
+            <Grid Grid.Row="4"
+                  ColumnDefinitions="*,*"
+                  ColumnSpacing="8">
+                <!-- Start Game Button -->
+                <Button Grid.Column="0"
+                        Text="Start Game"
+                        Command="{Binding StartGameCommand}"
+                        IsEnabled="{Binding CanStartGame}"
+                        BackgroundColor="{StaticResource Primary}"
+                        TextColor="{StaticResource White}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        HeightRequest="45"
+                        CornerRadius="22">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Opacity="0.4"
+                                Radius="12"
+                                Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+
+                <!-- Back Button -->
+                <Button Grid.Column="1"
+                        Text="Back to Menu"
+                        Command="{Binding GoBackCommand}"
+                        BackgroundColor="Transparent"
+                        TextColor="{StaticResource White}"
+                        BorderColor="{StaticResource White}"
+                        BorderWidth="2"
+                        FontSize="14"
+                        HeightRequest="45"
+                        CornerRadius="22"/>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

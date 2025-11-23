@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-
-namespace Blackjack
+﻿namespace Blackjack
 {
     public partial class App : Application
     {

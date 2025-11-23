@@ -5,7 +5,7 @@ namespace Blackjack.Models
     /// </summary>
     public class Deck
     {
-        private List<Card> _cards;
+        private readonly List<Card> _cards;
         private int _cardsDealt;
         private const int NUMBER_OF_DECKS = 6;
         private const int CARDS_PER_DECK = 52;
@@ -18,7 +18,7 @@ namespace Blackjack.Models
 
         public Deck()
         {
-            _cards = new List<Card>();
+            _cards = [];
             _cardsDealt = 0;
             InitializeShoe();
             Shuffle();
@@ -35,9 +35,9 @@ namespace Blackjack.Models
             for (int deck = 0; deck < NUMBER_OF_DECKS; deck++)
             {
                 // For each deck, create all 52 cards
-                foreach (Suit suit in Enum.GetValues(typeof(Suit)))
+                foreach (Suit suit in Enum.GetValues<Suit>())
                 {
-                    foreach (Rank rank in Enum.GetValues(typeof(Rank)))
+                    foreach (Rank rank in Enum.GetValues<Rank>())
                     {
                         _cards.Add(new Card(suit, rank));
                     }
@@ -50,16 +50,14 @@ namespace Blackjack.Models
         /// </summary>
         public void Shuffle()
         {
-            Random random = new Random();
+            Random random = new();
             int n = _cards.Count;
 
             // Fisher-Yates shuffle
             for (int i = n - 1; i > 0; i--)
             {
                 int j = random.Next(i + 1);
-                Card temp = _cards[i];
-                _cards[i] = _cards[j];
-                _cards[j] = temp;
+                (_cards[j], _cards[i]) = (_cards[i], _cards[j]);
             }
 
             _cardsDealt = 0;

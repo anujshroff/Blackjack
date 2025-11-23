@@ -17,36 +17,24 @@ namespace Blackjack.Models
     /// <summary>
     /// Represents the complete state of a Blackjack game.
     /// </summary>
-    public class GameState
+    public class GameState(GameSettings settings)
     {
-        public List<Player> Players { get; set; }
-        public Dealer Dealer { get; set; }
-        public Deck Shoe { get; set; }
-        public GamePhase CurrentPhase { get; set; }
-        public Player? ActivePlayer { get; set; }
-        public GameSettings Settings { get; set; }
-        
+        public List<Player> Players { get; set; } = [];
+        public Dealer Dealer { get; set; } = new Dealer();
+        public Deck Shoe { get; set; } = new Deck();
+        public GamePhase CurrentPhase { get; set; } = GamePhase.Betting;
+        public Player? ActivePlayer { get; set; } = null;
+        public GameSettings Settings { get; set; } = settings;
+
         /// <summary>
         /// Index of the current active hand being played (for split hands).
         /// </summary>
-        public int ActiveHandIndex { get; set; }
+        public int ActiveHandIndex { get; set; } = 0;
 
         /// <summary>
         /// Round number (increments with each new round).
         /// </summary>
-        public int RoundNumber { get; set; }
-
-        public GameState(GameSettings settings)
-        {
-            Players = new List<Player>();
-            Dealer = new Dealer();
-            Shoe = new Deck();
-            CurrentPhase = GamePhase.Betting;
-            ActivePlayer = null;
-            Settings = settings;
-            ActiveHandIndex = 0;
-            RoundNumber = 1;
-        }
+        public int RoundNumber { get; set; } = 1;
 
         /// <summary>
         /// Adds a player to the game at the specified seat.
@@ -62,10 +50,10 @@ namespace Blackjack.Models
             }
 
             Players.Add(player);
-            
+
             // Sort players by seat position (1-7)
-            Players = Players.OrderBy(p => p.SeatPosition).ToList();
-            
+            Players = [.. Players.OrderBy(p => p.SeatPosition)];
+
             return true;
         }
 
@@ -78,7 +66,7 @@ namespace Blackjack.Models
             if (ActivePlayer == null)
             {
                 // Start with first player
-                ActivePlayer = Players.FirstOrDefault(p => p.IsActive && p.Hands.Any());
+                ActivePlayer = Players.FirstOrDefault(p => p.IsActive && p.Hands.Count != 0);
                 ActiveHandIndex = 0;
                 return ActivePlayer;
             }
@@ -94,7 +82,7 @@ namespace Blackjack.Models
             int currentIndex = Players.IndexOf(ActivePlayer);
             for (int i = currentIndex + 1; i < Players.Count; i++)
             {
-                if (Players[i].IsActive && Players[i].Hands.Any())
+                if (Players[i].IsActive && Players[i].Hands.Count != 0)
                 {
                     ActivePlayer = Players[i];
                     ActiveHandIndex = 0;
@@ -163,7 +151,7 @@ namespace Blackjack.Models
         /// </summary>
         public List<Player> GetActivePlayers()
         {
-            return Players.Where(p => p.IsActive && !p.IsBankrupt).ToList();
+            return [.. Players.Where(p => p.IsActive && !p.IsBankrupt)];
         }
     }
 }
