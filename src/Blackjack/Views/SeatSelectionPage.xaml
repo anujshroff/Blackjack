@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:models="clr-namespace:Blackjack.Models"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.SeatSelectionPage"
+             x:DataType="viewmodels:SeatSelectionViewModel"
+             Title="{Binding Title}"
+             Shell.NavBarIsVisible="False">
+
+    <Grid>
+        <!-- Background -->
+        <BoxView Color="{StaticResource CasinoGreen}"/>
+
+        <!-- Main Content - Compact Layout -->
+        <Grid Padding="15"
+                RowDefinitions="Auto,*,Auto">
+
+            <!-- Header -->
+            <Label Grid.Row="0"
+                   Text="Choose Your Seat"
+                   FontSize="20"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource White}"
+                   HorizontalOptions="Center"
+                   Margin="0,0,0,10"/>
+
+            <!-- Center Content - Seats -->
+            <Grid Grid.Row="1"
+                    VerticalOptions="Center">
+                <!-- 7 Seats Container -->
+                <FlexLayout x:Name="SeatsContainer"
+                            Direction="Row"
+                            JustifyContent="Center"
+                            AlignItems="Center"
+                            Wrap="Wrap"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center"/>
+            </Grid>
+
+            <!-- Bottom Controls -->
+            <Grid Grid.Row="2"
+                    RowDefinitions="Auto,Auto,Auto"
+                    RowSpacing="15">
+
+                <!-- AI Players Control -->
+                <HorizontalStackLayout Grid.Row="0"
+                                       HorizontalOptions="Center"
+                                       Spacing="10"
+                                       VerticalOptions="Center">
+
+                    <Label Text="AI Players:"
+                           FontSize="14"
+                           TextColor="{StaticResource White}"
+                           VerticalOptions="Center"/>
+
+                    <!-- Decrease Button -->
+                    <Border BackgroundColor="{StaticResource Primary}"
+                            HeightRequest="36"
+                            WidthRequest="36"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDecreaseAI"/>
+                        </Border.GestureRecognizers>
+                        <ic:FluentIcon Icon="Subtract"
+                                       IconVariant="Filled"
+                                       FontSize="18"
+                                       ForegroundColor="{StaticResource White}"/>
+                    </Border>
+
+                    <!-- Count Display -->
+                    <Label Text="{Binding AiPlayerCount}"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource White}"
+                           VerticalOptions="Center"
+                           WidthRequest="40"
+                           HorizontalTextAlignment="Center"/>
+
+                    <!-- Increase Button -->
+                    <Border BackgroundColor="{StaticResource Primary}"
+                            HeightRequest="36"
+                            WidthRequest="36"
+                            StrokeThickness="0">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="18"/>
+                        </Border.StrokeShape>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnIncreaseAI"/>
+                        </Border.GestureRecognizers>
+                        <ic:FluentIcon Icon="Add"
+                                       IconVariant="Filled"
+                                       FontSize="18"
+                                       ForegroundColor="{StaticResource White}"/>
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- Legend (inline, small) -->
+                <Label Grid.Row="1"
+                       Text="Selected: White | AI: Blue | Empty: Gray"
+                       FontSize="11"
+                       TextColor="{StaticResource Gray300}"
+                       HorizontalOptions="Center"/>
+
+                <!-- Action Buttons -->
+                <Grid Grid.Row="2"
+                      ColumnDefinitions="*,*"
+                      ColumnSpacing="10">
+
+                    <Button Grid.Column="0"
+                            Text="Start Game"
+                            Command="{Binding StartGameCommand}"
+                            IsEnabled="{Binding CanStartGame}"
+                            BackgroundColor="{StaticResource Primary}"
+                            TextColor="{StaticResource White}"
+                            FontSize="14"
+                            FontAttributes="Bold"
+                            HeightRequest="40"
+                            CornerRadius="20"/>
+
+                    <Button Grid.Column="1"
+                            Text="Back"
+                            Command="{Binding GoBackCommand}"
+                            BackgroundColor="Transparent"
+                            TextColor="{StaticResource White}"
+                            BorderColor="{StaticResource White}"
+                            BorderWidth="2"
+                            FontSize="14"
+                            HeightRequest="40"
+                            CornerRadius="20"/>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</ContentPage>

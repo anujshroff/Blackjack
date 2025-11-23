@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="280" viewBox="0 0 200 280" xmlns="http://www.w3.org/2000/svg">
+  <!-- Card background -->
+  <rect x="5" y="5" width="190" height="270" rx="10" fill="#ffffff" stroke="#333333" stroke-width="2"/>
+  
+  <!-- Top-left corner -->
+  <text x="20" y="45" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#DC143C">7</text>
+  <text x="20" y="80" font-family="Arial, sans-serif" font-size="36" fill="#DC143C">♦</text>
+  
+  <!-- Bottom-right corner (rotated) -->
+  <g transform="rotate(180, 100, 140)">
+    <text x="20" y="45" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#DC143C">7</text>
+    <text x="20" y="80" font-family="Arial, sans-serif" font-size="36" fill="#DC143C">♦</text>
+  </g>
+  
+  <!-- Center symbol -->
+  <text x="100" y="180" font-family="Arial, sans-serif" font-size="120" fill="#DC143C" text-anchor="middle">♦</text>
+</svg>
