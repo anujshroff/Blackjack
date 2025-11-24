@@ -1,6 +1,5 @@
 using Blackjack.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
 
 namespace Blackjack.ViewModels
@@ -129,7 +128,7 @@ namespace Blackjack.ViewModels
         /// The human player's current bankroll.
         /// </summary>
         [ObservableProperty]
-        private decimal playerBankroll = 5000m;
+        private decimal playerBankroll;
 
         /// <summary>
         /// The human player's current bet amount.
@@ -142,6 +141,47 @@ namespace Blackjack.ViewModels
         /// </summary>
         [ObservableProperty]
         private GameSettings settings = new();
+
+        /// <summary>
+        /// AI betting service for generating AI bets.
+        /// </summary>
+        private Services.AIBettingService? _aiBettingService;
+
+        /// <summary>
+        /// Game rules service for validating actions and calculating payouts.
+        /// </summary>
+        private Services.GameRules? _gameRules;
+
+        /// <summary>
+        /// The 6-deck shoe used for dealing cards.
+        /// </summary>
+        private Deck? _deck;
+
+        /// <summary>
+        /// Tracks insurance bets per player (seat position -> insurance bet amount).
+        /// Insurance is only available on initial hand before any player actions.
+        /// </summary>
+        private readonly Dictionary<int, decimal> _insuranceBets = [];
+
+        /// <summary>
+        /// Tracks which players have made their insurance decision.
+        /// </summary>
+        private readonly HashSet<int> _playersDecidedInsurance = [];
+
+        /// <summary>
+        /// Indicates if we're waiting for the human player to decide on insurance/even money.
+        /// </summary>
+        private bool _awaitingHumanInsuranceDecision = false;
+
+        /// <summary>
+        /// Tracks the index of the current hand being played (for split hands).
+        /// </summary>
+        private int _currentHandIndex = 0;
+
+        /// <summary>
+        /// Basic Strategy service for AI decision-making.
+        /// </summary>
+        private Services.BasicStrategy? _basicStrategy;
 
         /// <summary>
         /// Indicates if the betting interface should be visible.
@@ -203,12 +243,32 @@ namespace Blackjack.ViewModels
         [ObservableProperty]
         private bool isInitialized;
 
+        /// <summary>
+        /// The position of the player currently being viewed (1-7).
+        /// Used to show any player's cards when tapped from summary strip.
+        /// </summary>
+        [ObservableProperty]
+        private int? viewedPlayerPosition;
+
+        /// <summary>
+        /// Index of the currently viewed hand for split hands (0-based).
+        /// </summary>
+        [ObservableProperty]
+        private int viewedHandIndex = 0;
+
+        /// <summary>
+        /// Indicates if we're viewing a non-active player.
+        /// Used to show "Return to Active" button.
+        /// </summary>
+        [ObservableProperty]
+        private bool isViewingInactivePlayer;
+
         public GameTableViewModel()
         {
             Title = "Blackjack Table";
 
-            // Initialize dealer
-            Dealer = new Dealer();
+            // Initialize dealer with soft 17 rule from settings
+            Dealer = new Dealer(Settings.DealerHitsSoft17);
 
             // Initialize 7 empty player positions
             for (int i = 1; i <= 7; i++)
@@ -252,12 +312,15 @@ namespace Blackjack.ViewModels
                 p.Bankroll = 0m;
             }
 
+            // Set starting bankroll from settings
+            PlayerBankroll = Settings.StartingBankroll;
+
             // Mark the human player position
             var humanPlayer = Players[humanPosition - 1];
             humanPlayer.Name = "You";
             humanPlayer.IsHuman = true;
             humanPlayer.IsActive = true;
-            humanPlayer.Bankroll = PlayerBankroll;
+            humanPlayer.Bankroll = Settings.StartingBankroll;
 
             // Mark AI player positions at exact seats
             int aiNumber = 1;
@@ -267,215 +330,71 @@ namespace Blackjack.ViewModels
                 aiPlayer.Name = $"AI Player {aiNumber}";
                 aiPlayer.IsHuman = false;
                 aiPlayer.IsActive = true;
-                aiPlayer.Bankroll = 5000m; // AI starts with same bankroll
+                aiPlayer.Bankroll = Settings.StartingBankroll;
                 aiNumber++;
             }
 
             GameMessage = $"Welcome! You're at Position {humanPosition}. Place your bet to begin.";
 
+            // Initialize AI betting service
+            _aiBettingService = new Services.AIBettingService(Settings);
+
+            // Initialize game rules service
+            _gameRules = new Services.GameRules(Settings);
+
+            // Initialize deck with number of decks from settings
+            _deck = new Deck(Settings.NumberOfDecks);
+
+            // Initialize Basic Strategy service
+            _basicStrategy = new Services.BasicStrategy();
+
             // Signal that initialization is complete
             IsInitialized = true;
-
-            // Add test cards for dealer (for testing card display)
-            AddTestDealerCards();
         }
 
         /// <summary>
-        /// Adds test cards to dealer for testing card display.
-        /// This will be replaced with actual game logic in Phase 3.
+        /// View a specific player's cards (from summary strip tap).
         /// </summary>
-        private void AddTestDealerCards()
+        public void ViewPlayer(int position)
         {
-            // Clear any existing cards
-            DealerCards.Clear();
+            ViewedPlayerPosition = position;
+            ViewedHandIndex = 0; // Reset to first hand
 
-            // Add a visible Ace of Spades
-            DealerCards.Add(new Card(Suit.Spades, Rank.Ace));
+            // Check if viewing inactive player
+            IsViewingInactivePlayer = (ActivePlayerPosition.HasValue && position != ActivePlayerPosition.Value);
 
-            // Add a face-down hole card (King of Hearts)
-            DealerCards.Add(new Card(Suit.Hearts, Rank.King));
-
-            // Show "?" for total since hole card is hidden
-            DealerTotal = "?";
-            DealerHoleCardFaceDown = true;
+            // Notify UI to update
+            OnPropertyChanged(nameof(ViewedPlayerPosition));
+            OnPropertyChanged(nameof(ViewedHandIndex));
+            OnPropertyChanged(nameof(IsViewingInactivePlayer));
         }
 
         /// <summary>
-        /// Command to request an additional card (Hit).
-        /// Phase 3 will implement the actual logic.
+        /// Return to viewing the active player.
         /// </summary>
-        [RelayCommand(CanExecute = nameof(CanHit))]
-        private async Task Hit()
+        public void ReturnToActivePlayer()
         {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Hit action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to keep current hand and end turn (Stand).
-        /// Phase 3 will implement the actual logic.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanStand))]
-        private async Task Stand()
-        {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Stand action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to double the bet and receive one more card (Double Down).
-        /// Phase 3 will implement the actual logic.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanDouble))]
-        private async Task DoubleDown()
-        {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Double Down action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to split a pair into two hands (Split).
-        /// Phase 3 will implement the actual logic.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanSplit))]
-        private async Task Split()
-        {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Split action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to take insurance against dealer blackjack.
-        /// Phase 3 will implement the actual logic.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanInsure))]
-        private async Task Insurance()
-        {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Insurance action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to take even money when player has blackjack and dealer shows Ace.
-        /// Phase 3 will implement the actual logic.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanEvenMoney))]
-        private async Task EvenMoney()
-        {
-            await Shell.Current.DisplayAlertAsync("Coming Soon",
-                "Even Money action will be implemented in Phase 3: Game Flow",
-                "OK");
-        }
-
-        /// <summary>
-        /// Command to add a chip to the current bet.
-        /// </summary>
-        [RelayCommand]
-        private void AddChip(object parameter)
-        {
-            // Convert parameter to decimal
-            if (parameter == null || !decimal.TryParse(parameter.ToString(), out decimal amount))
+            if (ActivePlayerPosition.HasValue)
             {
-                GameMessage = "Invalid chip amount";
-                return;
-            }
+                ViewedPlayerPosition = ActivePlayerPosition.Value;
+                ViewedHandIndex = _currentHandIndex;
+                IsViewingInactivePlayer = false;
 
-            // Validate that adding this chip won't exceed limits
-            var newBet = CurrentBet + amount;
-
-            if (newBet > PlayerBankroll)
-            {
-                GameMessage = $"Insufficient funds! You have ${PlayerBankroll:N0}";
-                return;
-            }
-
-            if (newBet > Settings.TableMaximum)
-            {
-                GameMessage = $"Maximum bet is ${Settings.TableMaximum:N0}";
-                return;
-            }
-
-            // Add chip to bet
-            CurrentBet = newBet;
-            GameMessage = $"Current bet: ${CurrentBet:N0}";
-
-            // Update CanConfirmBet based on table minimum
-            CanConfirmBet = CurrentBet >= Settings.TableMinimum && CurrentBet <= Settings.TableMaximum;
-        }
-
-        /// <summary>
-        /// Command to clear the current bet.
-        /// </summary>
-        [RelayCommand]
-        private void ClearBet()
-        {
-            CurrentBet = 0;
-            CanConfirmBet = false;
-            GameMessage = "Place your bet to begin";
-        }
-
-        /// <summary>
-        /// Command to confirm the bet and start the round.
-        /// </summary>
-        [RelayCommand(CanExecute = nameof(CanConfirmBet))]
-        private async Task ConfirmBet()
-        {
-            // Validate bet one more time
-            if (CurrentBet < Settings.TableMinimum)
-            {
-                GameMessage = $"Minimum bet is ${Settings.TableMinimum:N0}";
-                return;
-            }
-
-            if (CurrentBet > Settings.TableMaximum)
-            {
-                GameMessage = $"Maximum bet is ${Settings.TableMaximum:N0}";
-                return;
-            }
-
-            if (CurrentBet > PlayerBankroll)
-            {
-                GameMessage = "Insufficient funds!";
-                return;
-            }
-
-            // Deduct bet from bankroll
-            PlayerBankroll -= CurrentBet;
-
-            // Update player's bankroll in the model
-            var humanPlayer = Players[HumanPlayerPosition - 1];
-            humanPlayer.Bankroll = PlayerBankroll;
-
-            // Transition to dealing phase
-            CurrentPhase = GamePhase.Dealing;
-            IsBetting = false;
-            GameMessage = $"Bet confirmed: ${CurrentBet:N0}. Dealing cards...";
-
-            // Placeholder for Phase 3: Deal cards
-            await Task.Delay(1000); // Simulate dealing delay
-            GameMessage = "Card dealing will be implemented in Phase 3: Game Flow";
-        }
-
-        /// <summary>
-        /// Command to return to the main menu.
-        /// </summary>
-        [RelayCommand]
-        private static async Task GoToMenu()
-        {
-            var result = await Shell.Current.DisplayAlertAsync(
-                "Leave Table?",
-                "Are you sure you want to leave the table and return to the main menu?",
-                "Yes", "No");
-
-            if (result)
-            {
-                await Shell.Current.GoToAsync("//MainMenuPage");
+                // Notify UI to update
+                OnPropertyChanged(nameof(ViewedPlayerPosition));
+                OnPropertyChanged(nameof(ViewedHandIndex));
+                OnPropertyChanged(nameof(IsViewingInactivePlayer));
             }
         }
+
+        /// <summary>
+        /// Switch to viewing a different hand (for split hands).
+        /// </summary>
+        public void ViewHand(int handIndex)
+        {
+            ViewedHandIndex = handIndex;
+            OnPropertyChanged(nameof(ViewedHandIndex));
+        }
+
     }
 }

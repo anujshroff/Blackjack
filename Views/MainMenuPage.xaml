@@ -7,8 +7,10 @@
              x:DataType="viewmodels:MainMenuViewModel"
              Shell.NavBarIsVisible="False">
 
+    <!-- Use proportional sizing like GameTablePage for responsive design -->
     <Grid RowDefinitions="*,Auto"
-          Padding="20,10">
+          RowSpacing="0">
+
         <!-- Background Gradient -->
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0"
@@ -20,148 +22,126 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!-- Main Content -->
-        <VerticalStackLayout
-            Grid.Row="0"
-            VerticalOptions="Center"
-            HorizontalOptions="Center"
-            Spacing="16">
+        <!-- Main Content - Centered in available space -->
+        <Grid Grid.Row="0"
+              VerticalOptions="Center"
+              HorizontalOptions="Center">
 
-            <!-- App Icon/Logo Area -->
-            <Border
-                StrokeThickness="0"
-                Background="{StaticResource PrimaryBrush}"
-                HeightRequest="85"
-                WidthRequest="85"
-                StrokeShape="RoundRectangle 42">
-                <ic:FluentIcon
-                    Icon="PlayingCards"
-                    IconVariant="Filled"
-                    FontSize="46"
-                    ForegroundColor="{StaticResource White}"/>
-            </Border>
-
-            <!-- Title -->
-            <Label
-                Text="Blackjack"
-                FontSize="36"
-                FontAttributes="Bold"
-                TextColor="{StaticResource Primary}"
-                HorizontalOptions="Center"
-                Margin="0,0,0,0"/>
-
-            <!-- Subtitle -->
-            <Label
-                Text="Play Vegas-style Blackjack"
-                FontSize="16"
-                TextColor="{StaticResource Gray500}"
-                HorizontalOptions="Center"
-                Margin="0,0,0,4"/>
-
-            <!-- Start Game Button (Primary) -->
-            <Button
-                Text="Start Game"
-                Command="{Binding StartGameCommand}"
-                BackgroundColor="{StaticResource Primary}"
-                TextColor="{StaticResource White}"
-                FontSize="18"
-                FontAttributes="Bold"
-                HeightRequest="48"
-                WidthRequest="260"
-                CornerRadius="24"
+            <VerticalStackLayout
+                Spacing="16"
+                VerticalOptions="Center"
                 HorizontalOptions="Center">
-                <Button.Shadow>
-                    <Shadow Brush="{StaticResource Primary}"
-                            Opacity="0.3"
-                            Radius="10"
-                            Offset="0,4"/>
-                </Button.Shadow>
-            </Button>
 
-            <!-- Settings Button (Secondary) -->
-            <Border
-                Stroke="{StaticResource Secondary}"
-                StrokeThickness="2"
-                BackgroundColor="Transparent"
-                HeightRequest="44"
-                WidthRequest="260"
-                StrokeShape="RoundRectangle 22"
-                HorizontalOptions="Center">
-                <Grid>
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding OpenSettingsCommand}"/>
-                    </Grid.GestureRecognizers>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        Spacing="8">
-                        <ic:FluentIcon
-                            Icon="Settings"
-                            IconVariant="Regular"
-                            FontSize="18"
-                            ForegroundColor="{StaticResource Secondary}"/>
-                        <Label
-                            Text="Settings"
-                            FontSize="16"
-                            TextColor="{StaticResource Secondary}"
-                            VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </Grid>
-            </Border>
+                <!-- App Icon/Logo Area -->
+                <Border
+                    StrokeThickness="0"
+                    Background="{StaticResource PrimaryBrush}"
+                    HeightRequest="85"
+                    WidthRequest="85"
+                    StrokeShape="RoundRectangle 42"
+                    HorizontalOptions="Center">
+                    <ic:FluentIcon
+                        Icon="PlayingCards"
+                        IconVariant="Filled"
+                        FontSize="46"
+                        ForegroundColor="{StaticResource White}"/>
+                </Border>
 
-            <!-- Statistics Button (Secondary) -->
-            <Border
-                Stroke="{StaticResource Secondary}"
-                StrokeThickness="2"
-                BackgroundColor="Transparent"
-                HeightRequest="44"
-                WidthRequest="260"
-                StrokeShape="RoundRectangle 22"
-                HorizontalOptions="Center">
-                <Grid>
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ViewStatisticsCommand}"/>
-                    </Grid.GestureRecognizers>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        Spacing="8">
-                        <ic:FluentIcon
-                            Icon="ChartMultiple"
-                            IconVariant="Regular"
-                            FontSize="18"
-                            ForegroundColor="{StaticResource Secondary}"/>
-                        <Label
-                            Text="Statistics"
-                            FontSize="16"
-                            TextColor="{StaticResource Secondary}"
-                            VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </Grid>
-            </Border>
+                <!-- Title -->
+                <Label
+                    Text="Blackjack"
+                    FontSize="36"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Primary}"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Margin="0,0,0,0"/>
 
-            <!-- Exit Button (Windows Only) -->
-            <Button
-                x:Name="ExitButton"
-                Text="Exit"
-                Command="{Binding ExitAppCommand}"
-                BackgroundColor="Transparent"
-                TextColor="{StaticResource Gray500}"
-                FontSize="13"
-                HeightRequest="36"
-                WidthRequest="90"
-                HorizontalOptions="Center"
-                Margin="0,4,0,0"
-                IsVisible="False"/>
-        </VerticalStackLayout>
+                <!-- Subtitle -->
+                <Label
+                    Text="Play Vegas-style Blackjack"
+                    FontSize="16"
+                    TextColor="{StaticResource Gray500}"
+                    HorizontalOptions="Center"
+                    HorizontalTextAlignment="Center"
+                    Margin="0,0,0,4"/>
 
-        <!-- Footer -->
+                <!-- Start Game Button (Primary) -->
+                <Button
+                    Text="Start Game"
+                    Command="{Binding StartGameCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="{StaticResource White}"
+                    FontSize="18"
+                    FontAttributes="Bold"
+                    HeightRequest="48"
+                    WidthRequest="260"
+                    CornerRadius="24"
+                    HorizontalOptions="Center">
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Opacity="0.3"
+                                Radius="10"
+                                Offset="0,4"/>
+                    </Button.Shadow>
+                </Button>
+
+                <!-- Settings Button (Secondary) -->
+                <Border
+                    Stroke="{StaticResource Secondary}"
+                    StrokeThickness="2"
+                    BackgroundColor="Transparent"
+                    HeightRequest="44"
+                    WidthRequest="260"
+                    StrokeShape="RoundRectangle 22"
+                    HorizontalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenSettingsCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Spacing="8">
+                            <ic:FluentIcon
+                                Icon="Settings"
+                                IconVariant="Regular"
+                                FontSize="18"
+                                ForegroundColor="{StaticResource Secondary}"/>
+                            <Label
+                                Text="Settings"
+                                FontSize="16"
+                                TextColor="{StaticResource Secondary}"
+                                VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- Exit Button (Windows Only) -->
+                <Button
+                    x:Name="ExitButton"
+                    Text="Exit"
+                    Command="{Binding ExitAppCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource Gray500}"
+                    FontSize="13"
+                    HeightRequest="36"
+                    WidthRequest="90"
+                    HorizontalOptions="Center"
+                    Margin="0,4,0,0"
+                    IsVisible="False"/>
+            </VerticalStackLayout>
+        </Grid>
+
+        <!-- Footer - Always at bottom -->
         <Label
             Grid.Row="1"
             Text="v1.0"
             FontSize="11"
             TextColor="{StaticResource Gray400}"
             HorizontalOptions="Center"
-            Margin="0,0,0,8"/>
+            HorizontalTextAlignment="Center"
+            VerticalOptions="End"
+            Margin="0,0,0,10"/>
     </Grid>
 </ContentPage>
