@@ -13,9 +13,9 @@ namespace Blackjack.Models
         public int SeatNumber { get; init; }
 
         /// <summary>
-        /// Display label for the seat (e.g., "Position 1").
+        /// Display label for the seat (e.g., "1").
         /// </summary>
-        public string PositionLabel => $"Position {SeatNumber}";
+        public string PositionLabel => SeatNumber.ToString();
 
         /// <summary>
         /// Indicates if this seat is occupied by the human player.

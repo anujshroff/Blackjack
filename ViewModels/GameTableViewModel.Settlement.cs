@@ -24,10 +24,11 @@ namespace Blackjack.ViewModels
             {
                 foreach (var hand in player.Hands)
                 {
-                    // Skip hands that were settled already (even money)
-                    if (hand.Status == HandStatus.Won && hand.IsBlackjack)
+                    // Skip hands that were already settled (blackjack payout or even money)
+                    if (hand.Status == HandStatus.Blackjack ||
+                        (hand.Status == HandStatus.Won && hand.IsBlackjack))
                     {
-                        GameMessage = $"{player.Name}: Already paid (Even Money)";
+                        GameMessage = $"{player.Name}: Already paid";
                         await Task.Delay(500);
                         continue;
                     }

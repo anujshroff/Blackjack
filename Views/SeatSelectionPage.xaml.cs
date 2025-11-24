@@ -1,6 +1,5 @@
 using Blackjack.Models;
 using Blackjack.ViewModels;
-using FluentIcons.Maui;
 using Microsoft.Maui.Controls.Shapes;
 using System.Collections.Specialized;
 
@@ -55,60 +54,32 @@ namespace Blackjack.Views
 
         private Border CreateSeatBorder(SeatInfo seat)
         {
-            var icon = new FluentIcon
+            var numberLabel = new Label
             {
-                Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.Person,
-                IconVariant = FluentIcons.Common.IconVariant.Filled,
-                FontSize = 32,
+                Text = seat.PositionLabel,
+                FontSize = 36,
+                FontAttributes = FontAttributes.Bold,
                 HorizontalOptions = LayoutOptions.Center,
                 VerticalOptions = LayoutOptions.Center
             };
 
-            var emptyIcon = new FluentIcon
-            {
-                Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.PersonCircle,
-                IconVariant = FluentIcons.Common.IconVariant.Regular,
-                FontSize = 32,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center,
-                Opacity = 0.5
-            };
-
-            var label = new Label
-            {
-                Text = seat.PositionLabel,
-                FontSize = 11,
-                FontAttributes = FontAttributes.Bold,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.End,
-                Margin = new Thickness(0, 4, 0, 0)
-            };
-
             var grid = new Grid
             {
-                RowDefinitions =
-                {
-                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) },
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = new GridLength(1, GridUnitType.Star) }
-                },
                 Padding = new Thickness(8)
             };
 
-            grid.Add(icon, 0, 1);
-            grid.Add(emptyIcon, 0, 1);
-            grid.Add(label, 0, 2);
+            grid.Add(numberLabel);
 
             var border = new Border
             {
                 Padding = 0,
                 Margin = new Thickness(5),
-                HeightRequest = 100,
-                WidthRequest = 90,
+                HeightRequest = 80,
+                WidthRequest = 80,
                 StrokeThickness = 3,
-                StrokeShape = new RoundRectangle { CornerRadius = 12 },
+                StrokeShape = new RoundRectangle { CornerRadius = 10 },
                 Content = grid,
-                // Store references to icons and label for easy updates
+                // Store references for easy updates
                 ClassId = seat.SeatNumber.ToString()
             };
 
@@ -125,41 +96,32 @@ namespace Blackjack.Views
         private static void UpdateSeatVisuals(Border border, SeatInfo seat)
         {
             var grid = (Grid)border.Content!;
-            var icon = (FluentIcon)grid.Children[0];
-            var emptyIcon = (FluentIcon)grid.Children[1];
-            var label = (Label)grid.Children[2];
+            var numberLabel = (Label)grid.Children[0];
 
             if (seat.IsPlayer)
             {
-                // Player seat: white background, blue border, blue icon
+                // Player seat: white background, blue border, blue text
                 border.BackgroundColor = Colors.White;
                 border.Stroke = Application.Current?.Resources["Primary"] as Color ?? Colors.Blue;
-                icon.ForegroundColor = Application.Current?.Resources["Primary"] as Color ?? Colors.Blue;
-                icon.IsVisible = true;
-                emptyIcon.IsVisible = false;
-                label.TextColor = Application.Current?.Resources["Gray900"] as Color ?? Colors.Black;
+                border.StrokeDashArray = null;
+                numberLabel.TextColor = Application.Current?.Resources["Primary"] as Color ?? Colors.Blue;
             }
             else if (seat.IsAI)
             {
-                // AI seat: blue background, white icon
+                // AI seat: blue background, white text
                 border.BackgroundColor = Application.Current?.Resources["Secondary"] as Color ?? Colors.Blue;
                 border.Stroke = Colors.Transparent;
-                icon.ForegroundColor = Colors.White;
-                icon.IsVisible = true;
-                emptyIcon.IsVisible = false;
-                label.TextColor = Colors.White;
+                border.StrokeDashArray = null;
+                numberLabel.TextColor = Colors.White;
             }
             else
             {
-                // Empty seat: transparent background, dashed gray border, gray icon
+                // Empty seat: transparent background, dashed gray border, gray text
                 border.BackgroundColor = Colors.Transparent;
                 var grayColor = Application.Current?.Resources["Gray400"] as Color ?? Colors.Gray;
                 border.Stroke = grayColor;
                 border.StrokeDashArray = [2, 2];
-                emptyIcon.ForegroundColor = grayColor;
-                icon.IsVisible = false;
-                emptyIcon.IsVisible = true;
-                label.TextColor = grayColor;
+                numberLabel.TextColor = grayColor;
             }
         }
 

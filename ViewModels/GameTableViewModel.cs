@@ -243,6 +243,26 @@ namespace Blackjack.ViewModels
         [ObservableProperty]
         private bool isInitialized;
 
+        /// <summary>
+        /// The position of the player currently being viewed (1-7).
+        /// Used to show any player's cards when tapped from summary strip.
+        /// </summary>
+        [ObservableProperty]
+        private int? viewedPlayerPosition;
+
+        /// <summary>
+        /// Index of the currently viewed hand for split hands (0-based).
+        /// </summary>
+        [ObservableProperty]
+        private int viewedHandIndex = 0;
+
+        /// <summary>
+        /// Indicates if we're viewing a non-active player.
+        /// Used to show "Return to Active" button.
+        /// </summary>
+        [ObservableProperty]
+        private bool isViewingInactivePlayer;
+
         public GameTableViewModel()
         {
             Title = "Blackjack Table";
@@ -329,6 +349,49 @@ namespace Blackjack.ViewModels
             IsInitialized = true;
         }
 
+        /// <summary>
+        /// View a specific player's cards (from summary strip tap).
+        /// </summary>
+        public void ViewPlayer(int position)
+        {
+            ViewedPlayerPosition = position;
+            ViewedHandIndex = 0; // Reset to first hand
+
+            // Check if viewing inactive player
+            IsViewingInactivePlayer = (ActivePlayerPosition.HasValue && position != ActivePlayerPosition.Value);
+
+            // Notify UI to update
+            OnPropertyChanged(nameof(ViewedPlayerPosition));
+            OnPropertyChanged(nameof(ViewedHandIndex));
+            OnPropertyChanged(nameof(IsViewingInactivePlayer));
+        }
+
+        /// <summary>
+        /// Return to viewing the active player.
+        /// </summary>
+        public void ReturnToActivePlayer()
+        {
+            if (ActivePlayerPosition.HasValue)
+            {
+                ViewedPlayerPosition = ActivePlayerPosition.Value;
+                ViewedHandIndex = _currentHandIndex;
+                IsViewingInactivePlayer = false;
+
+                // Notify UI to update
+                OnPropertyChanged(nameof(ViewedPlayerPosition));
+                OnPropertyChanged(nameof(ViewedHandIndex));
+                OnPropertyChanged(nameof(IsViewingInactivePlayer));
+            }
+        }
+
+        /// <summary>
+        /// Switch to viewing a different hand (for split hands).
+        /// </summary>
+        public void ViewHand(int handIndex)
+        {
+            ViewedHandIndex = handIndex;
+            OnPropertyChanged(nameof(ViewedHandIndex));
+        }
 
     }
 }

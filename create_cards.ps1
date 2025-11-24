@@ -42,17 +42,17 @@ function Create-Card($suit, $rank, $rankDisplay, $symbol, $color) {
   <rect x="5" y="5" width="190" height="270" rx="10" fill="#ffffff" stroke="#333333" stroke-width="2"/>
   
   <!-- Top-left corner -->
-  <text x="20" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="$color">$rankDisplay</text>
-  <text x="20" y="60" font-family="Arial, sans-serif" font-size="20" fill="$color">$symbol</text>
+  <text x="20" y="45" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="$color">$rankDisplay</text>
+  <text x="20" y="80" font-family="Arial, sans-serif" font-size="36" fill="$color">$symbol</text>
   
   <!-- Bottom-right corner (rotated) -->
   <g transform="rotate(180, $centerX, $centerY)">
-    <text x="20" y="35" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="$color">$rankDisplay</text>
-    <text x="20" y="60" font-family="Arial, sans-serif" font-size="20" fill="$color">$symbol</text>
+    <text x="20" y="45" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="$color">$rankDisplay</text>
+    <text x="20" y="80" font-family="Arial, sans-serif" font-size="36" fill="$color">$symbol</text>
   </g>
   
   <!-- Center symbol -->
-  <text x="$centerX" y="$($centerY + 25)" font-family="Arial, sans-serif" font-size="80" fill="$color" text-anchor="middle">$symbol</text>
+  <text x="$centerX" y="$($centerY + 40)" font-family="Arial, sans-serif" font-size="120" fill="$color" text-anchor="middle">$symbol</text>
 </svg>
 "@
     
