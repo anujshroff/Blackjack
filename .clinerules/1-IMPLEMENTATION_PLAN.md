@@ -79,7 +79,6 @@ Instead of generating custom icons, the application will use **Fluent UI System 
 | Element | Fluent Icon | Material Icon Alternative |
 |---------|-------------|---------------------------|
 | Settings | `settings` | `tune` |
-| Statistics | `bar_chart` | `analytics` |
 | Info/Help | `info` | `help` |
 | Sound On | `volume_up` | `volume_up` |
 | Sound Off | `volume_off` | `volume_mute` |
@@ -191,7 +190,6 @@ The following assets are not currently required but may be added in future itera
   - [x] Create MainMenuViewModel with RelayCommands
   - [x] Add start game button with navigation (shows "Coming Soon" placeholder)
   - [x] Add settings button (shows "Coming Soon" placeholder for Phase 5)
-  - [x] Add statistics button (shows "Coming Soon" placeholder for Phase 5)
   - [x] Add platform-specific exit button (visible on Windows only)
   - [x] Add app icon with Cards FluentIcon in circular badge
   - [x] Add title "Blackjack" and subtitle "Play Vegas-style Blackjack"
@@ -361,15 +359,6 @@ The following assets are not currently required but may be added in future itera
 
 ### Phase 5: Polish and Features (Enhancement)
 **Goal**: Add polish, additional features, and platform optimizations
-
-- [ ] **Statistics Tracking**
-  - [ ] Create StatisticsService
-  - [ ] Track hands played
-  - [ ] Track hands won/lost/pushed
-  - [ ] Track total winnings/losses
-  - [ ] Track blackjacks dealt
-  - [ ] Calculate win percentage
-  - [ ] Create statistics display page
 
 - [ ] **Save/Load Game**
   - [ ] Implement game state serialization
