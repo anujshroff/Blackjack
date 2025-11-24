@@ -24,6 +24,16 @@ namespace Blackjack.Models
         public HandStatus Status { get; set; }
 
         /// <summary>
+        /// Indicates if this hand is waiting for its second card (used in splits).
+        /// </summary>
+        public bool NeedsSecondCard { get; set; }
+
+        /// <summary>
+        /// The index of this hand in the player's hand collection (0 = first hand, 1 = second split hand, etc.).
+        /// </summary>
+        public int HandIndex { get; set; }
+
+        /// <summary>
         /// Gets the total value of the hand, automatically handling Aces as 1 or 11.
         /// </summary>
         public int TotalValue
@@ -120,6 +130,8 @@ namespace Blackjack.Models
             Cards = [];
             Bet = 0;
             Status = HandStatus.Active;
+            NeedsSecondCard = false;
+            HandIndex = 0;
         }
 
         /// <summary>

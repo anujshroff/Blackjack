@@ -9,37 +9,99 @@ namespace Blackjack.Views
     {
         private GameTableViewModel ViewModel => (GameTableViewModel)BindingContext;
 
+        // Get screen dimensions for dynamic sizing
+        private static double ScreenHeight => DeviceDisplay.Current.MainDisplayInfo.Height / DeviceDisplay.Current.MainDisplayInfo.Density;
+        private static double ScreenWidth => DeviceDisplay.Current.MainDisplayInfo.Width / DeviceDisplay.Current.MainDisplayInfo.Density;
+
+        // Dynamic card sizing methods based on container context
+        private static (double width, double height) GetCardSizeForDealerArea()
+        {
+            // Dealer area is in Row 0 (35% of screen height)
+            // Account for padding, margins, labels, etc.
+            double availableHeight = GameTablePage.ScreenHeight * 0.35 * 0.5; // Use 50% of row height for cards
+            double maxHeight = Math.Min(availableHeight, 100); // Cap at reasonable size
+            double height = Math.Max(60, maxHeight); // Minimum 60px height
+            double width = height / 1.4; // Maintain card aspect ratio
+            return (width, height);
+        }
+
+        private static (double width, double height) GetCardSizeForActiveHandArea()
+        {
+            // Active hand area is in Row 0 (35% of screen height)
+            // Similar to dealer area but might have slightly different constraints
+            double availableHeight = GameTablePage.ScreenHeight * 0.35 * 0.5; // Use 50% of row height for cards
+            double maxHeight = Math.Min(availableHeight, 100); // Cap at reasonable size
+            double height = Math.Max(60, maxHeight); // Minimum 60px height
+            double width = height / 1.4; // Maintain card aspect ratio
+            return (width, height);
+        }
+
+        private static (double width, double height) GetCardSizeForSummaryStrip()
+        {
+            // Summary strip is in Row 1 (25% of screen height)
+            // Cards should be smaller here
+            double availableHeight = GameTablePage.ScreenHeight * 0.25 * 0.6; // Use 60% of row height
+            double maxHeight = Math.Min(availableHeight, 70); // Smaller cap for summary cards
+            double height = Math.Max(45, maxHeight); // Minimum 45px height
+            double width = height / 1.4; // Maintain card aspect ratio
+            return (width, height);
+        }
+
+        private static double GetCardOverlap(double cardWidth)
+        {
+            return cardWidth * 0.5; // 50% overlap for better space usage
+        }
+
         public GameTablePage(GameTableViewModel viewModel)
         {
             InitializeComponent();
             BindingContext = viewModel;
 
+            // Set dynamic heights for ScrollViews
+            UpdateScrollViewHeights();
+
             // Subscribe to ViewModel property changes
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
+
+            // Wire up Return to Active button
+            ReturnToActiveButton.Clicked += (s, e) => ViewModel.ReturnToActivePlayer();
+        }
+
+        /// <summary>
+        /// Update ScrollView heights based on dynamic card sizing
+        /// </summary>
+        private void UpdateScrollViewHeights()
+        {
+            // Set dealer ScrollView height to accommodate full card with some padding
+            var (_, height) = GameTablePage.GetCardSizeForDealerArea();
+            DealerCardsScrollView?.HeightRequest = height + 10; // Add padding
         }
 
         private void ViewModel_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            // When ViewModel is initialized, rebuild the player positions
+            // When ViewModel is initialized, build initial UI
             if (e.PropertyName == nameof(GameTableViewModel.IsInitialized) && ViewModel.IsInitialized)
             {
-                // Dispatch to main thread for UI updates
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    BuildPlayerPositions();
+                    BuildPlayerSummaryStrip();
+                    BuildActiveHandDisplay();
                     BuildDealerCards();
+                    UpdateLayoutForPhase();
                 });
             }
-            // When current phase changes, rebuild player positions to update bet displays and dealer cards
+            // When phase changes, rebuild everything
             else if (e.PropertyName == nameof(GameTableViewModel.CurrentPhase))
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    BuildPlayerPositions();
+                    BuildPlayerSummaryStrip();
+                    BuildActiveHandDisplay();
                     BuildDealerCards();
+                    UpdateLayoutForPhase();
                 });
             }
-            // When dealer cards change, rebuild dealer card display
+            // When dealer cards change
             else if (e.PropertyName == nameof(GameTableViewModel.DealerCards))
             {
                 MainThread.BeginInvokeOnMainThread(() =>
@@ -47,25 +109,77 @@ namespace Blackjack.Views
                     BuildDealerCards();
                 });
             }
-            // When Players property changes (cards added to hands), rebuild player positions
+            // When Players property changes (cards dealt, etc.)
             else if (e.PropertyName == nameof(GameTableViewModel.Players))
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    BuildPlayerPositions();
+                    BuildPlayerSummaryStrip();
+                    BuildActiveHandDisplay();
+                });
+            }
+            // When active player position changes
+            else if (e.PropertyName == nameof(GameTableViewModel.ActivePlayerPosition))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    // Auto-view the active player when it changes
+                    if (ViewModel.ActivePlayerPosition.HasValue)
+                    {
+                        ViewModel.ViewPlayer(ViewModel.ActivePlayerPosition.Value);
+                    }
+                    BuildPlayerSummaryStrip();
+                    BuildActiveHandDisplay();
+                });
+            }
+            // When viewed player position changes
+            else if (e.PropertyName == nameof(GameTableViewModel.ViewedPlayerPosition) ||
+                     e.PropertyName == nameof(GameTableViewModel.ViewedHandIndex))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    BuildActiveHandDisplay();
+
+                    // Update Return to Active button visibility
+                    ReturnToActiveButton.IsVisible = ViewModel.IsViewingInactivePlayer;
                 });
             }
         }
 
+        /// <summary>
+        /// Update layout based on game phase (expand dealer area during dealer turn).
+        /// </summary>
+        private void UpdateLayoutForPhase()
+        {
+            // During dealer's turn, expand dealer area to full width
+            bool isDealerTurn = ViewModel.CurrentPhase == GamePhase.DealerAction;
+
+            if (isDealerTurn)
+            {
+                // Expand dealer area to use both columns
+                Grid.SetColumnSpan(DealerAreaBorder, 2);
+                ActiveHandAreaBorder.IsVisible = false;
+            }
+            else
+            {
+                // Normal layout: dealer on left, active hand on right
+                Grid.SetColumnSpan(DealerAreaBorder, 1);
+                ActiveHandAreaBorder.IsVisible = true;
+            }
+        }
+
+        /// <summary>
+        /// Build the dealer's card display.
+        /// </summary>
         private void BuildDealerCards()
         {
-            // Clear existing cards
             DealerCardsContainer.Children.Clear();
 
             if (ViewModel.DealerCards.Count == 0)
                 return;
 
             var cardConverter = new Converters.CardToImageConverter();
+            var (cardWidth, cardHeight) = GameTablePage.GetCardSizeForDealerArea();
 
             for (int i = 0; i < ViewModel.DealerCards.Count; i++)
             {
@@ -73,10 +187,12 @@ namespace Blackjack.Views
 
                 var cardBorder = new Border
                 {
-                    StrokeThickness = 0,
-                    MaximumWidthRequest = 70,
-                    MaximumHeightRequest = 100,
-                    StrokeShape = new RoundRectangle { CornerRadius = 6 }
+                    StrokeThickness = 1,
+                    Stroke = Colors.Black,
+                    WidthRequest = cardWidth,
+                    HeightRequest = cardHeight,
+                    BackgroundColor = Colors.White,
+                    StrokeShape = new RoundRectangle { CornerRadius = 4 }
                 };
 
                 ImageSource? imageSource;
@@ -88,7 +204,8 @@ namespace Blackjack.Views
                 }
                 else
                 {
-                    imageSource = cardConverter.Convert(card, typeof(ImageSource), null!, System.Globalization.CultureInfo.CurrentCulture) as ImageSource;
+                    imageSource = cardConverter.Convert(card, typeof(ImageSource), null!,
+                        System.Globalization.CultureInfo.CurrentCulture) as ImageSource;
                 }
 
                 var cardImage = new Image
@@ -102,249 +219,518 @@ namespace Blackjack.Views
             }
         }
 
-        private void BuildPlayerPositions()
+        /// <summary>
+        /// Build the player summary strip showing all players in compact form.
+        /// </summary>
+        private void BuildPlayerSummaryStrip()
         {
-            PlayersGrid.Children.Clear();
-            PlayersGrid.ColumnDefinitions.Clear();
-            PlayersGrid.RowDefinitions.Clear();
+            PlayerSummaryStrip.Children.Clear();
 
-            // Create a semi-circular arrangement using a grid
-            // Set up 7 columns for 7 positions
-            for (int i = 0; i < 7; i++)
-            {
-                PlayersGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-            }
-
-            // Add single row for players
-            PlayersGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-            // Calculate semi-circular positions
             foreach (var player in ViewModel.Players)
             {
-                var playerCard = CreatePlayerCard(player);
+                if (!player.IsActive)
+                    continue;
 
-                // Calculate position on the arc
-                int position = player.SeatPosition - 1; // Convert to 0-based index
-
-                // Calculate vertical offset for arc effect
-                // Positions 1 and 7 are closest to dealer (top), position 4 is furthest (bottom of arc)
-                double[] arcOffsets = [0, 15, 30, 40, 30, 15, 0];
-                double yOffset = arcOffsets[position];
-
-                // Apply margins for arc effect and make cards slightly overlap
-                playerCard.Margin = new Thickness(2, yOffset, 2, 0);
-
-                // Add to grid at the appropriate column
-                Grid.SetColumn(playerCard, position);
-                Grid.SetRow(playerCard, 0);
-
-                PlayersGrid.Children.Add(playerCard);
+                var summaryCard = CreatePlayerSummaryCard(player);
+                PlayerSummaryStrip.Children.Add(summaryCard);
             }
         }
 
-        private static Border CreatePlayerCard(Player player)
+        /// <summary>
+        /// Create a compact summary card for a player.
+        /// </summary>
+        private Border CreatePlayerSummaryCard(Player player)
         {
-            // Active indicator border (highlights player's turn and active seats)
-            var activeIndicatorColor = player.IsHuman
-                ? Application.Current?.Resources["Primary"] as Color ?? Colors.Blue
-                : Application.Current?.Resources["Secondary"] as Color ?? Colors.LightBlue;
+            // Determine colors based on player state
+            var borderColor = Colors.Transparent;
+            var backgroundColor = Color.FromArgb("#1AFFFFFF");
 
-            var outerBorder = new Border
+            // Highlight active player's turn
+            if (player.SeatPosition == ViewModel.ActivePlayerPosition)
             {
-                Stroke = player.IsActive ? activeIndicatorColor : Colors.Transparent,
-                StrokeThickness = player.IsActive ? 3 : 0,
-                BackgroundColor = player.IsActive ? Color.FromArgb("#20FFFFFF") : Color.FromArgb("#10FFFFFF"),
-                Padding = 12,
-                Margin = new Thickness(5),
-                HeightRequest = 210,
-                WidthRequest = 140,
-                StrokeShape = new RoundRectangle { CornerRadius = 12 }
+                borderColor = Color.FromArgb("#10B981"); // Green for active turn
+                backgroundColor = Color.FromArgb("#2010B981");
+            }
+            // Highlight viewed player
+            else if (player.SeatPosition == ViewModel.ViewedPlayerPosition)
+            {
+                borderColor = Color.FromArgb("#F59E0B"); // Orange for viewed
+                backgroundColor = Color.FromArgb("#20F59E0B");
+            }
+
+            // Determine status text and color
+            var statusText = "";
+            var statusColor = Colors.White;
+
+            if (player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0)
+            {
+                var hand = player.Hands[0];
+                if (hand.IsBusted)
+                {
+                    statusText = "BUST";
+                    statusColor = Color.FromArgb("#EF4444"); // Red
+                }
+                else if (hand.IsBlackjack)
+                {
+                    statusText = "BJ!";
+                    statusColor = Color.FromArgb("#FFD700"); // Gold
+                }
+                else if (hand.Status == HandStatus.Standing)
+                {
+                    statusText = hand.TotalValue.ToString();
+                    statusColor = Colors.White;
+                }
+                else if (hand.Cards.Count > 0)
+                {
+                    statusText = hand.TotalValue.ToString();
+                    statusColor = Colors.White;
+                }
+            }
+
+            var summaryBorder = new Border
+            {
+                BackgroundColor = backgroundColor,
+                Stroke = borderColor,
+                StrokeThickness = borderColor == Colors.Transparent ? 0 : 2,
+                Padding = 3,
+                WidthRequest = 58,
+                // Removed HeightRequest to allow natural sizing
+                StrokeShape = new RoundRectangle { CornerRadius = 6 }
             };
 
             var content = new VerticalStackLayout
             {
-                Spacing = 8
+                Spacing = 2
             };
 
-            // Position number
-            var positionLabel = new Label
+            // Position label with split indicator
+            var positionText = player.Hands.Count > 1
+                ? $"P{player.SeatPosition} ({player.Hands.Count}H)"
+                : $"P{player.SeatPosition}";
+
+            content.Add(new Label
             {
-                Text = $"Position {player.SeatPosition}",
-                FontSize = 11,
+                Text = positionText,
+                FontSize = 9,
                 FontAttributes = FontAttributes.Bold,
-                TextColor = Application.Current?.Resources["CasinoGold"] as Color ?? Colors.Gold,
+                TextColor = Color.FromArgb("#D4AF37"),
+                HorizontalOptions = LayoutOptions.Center
+            });
+
+            // Player icon and name
+            var iconStack = new HorizontalStackLayout
+            {
+                Spacing = 2,
                 HorizontalOptions = LayoutOptions.Center
             };
-            content.Add(positionLabel);
 
-            // Player avatar and name
-            var playerInfoStack = new HorizontalStackLayout
+            var playerIcon = new FluentIcon
             {
-                HorizontalOptions = LayoutOptions.Center,
-                Spacing = 5
+                Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.Person,
+                IconVariant = player.IsHuman ?
+                    FluentIcons.Common.IconVariant.Filled :
+                    FluentIcons.Common.IconVariant.Regular,
+                FontSize = 12,
+                ForegroundColor = player.IsHuman ?
+                    Color.FromArgb("#3B82F6") :
+                    Color.FromArgb("#64748B")
             };
+            iconStack.Add(playerIcon);
+            content.Add(iconStack);
 
-            if (player.IsActive)
+            // Total bet amount across all hands
+            var totalBet = player.Hands.Sum(h => h.Bet);
+            if (totalBet > 0)
             {
-                var avatar = new FluentIcon
+                content.Add(new Label
                 {
-                    Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.Person,
-                    IconVariant = player.IsHuman ? FluentIcons.Common.IconVariant.Filled : FluentIcons.Common.IconVariant.Regular,
-                    FontSize = 20,
-                    ForegroundColor = player.IsHuman
-                        ? Application.Current?.Resources["Primary"] as Color ?? Colors.Blue
-                        : Application.Current?.Resources["Secondary"] as Color ?? Colors.LightBlue
-                };
-                playerInfoStack.Add(avatar);
-
-                var nameLabel = new Label
-                {
-                    Text = player.Name,
-                    FontSize = 13,
+                    Text = $"${totalBet:N0}",
+                    FontSize = 10,
                     FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
-                    VerticalOptions = LayoutOptions.Center
-                };
-                playerInfoStack.Add(nameLabel);
+                    TextColor = Color.FromArgb("#10B981"),
+                    HorizontalOptions = LayoutOptions.Center
+                });
             }
-            else
+
+            // Status - show all hand totals for splits, or single status
+            if (player.Hands.Count > 1 && player.Hands.Any(h => h.Cards.Count > 0))
             {
-                var emptyLabel = new Label
+                // Multiple hands - show each status compactly
+                var statusStack = new VerticalStackLayout
                 {
-                    Text = "Empty",
-                    FontSize = 13,
-                    FontAttributes = FontAttributes.Italic,
-                    TextColor = Application.Current?.Resources["Gray400"] as Color ?? Colors.Gray,
+                    Spacing = 1,
                     HorizontalOptions = LayoutOptions.Center
                 };
-                playerInfoStack.Add(emptyLabel);
-            }
-            content.Add(playerInfoStack);
 
-            // Cards area - display actual cards
-            var cardsArea = new HorizontalStackLayout
+                foreach (var hand in player.Hands)
+                {
+                    if (hand.Cards.Count == 0)
+                        continue;
+
+                    string handStatus;
+                    Color handColor;
+
+                    if (hand.NeedsSecondCard)
+                    {
+                        handStatus = "?";
+                        handColor = Color.FromArgb("#6B7280");
+                    }
+                    else if (hand.IsBusted)
+                    {
+                        handStatus = "B";
+                        handColor = Color.FromArgb("#EF4444");
+                    }
+                    else if (hand.IsBlackjack)
+                    {
+                        handStatus = "BJ";
+                        handColor = Color.FromArgb("#FFD700");
+                    }
+                    else if (hand.Status == HandStatus.Standing)
+                    {
+                        handStatus = hand.TotalValue.ToString();
+                        handColor = Colors.White;
+                    }
+                    else
+                    {
+                        handStatus = hand.TotalValue.ToString();
+                        handColor = Colors.White;
+                    }
+
+                    statusStack.Add(new Label
+                    {
+                        Text = handStatus,
+                        FontSize = 9,
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = handColor,
+                        HorizontalOptions = LayoutOptions.Center
+                    });
+                }
+
+                content.Add(statusStack);
+            }
+            else if (!string.IsNullOrEmpty(statusText))
             {
+                // Single hand - show normal status
+                content.Add(new Label
+                {
+                    Text = statusText,
+                    FontSize = 11,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = statusColor,
+                    HorizontalOptions = LayoutOptions.Center
+                });
+            }
+
+            summaryBorder.Content = content;
+
+            // Add tap gesture to view this player
+            var tapGesture = new TapGestureRecognizer();
+            tapGesture.Tapped += (s, e) => ViewModel.ViewPlayer(player.SeatPosition);
+            summaryBorder.GestureRecognizers.Add(tapGesture);
+
+            return summaryBorder;
+        }
+
+        /// <summary>
+        /// Build the active hand display showing the currently viewed player's hand.
+        /// </summary>
+        private void BuildActiveHandDisplay()
+        {
+            ActiveHandArea.Children.Clear();
+
+            // Don't show active hand during dealer's turn
+            if (ViewModel.CurrentPhase == GamePhase.DealerAction)
+                return;
+
+            // Keep the Return to Active button
+            if (ReturnToActiveButton.Parent == null)
+            {
+                ActiveHandArea.Children.Add(ReturnToActiveButton);
+            }
+
+            // Find the player to display
+            Player? viewedPlayer = null;
+            if (ViewModel.ViewedPlayerPosition.HasValue)
+            {
+                viewedPlayer = ViewModel.Players.FirstOrDefault(p =>
+                    p.SeatPosition == ViewModel.ViewedPlayerPosition.Value);
+            }
+            else if (ViewModel.ActivePlayerPosition.HasValue)
+            {
+                viewedPlayer = ViewModel.Players.FirstOrDefault(p =>
+                    p.SeatPosition == ViewModel.ActivePlayerPosition.Value);
+            }
+
+            if (viewedPlayer == null || !viewedPlayer.IsActive)
+                return;
+
+            var handDisplay = CreateActiveHandDisplay(viewedPlayer);
+            ActiveHandArea.Children.Insert(0, handDisplay); // Insert before Return button
+        }
+
+        /// <summary>
+        /// Create the large, focused display for the active/viewed player's hand.
+        /// </summary>
+        private VerticalStackLayout CreateActiveHandDisplay(Player player)
+        {
+            var content = new VerticalStackLayout
+            {
+                Spacing = 5,
                 HorizontalOptions = LayoutOptions.Center,
-                Spacing = -15, // Negative spacing for slight card overlap
-                HeightRequest = 70
+                VerticalOptions = LayoutOptions.Center
             };
 
-            if (player.IsActive && player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0)
+            // Player info header - more compact
+            var headerStack = new HorizontalStackLayout
             {
-                // Display each card in the hand
-                foreach (var card in player.Hands[0].Cards)
+                Spacing = 4,
+                HorizontalOptions = LayoutOptions.Center
+            };
+
+            var playerIcon = new FluentIcon
+            {
+                Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.Person,
+                IconVariant = player.IsHuman ?
+                    FluentIcons.Common.IconVariant.Filled :
+                    FluentIcons.Common.IconVariant.Regular,
+                FontSize = 16,
+                ForegroundColor = player.IsHuman ?
+                    Color.FromArgb("#3B82F6") :
+                    Color.FromArgb("#64748B")
+            };
+            headerStack.Add(playerIcon);
+
+            headerStack.Add(new Label
+            {
+                Text = $"{player.Name} (P{player.SeatPosition})",
+                FontSize = 12,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Colors.White,
+                VerticalOptions = LayoutOptions.Center
+            });
+
+            content.Add(headerStack);
+
+            // Handle multiple hands (splits) - more compact
+            if (player.Hands.Count > 1)
+            {
+                // Add hand tabs
+                var tabsStack = new HorizontalStackLayout
                 {
-                    var cardBorder = new Border
+                    Spacing = 5,
+                    HorizontalOptions = LayoutOptions.Center
+                };
+
+                for (int i = 0; i < player.Hands.Count; i++)
+                {
+                    var handIndex = i;
+                    var hand = player.Hands[i];
+
+                    // Determine tab color and status based on hand state
+                    Color backgroundColor;
+                    Color strokeColor;
+                    string statusText;
+
+                    // Check if this is the currently active hand for play
+                    bool isActivePlayHand = player.SeatPosition == ViewModel.ActivePlayerPosition &&
+                                           handIndex == ViewModel.ViewedHandIndex &&
+                                           hand.Status == HandStatus.Active;
+
+                    if (isActivePlayHand)
                     {
-                        StrokeThickness = 1,
-                        Stroke = Colors.White,
-                        WidthRequest = 45,
-                        HeightRequest = 65,
+                        // Green for currently active hand being played
+                        backgroundColor = Color.FromArgb("#10B981");
+                        strokeColor = Color.FromArgb("#059669");
+                        statusText = "ACTIVE";
+                    }
+                    else if (hand.NeedsSecondCard)
+                    {
+                        // Gray for waiting hand (needs second card)
+                        backgroundColor = Color.FromArgb("#6B7280");
+                        strokeColor = Color.FromArgb("#4B5563");
+                        statusText = "WAIT";
+                    }
+                    else if (hand.Status == HandStatus.Busted)
+                    {
+                        // Red for busted
+                        backgroundColor = Color.FromArgb("#EF4444");
+                        strokeColor = Color.FromArgb("#DC2626");
+                        statusText = "BUST";
+                    }
+                    else if (hand.Status == HandStatus.Standing)
+                    {
+                        // Blue for standing
+                        backgroundColor = Color.FromArgb("#3B82F6");
+                        strokeColor = Color.FromArgb("#2563EB");
+                        statusText = hand.TotalValue.ToString();
+                    }
+                    else if (handIndex == ViewModel.ViewedHandIndex)
+                    {
+                        // Orange for viewed but not active
+                        backgroundColor = Color.FromArgb("#F59E0B");
+                        strokeColor = Color.FromArgb("#D97706");
+                        statusText = $"H{handIndex + 1}";
+                    }
+                    else
+                    {
+                        // Default
+                        backgroundColor = Color.FromArgb("#40FFFFFF");
+                        strokeColor = Colors.Transparent;
+                        statusText = $"H{handIndex + 1}";
+                    }
+
+                    var tabBorder = new Border
+                    {
+                        BackgroundColor = backgroundColor,
+                        Stroke = strokeColor,
+                        StrokeThickness = 2,
+                        Padding = new Thickness(8, 3),
                         StrokeShape = new RoundRectangle { CornerRadius = 4 }
                     };
 
+                    var tabContent = new VerticalStackLayout
+                    {
+                        Spacing = 1
+                    };
+
+                    tabContent.Add(new Label
+                    {
+                        Text = $"H{handIndex + 1}",
+                        FontSize = 9,
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = Colors.White,
+                        HorizontalOptions = LayoutOptions.Center
+                    });
+
+                    tabContent.Add(new Label
+                    {
+                        Text = statusText,
+                        FontSize = 8,
+                        TextColor = Colors.White,
+                        HorizontalOptions = LayoutOptions.Center
+                    });
+
+                    tabBorder.Content = tabContent;
+
+                    var tapGesture = new TapGestureRecognizer();
+                    tapGesture.Tapped += (s, e) => ViewModel.ViewHand(handIndex);
+                    tabBorder.GestureRecognizers.Add(tapGesture);
+
+                    tabsStack.Add(tabBorder);
+                }
+
+                content.Add(tabsStack);
+            }
+
+            // Cards display for current hand
+            var handToDisplay = player.Hands.Count > ViewModel.ViewedHandIndex ?
+                player.Hands[ViewModel.ViewedHandIndex] :
+                (player.Hands.Count > 0 ? player.Hands[0] : null);
+
+            if (handToDisplay != null && handToDisplay.Cards.Count > 0)
+            {
+                var (cardWidth, cardHeight) = GameTablePage.GetCardSizeForActiveHandArea();
+                var cardOverlap = GameTablePage.GetCardOverlap(cardWidth);
+
+                var cardsStack = new HorizontalStackLayout
+                {
+                    Spacing = -cardOverlap,
+                    HorizontalOptions = LayoutOptions.Center,
+                    VerticalOptions = LayoutOptions.Center
+                };
+
+                var cardConverter = new Converters.CardToImageConverter();
+                foreach (var card in handToDisplay.Cards)
+                {
                     var cardImage = new Image
                     {
-                        Source = new Converters.CardToImageConverter().Convert(card, typeof(ImageSource), null!, System.Globalization.CultureInfo.CurrentCulture) as ImageSource,
+                        Source = cardConverter.Convert(card, typeof(ImageSource), null!,
+                            System.Globalization.CultureInfo.CurrentCulture) as ImageSource,
                         Aspect = Aspect.AspectFit
                     };
 
-                    cardBorder.Content = cardImage;
-                    cardsArea.Add(cardBorder);
+                    var cardBorder = new Border
+                    {
+                        StrokeThickness = 1,
+                        Stroke = Colors.Black,
+                        WidthRequest = cardWidth,
+                        HeightRequest = cardHeight,
+                        BackgroundColor = Colors.White,
+                        StrokeShape = new RoundRectangle { CornerRadius = 4 },
+                        Content = cardImage
+                    };
+
+                    cardsStack.Add(cardBorder);
                 }
-            }
-            else if (player.IsActive)
-            {
-                // No cards yet - show placeholder
-                var cardsPlaceholder = new Label
+
+                // Wrap cards in ScrollView for overflow handling
+                var cardsScrollView = new ScrollView
                 {
-                    Text = "[No Cards]",
-                    FontSize = 10,
-                    FontAttributes = FontAttributes.Italic,
-                    TextColor = Application.Current?.Resources["Gray400"] as Color ?? Colors.Gray,
+                    Orientation = ScrollOrientation.Horizontal,
+                    HorizontalScrollBarVisibility = ScrollBarVisibility.Never,
+                    HeightRequest = cardHeight + 10, // Dynamic height with padding
+                    Content = cardsStack
+                };
+
+                content.Add(cardsScrollView);
+
+                // Hand info (bet, total, status) - more compact
+                var infoStack = new HorizontalStackLayout
+                {
+                    Spacing = 15,
+                    HorizontalOptions = LayoutOptions.Center
+                };
+
+                // Bet info
+                infoStack.Add(new Label
+                {
+                    Text = $"Bet: ${handToDisplay.Bet:N0}",
+                    FontSize = 11,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = Color.FromArgb("#10B981"),
                     VerticalOptions = LayoutOptions.Center
-                };
-                cardsArea.Add(cardsPlaceholder);
-            }
-            content.Add(cardsArea);
+                });
 
-            // Bet and Total info
-            if (player.IsActive)
+                // Total info
+                var totalText = $"Total: {handToDisplay.TotalValue}";
+                var totalColor = Colors.White;
+
+                if (handToDisplay.IsBusted)
+                {
+                    totalText = "BUST!";
+                    totalColor = Color.FromArgb("#EF4444");
+                }
+                else if (handToDisplay.IsBlackjack)
+                {
+                    totalText = "BLACKJACK!";
+                    totalColor = Color.FromArgb("#FFD700");
+                }
+
+                infoStack.Add(new Label
+                {
+                    Text = totalText,
+                    FontSize = 12,
+                    FontAttributes = FontAttributes.Bold,
+                    TextColor = totalColor,
+                    VerticalOptions = LayoutOptions.Center
+                });
+
+                content.Add(infoStack);
+            }
+            else
             {
-                var infoGrid = new Grid
+                // No cards yet
+                content.Add(new Label
                 {
-                    ColumnDefinitions =
-                    {
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
-                        new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
-                    },
-                    RowDefinitions =
-                    {
-                        new RowDefinition { Height = GridLength.Auto }
-                    }
-                };
-
-                // Bet display
-                var betStack = new VerticalStackLayout
-                {
-                    Spacing = 2
-                };
-                betStack.Add(new Label
-                {
-                    Text = "BET",
-                    FontSize = 9,
-                    TextColor = Application.Current?.Resources["Gray300"] as Color ?? Colors.LightGray,
+                    Text = "Waiting for cards...",
+                    FontSize = 14,
+                    FontAttributes = FontAttributes.Italic,
+                    TextColor = Color.FromArgb("#80FFFFFF"),
                     HorizontalOptions = LayoutOptions.Center
                 });
-
-                // Get current bet amount from player's first hand
-                var currentBet = player.Hands.Count > 0 ? player.Hands[0].Bet : 0m;
-                var betText = currentBet > 0 ? $"${currentBet:N0}" : "$--";
-                var betLabel = new Label
-                {
-                    Text = betText,
-                    FontSize = 12,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = currentBet > 0
-                        ? Application.Current?.Resources["Success"] as Color ?? Colors.Green
-                        : Colors.White,
-                    HorizontalOptions = LayoutOptions.Center
-                };
-                betStack.Add(betLabel);
-                infoGrid.Add(betStack, 0, 0);
-
-                // Total display
-                var totalStack = new VerticalStackLayout
-                {
-                    Spacing = 2
-                };
-                totalStack.Add(new Label
-                {
-                    Text = "TOTAL",
-                    FontSize = 9,
-                    TextColor = Application.Current?.Resources["Gray300"] as Color ?? Colors.LightGray,
-                    HorizontalOptions = LayoutOptions.Center
-                });
-
-                // Get current hand total
-                var currentTotal = player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0
-                    ? player.Hands[0].TotalValue.ToString()
-                    : "--";
-                totalStack.Add(new Label
-                {
-                    Text = currentTotal,
-                    FontSize = 12,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
-                    HorizontalOptions = LayoutOptions.Center
-                });
-                infoGrid.Add(totalStack, 1, 0);
-
-                content.Add(infoGrid);
             }
 
-            outerBorder.Content = content;
-            return outerBorder;
+            return content;
         }
 
         protected override void OnDisappearing()
