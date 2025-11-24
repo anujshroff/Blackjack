@@ -27,7 +27,78 @@ namespace Blackjack.Views
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
                     BuildPlayerPositions();
+                    BuildDealerCards();
                 });
+            }
+            // When current phase changes, rebuild player positions to update bet displays and dealer cards
+            else if (e.PropertyName == nameof(GameTableViewModel.CurrentPhase))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    BuildPlayerPositions();
+                    BuildDealerCards();
+                });
+            }
+            // When dealer cards change, rebuild dealer card display
+            else if (e.PropertyName == nameof(GameTableViewModel.DealerCards))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    BuildDealerCards();
+                });
+            }
+            // When Players property changes (cards added to hands), rebuild player positions
+            else if (e.PropertyName == nameof(GameTableViewModel.Players))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    BuildPlayerPositions();
+                });
+            }
+        }
+
+        private void BuildDealerCards()
+        {
+            // Clear existing cards
+            DealerCardsContainer.Children.Clear();
+
+            if (ViewModel.DealerCards.Count == 0)
+                return;
+
+            var cardConverter = new Converters.CardToImageConverter();
+
+            for (int i = 0; i < ViewModel.DealerCards.Count; i++)
+            {
+                var card = ViewModel.DealerCards[i];
+
+                var cardBorder = new Border
+                {
+                    StrokeThickness = 0,
+                    MaximumWidthRequest = 70,
+                    MaximumHeightRequest = 100,
+                    StrokeShape = new RoundRectangle { CornerRadius = 6 }
+                };
+
+                ImageSource? imageSource;
+
+                // Show card_back for hole card (index 1) when face-down
+                if (i == 1 && ViewModel.DealerHoleCardFaceDown)
+                {
+                    imageSource = ImageSource.FromFile("card_back.png");
+                }
+                else
+                {
+                    imageSource = cardConverter.Convert(card, typeof(ImageSource), null!, System.Globalization.CultureInfo.CurrentCulture) as ImageSource;
+                }
+
+                var cardImage = new Image
+                {
+                    Source = imageSource,
+                    Aspect = Aspect.AspectFit
+                };
+
+                cardBorder.Content = cardImage;
+                DealerCardsContainer.Children.Add(cardBorder);
             }
         }
 
@@ -85,7 +156,7 @@ namespace Blackjack.Views
                 BackgroundColor = player.IsActive ? Color.FromArgb("#20FFFFFF") : Color.FromArgb("#10FFFFFF"),
                 Padding = 12,
                 Margin = new Thickness(5),
-                HeightRequest = 180,
+                HeightRequest = 210,
                 WidthRequest = 140,
                 StrokeShape = new RoundRectangle { CornerRadius = 12 }
             };
@@ -150,19 +221,44 @@ namespace Blackjack.Views
             }
             content.Add(playerInfoStack);
 
-            // Cards area (empty for Phase 2)
+            // Cards area - display actual cards
             var cardsArea = new HorizontalStackLayout
             {
                 HorizontalOptions = LayoutOptions.Center,
-                Spacing = 5,
+                Spacing = -15, // Negative spacing for slight card overlap
                 HeightRequest = 70
             };
 
-            if (player.IsActive)
+            if (player.IsActive && player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0)
             {
+                // Display each card in the hand
+                foreach (var card in player.Hands[0].Cards)
+                {
+                    var cardBorder = new Border
+                    {
+                        StrokeThickness = 1,
+                        Stroke = Colors.White,
+                        WidthRequest = 45,
+                        HeightRequest = 65,
+                        StrokeShape = new RoundRectangle { CornerRadius = 4 }
+                    };
+
+                    var cardImage = new Image
+                    {
+                        Source = new Converters.CardToImageConverter().Convert(card, typeof(ImageSource), null!, System.Globalization.CultureInfo.CurrentCulture) as ImageSource,
+                        Aspect = Aspect.AspectFit
+                    };
+
+                    cardBorder.Content = cardImage;
+                    cardsArea.Add(cardBorder);
+                }
+            }
+            else if (player.IsActive)
+            {
+                // No cards yet - show placeholder
                 var cardsPlaceholder = new Label
                 {
-                    Text = "[Cards]",
+                    Text = "[No Cards]",
                     FontSize = 10,
                     FontAttributes = FontAttributes.Italic,
                     TextColor = Application.Current?.Resources["Gray400"] as Color ?? Colors.Gray,
@@ -200,14 +296,21 @@ namespace Blackjack.Views
                     TextColor = Application.Current?.Resources["Gray300"] as Color ?? Colors.LightGray,
                     HorizontalOptions = LayoutOptions.Center
                 });
-                betStack.Add(new Label
+
+                // Get current bet amount from player's first hand
+                var currentBet = player.Hands.Count > 0 ? player.Hands[0].Bet : 0m;
+                var betText = currentBet > 0 ? $"${currentBet:N0}" : "$--";
+                var betLabel = new Label
                 {
-                    Text = "$--",
+                    Text = betText,
                     FontSize = 12,
                     FontAttributes = FontAttributes.Bold,
-                    TextColor = Colors.White,
+                    TextColor = currentBet > 0
+                        ? Application.Current?.Resources["Success"] as Color ?? Colors.Green
+                        : Colors.White,
                     HorizontalOptions = LayoutOptions.Center
-                });
+                };
+                betStack.Add(betLabel);
                 infoGrid.Add(betStack, 0, 0);
 
                 // Total display
@@ -222,9 +325,14 @@ namespace Blackjack.Views
                     TextColor = Application.Current?.Resources["Gray300"] as Color ?? Colors.LightGray,
                     HorizontalOptions = LayoutOptions.Center
                 });
+
+                // Get current hand total
+                var currentTotal = player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0
+                    ? player.Hands[0].TotalValue.ToString()
+                    : "--";
                 totalStack.Add(new Label
                 {
-                    Text = "--",
+                    Text = currentTotal,
                     FontSize = 12,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = Colors.White,

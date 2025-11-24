@@ -109,37 +109,6 @@
                 </Grid>
             </Border>
 
-            <!-- Statistics Button (Secondary) -->
-            <Border
-                Stroke="{StaticResource Secondary}"
-                StrokeThickness="2"
-                BackgroundColor="Transparent"
-                HeightRequest="44"
-                WidthRequest="260"
-                StrokeShape="RoundRectangle 22"
-                HorizontalOptions="Center">
-                <Grid>
-                    <Grid.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding ViewStatisticsCommand}"/>
-                    </Grid.GestureRecognizers>
-                    <HorizontalStackLayout
-                        HorizontalOptions="Center"
-                        VerticalOptions="Center"
-                        Spacing="8">
-                        <ic:FluentIcon
-                            Icon="ChartMultiple"
-                            IconVariant="Regular"
-                            FontSize="18"
-                            ForegroundColor="{StaticResource Secondary}"/>
-                        <Label
-                            Text="Statistics"
-                            FontSize="16"
-                            TextColor="{StaticResource Secondary}"
-                            VerticalOptions="Center"/>
-                    </HorizontalStackLayout>
-                </Grid>
-            </Border>
-
             <!-- Exit Button (Windows Only) -->
             <Button
                 x:Name="ExitButton"

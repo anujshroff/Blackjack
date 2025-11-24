@@ -62,30 +62,6 @@ namespace Blackjack.ViewModels
         }
 
         /// <summary>
-        /// Command to view statistics.
-        /// Placeholder for future implementation.
-        /// </summary>
-        [RelayCommand]
-        private async Task ViewStatistics()
-        {
-            if (IsBusy)
-                return;
-
-            try
-            {
-                IsBusy = true;
-
-                await Shell.Current.DisplayAlertAsync("Coming Soon",
-                    "Statistics page will be available in Phase 5.",
-                    "OK");
-            }
-            finally
-            {
-                IsBusy = false;
-            }
-        }
-
-        /// <summary>
         /// Command to exit the application.
         /// Only available on Windows platform.
         /// </summary>

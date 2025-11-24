@@ -276,19 +276,11 @@ Computer players will implement the mathematically optimal Basic Strategy for H1
 - Card dealing animations
 - Win/loss notifications
 - Chip movement animations
-- Sound effects (optional, toggleable)
 
 ### 5.3 Game State Management
 - **Save/Load Game**: Ability to save current game state and resume later
-- **Statistics Tracking**:
-  - Hands played
-  - Hands won/lost/pushed
-  - Total winnings/losses
-  - Blackjacks dealt
-  - Win percentage
   
 - **Settings Menu**:
-  - Sound on/off
   - Animation speed
   - Table minimum/maximum
   - Starting bankroll
@@ -315,19 +307,16 @@ Blackjack/
 ├── ViewModels/                      (MVVM view models)
 │   ├── MainMenuViewModel.cs
 │   ├── GameTableViewModel.cs
-│   ├── SettingsViewModel.cs
-│   └── StatisticsViewModel.cs
+│   └── SettingsViewModel.cs
 ├── Views/                           (XAML pages)
 │   ├── MainMenuPage.xaml
 │   ├── SeatSelectionPage.xaml
 │   ├── GameTablePage.xaml
-│   ├── SettingsPage.xaml
-│   └── StatisticsPage.xaml
+│   └── SettingsPage.xaml
 ├── Services/                        (Business logic)
 │   ├── GameEngine.cs
 │   ├── BasicStrategy.cs
-│   ├── AIPlayer.cs
-│   └── StatisticsService.cs
+│   └── AIPlayer.cs
 ├── Resources/                       (Images, styles, etc.)
 │   ├── Images/
 │   │   └── Cards/                   (52 card images + card back - open source)
@@ -429,7 +418,6 @@ public enum GamePhase { Betting, Dealing, InsuranceOffer, PlayerActions, DealerA
 - Touch-optimized controls
 - Portrait and landscape orientations
 - Adaptive layout for phones and tablets
-- Gesture support (swipe to view stats, etc.)
 
 #### 6.4.3 iOS
 - Touch-optimized controls

@@ -95,29 +95,11 @@
                            TextColor="#D4AF37"
                            HorizontalOptions="Center"/>
 
-                    <!-- Dealer Cards -->
-                    <CollectionView x:Name="DealerCardsView"
-                                    ItemsSource="{Binding DealerCards}"
-                                    HorizontalOptions="Center"
-                                    MaximumHeightRequest="100">
-                        <CollectionView.ItemsLayout>
-                            <LinearItemsLayout Orientation="Horizontal"
-                                               ItemSpacing="10"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                            <DataTemplate x:DataType="models:Card">
-                                <Border StrokeThickness="0"
-                                        MaximumWidthRequest="70"
-                                        MaximumHeightRequest="100">
-                                    <Border.StrokeShape>
-                                        <RoundRectangle CornerRadius="6"/>
-                                    </Border.StrokeShape>
-                                    <Image Aspect="AspectFit"
-                                           Source="{Binding ., Converter={StaticResource CardToImageConverter}}"/>
-                                </Border>
-                            </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                    <!-- Dealer Cards - populated in code-behind to control hole card -->
+                    <HorizontalStackLayout x:Name="DealerCardsContainer"
+                                           HorizontalOptions="Center"
+                                           Spacing="10"
+                                           HeightRequest="100"/>
 
                     <Label Text="{Binding DealerTotal, StringFormat='Total: {0}'}"
                            FontSize="14"
@@ -237,6 +219,7 @@
                                     Padding="8,6"/>
                             <Button Text="DEAL"
                                     Command="{Binding ConfirmBetCommand}"
+                                    IsEnabled="{Binding CanConfirmBet}"
                                     BackgroundColor="#10B981"
                                     TextColor="White"
                                     FontSize="12"
