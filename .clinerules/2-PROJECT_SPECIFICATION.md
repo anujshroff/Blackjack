@@ -276,13 +276,11 @@ Computer players will implement the mathematically optimal Basic Strategy for H1
 - Card dealing animations
 - Win/loss notifications
 - Chip movement animations
-- Sound effects (optional, toggleable)
 
 ### 5.3 Game State Management
 - **Save/Load Game**: Ability to save current game state and resume later
   
 - **Settings Menu**:
-  - Sound on/off
   - Animation speed
   - Table minimum/maximum
   - Starting bankroll

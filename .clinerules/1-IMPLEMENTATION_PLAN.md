@@ -80,8 +80,6 @@ Instead of generating custom icons, the application will use **Fluent UI System 
 |---------|-------------|---------------------------|
 | Settings | `settings` | `tune` |
 | Info/Help | `info` | `help` |
-| Sound On | `volume_up` | `volume_up` |
-| Sound Off | `volume_off` | `volume_mute` |
 | Home | `home` | `home` |
 | Menu | `menu` | `menu` |
 | Back | `arrow_back` | `arrow_back` |
@@ -369,7 +367,6 @@ The following assets are not currently required but may be added in future itera
 
 - [ ] **Settings Menu**
   - [ ] Create SettingsPage.xaml and ViewModel
-  - [ ] Add sound on/off toggle
   - [ ] Add animation speed control
   - [ ] Add table minimum/maximum configuration
   - [ ] Add starting bankroll configuration
@@ -381,14 +378,6 @@ The following assets are not currently required but may be added in future itera
   - [ ] Chip movement animations
   - [ ] Win/loss celebration animations
   - [ ] Shuffle animation
-
-- [ ] **Sound Effects**
-  - [ ] Add card dealing sound
-  - [ ] Add chip placement sound
-  - [ ] Add win/loss sounds
-  - [ ] Add shuffle sound
-  - [ ] Add button click sounds
-  - [ ] Implement sound toggle
 
 - [ ] **Platform Optimizations**
   - [ ] **Windows**: Desktop layout with mouse/keyboard controls
