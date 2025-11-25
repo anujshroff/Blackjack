@@ -1,4 +1,5 @@
 using Blackjack.Models;
+using Blackjack.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.ObjectModel;
 
@@ -184,6 +185,11 @@ namespace Blackjack.ViewModels
         private Services.BasicStrategy? _basicStrategy;
 
         /// <summary>
+        /// Bankroll service for persisting player bankroll.
+        /// </summary>
+        private readonly BankrollService _bankrollService;
+
+        /// <summary>
         /// Indicates if the betting interface should be visible.
         /// </summary>
         [ObservableProperty]
@@ -263,9 +269,10 @@ namespace Blackjack.ViewModels
         [ObservableProperty]
         private bool isViewingInactivePlayer;
 
-        public GameTableViewModel()
+        public GameTableViewModel(BankrollService bankrollService)
         {
             Title = "Blackjack Table";
+            _bankrollService = bankrollService;
 
             // Initialize dealer with soft 17 rule from settings
             Dealer = new Dealer(Settings.DealerHitsSoft17);
@@ -312,15 +319,15 @@ namespace Blackjack.ViewModels
                 p.Bankroll = 0m;
             }
 
-            // Set starting bankroll from settings
-            PlayerBankroll = Settings.StartingBankroll;
+            // Load bankroll from persistence (or use default if none saved)
+            PlayerBankroll = BankrollService.LoadBankroll(Settings.StartingBankroll);
 
             // Mark the human player position
             var humanPlayer = Players[humanPosition - 1];
             humanPlayer.Name = "You";
             humanPlayer.IsHuman = true;
             humanPlayer.IsActive = true;
-            humanPlayer.Bankroll = Settings.StartingBankroll;
+            humanPlayer.Bankroll = PlayerBankroll;
 
             // Mark AI player positions at exact seats
             int aiNumber = 1;

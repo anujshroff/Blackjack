@@ -33,6 +33,7 @@ namespace Blackjack
             // Register Services
             builder.Services.AddSingleton<BasicStrategy>();
             builder.Services.AddSingleton<GameRules>();
+            builder.Services.AddSingleton<BankrollService>();
 
 #if DEBUG
             builder.Logging.AddDebug();

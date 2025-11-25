@@ -1,4 +1,7 @@
+using Blackjack.Models;
+using Blackjack.Services;
 using Blackjack.Views;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Blackjack.ViewModels
@@ -9,9 +12,61 @@ namespace Blackjack.ViewModels
     /// </summary>
     public partial class MainMenuViewModel : ViewModelBase
     {
-        public MainMenuViewModel()
+        private readonly BankrollService _bankrollService;
+        private readonly GameSettings _settings = new();
+
+        /// <summary>
+        /// Indicates if there is a saved bankroll.
+        /// </summary>
+        [ObservableProperty]
+        private bool hasSavedBankroll;
+
+        /// <summary>
+        /// The current saved bankroll amount.
+        /// </summary>
+        [ObservableProperty]
+        private decimal savedBankroll;
+
+        /// <summary>
+        /// The starting bankroll from settings (for display).
+        /// </summary>
+        [ObservableProperty]
+        private decimal startingBankroll;
+
+        public MainMenuViewModel(BankrollService bankrollService)
         {
             Title = "Blackjack";
+            _bankrollService = bankrollService;
+            StartingBankroll = _settings.StartingBankroll;
+
+            // Load current bankroll state
+            RefreshBankrollState();
+        }
+
+        /// <summary>
+        /// Refreshes the bankroll state from persistent storage.
+        /// Also handles auto-reset if bankroll is $0 or below table minimum.
+        /// </summary>
+        public void RefreshBankrollState()
+        {
+            HasSavedBankroll = BankrollService.HasSavedBankroll();
+
+            if (HasSavedBankroll)
+            {
+                SavedBankroll = BankrollService.GetSavedBankroll() ?? _settings.StartingBankroll;
+
+                // Auto-reset if bankroll is below table minimum
+                if (SavedBankroll < _settings.TableMinimum)
+                {
+                    BankrollService.ResetBankroll();
+                    HasSavedBankroll = false;
+                    SavedBankroll = _settings.StartingBankroll;
+                }
+            }
+            else
+            {
+                SavedBankroll = _settings.StartingBankroll;
+            }
         }
 
         /// <summary>
@@ -54,6 +109,38 @@ namespace Blackjack.ViewModels
                 await Shell.Current.DisplayAlertAsync("Coming Soon",
                     "Settings page will be available in Phase 5.",
                     "OK");
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>
+        /// Command to reset the bankroll to starting value.
+        /// Shows confirmation dialog before resetting.
+        /// </summary>
+        [RelayCommand]
+        private async Task ResetBankroll()
+        {
+            if (IsBusy)
+                return;
+
+            try
+            {
+                IsBusy = true;
+
+                bool confirmed = await Shell.Current.DisplayAlertAsync(
+                    "Reset Bankroll",
+                    $"Are you sure you want to reset your bankroll to ${_settings.StartingBankroll:N0}?\n\nCurrent bankroll: ${SavedBankroll:N0}",
+                    "Reset",
+                    "Cancel");
+
+                if (confirmed)
+                {
+                    BankrollService.ResetBankroll();
+                    RefreshBankrollState();
+                }
             }
             finally
             {
