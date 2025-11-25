@@ -28,11 +28,8 @@ namespace Blackjack.ViewModels
                 await Task.Delay(1000);
             }
 
-            // Clear dealer cards
-            DealerCards.Clear();
-            Dealer?.ClearHand();
-
-            // Save bet amounts before clearing hands, then restore them
+            // Note: Cards are already cleared in ConfirmBet(), no need to clear again
+            // Just save bet amounts to restore after dealing starts
             var playerBets = new Dictionary<int, decimal>();
             foreach (var player in Players.Where(p => p.IsActive))
             {
@@ -41,26 +38,31 @@ namespace Blackjack.ViewModels
                 {
                     playerBets[player.SeatPosition] = player.Hands[0].Bet;
                 }
-
-                // Clear hands to prepare for dealing
-                player.ClearHands();
-
-                // Restore bet amount to the new hand
-                if (playerBets.TryGetValue(player.SeatPosition, out decimal betAmount))
-                {
-                    player.Hands[0].Bet = betAmount;
-                }
             }
 
             // First card to each player (positions 1-7)
             GameMessage = "Dealing first card to players...";
             foreach (var player in Players.Where(p => p.IsActive).OrderBy(p => p.SeatPosition))
             {
+                // Update viewed player to show who is receiving the card
+                ViewedPlayerPosition = player.SeatPosition;
+                OnPropertyChanged(nameof(ViewedPlayerPosition));
+
                 var card = _deck.DealCard();
                 if (card != null)
                 {
                     player.Hands[0].AddCard(card);
+
+                    // Restore bet amount if needed
+                    if (playerBets.TryGetValue(player.SeatPosition, out decimal betAmount))
+                    {
+                        player.Hands[0].Bet = betAmount;
+                    }
+
                     GameMessage = $"Dealing to {player.Name}...";
+
+                    // Update UI to show the new card
+                    OnPropertyChanged(nameof(Players));
                     await Task.Delay(400);
                 }
             }
@@ -73,6 +75,7 @@ namespace Blackjack.ViewModels
                 Dealer.AddCard(dealerUpCard);
                 DealerCards.Add(dealerUpCard);
                 DealerTotal = dealerUpCard.Rank == Rank.Ace ? "A" : dealerUpCard.Value.ToString();
+                OnPropertyChanged(nameof(DealerCards));
                 await Task.Delay(400);
             }
 
@@ -80,11 +83,18 @@ namespace Blackjack.ViewModels
             GameMessage = "Dealing second card to players...";
             foreach (var player in Players.Where(p => p.IsActive).OrderBy(p => p.SeatPosition))
             {
+                // Update viewed player to show who is receiving the card
+                ViewedPlayerPosition = player.SeatPosition;
+                OnPropertyChanged(nameof(ViewedPlayerPosition));
+
                 var card = _deck.DealCard();
                 if (card != null)
                 {
                     player.Hands[0].AddCard(card);
                     GameMessage = $"Dealing to {player.Name}...";
+
+                    // Update UI to show the new card
+                    OnPropertyChanged(nameof(Players));
                     await Task.Delay(400);
                 }
             }
@@ -97,14 +107,9 @@ namespace Blackjack.ViewModels
                 Dealer.AddCard(dealerHoleCard);
                 DealerCards.Add(dealerHoleCard); // Add to collection but UI will show face-down
                 DealerHoleCardFaceDown = true;
+                OnPropertyChanged(nameof(DealerCards));
                 await Task.Delay(400);
             }
-
-            // Notify UI to refresh player cards (important: cards were added to hands, not to Players collection)
-            OnPropertyChanged(nameof(Players));
-
-            // Notify UI to refresh dealer cards
-            OnPropertyChanged(nameof(DealerCards));
 
             // Small delay to let UI update before checking for blackjack
             await Task.Delay(200);

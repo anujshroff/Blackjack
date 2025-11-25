@@ -277,6 +277,26 @@ namespace Blackjack.ViewModels
                 var hand = player.Hands[0];
                 decimal payout = 0;
 
+                // Skip hands already settled (e.g., even money taken)
+                if (hand.Status != HandStatus.Active)
+                {
+                    // Still check for insurance payout even if hand was settled via even money
+                    if (_insuranceBets.TryGetValue(player.SeatPosition, out decimal settledInsuranceBet))
+                    {
+                        payout = _gameRules.CalculateInsurancePayout(settledInsuranceBet);
+                        player.Bankroll += payout;
+
+                        if (player.IsHuman)
+                        {
+                            PlayerBankroll = player.Bankroll;
+                        }
+
+                        GameMessage = $"{player.Name} insurance pays ${payout:N0}";
+                        await Task.Delay(500);
+                    }
+                    continue;
+                }
+
                 // Check for insurance payout
                 if (_insuranceBets.TryGetValue(player.SeatPosition, out decimal insuranceBet))
                 {

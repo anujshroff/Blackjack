@@ -80,6 +80,29 @@ namespace Blackjack.ViewModels
                 return;
             }
 
+            // Hide betting UI
+            IsBetting = false;
+            GameMessage = "Clearing table...";
+
+            // Clear all cards from previous round
+            DealerCards.Clear();
+            Dealer?.ClearHand();
+            DealerHoleCardFaceDown = true;
+            DealerTotal = "--";
+
+            // Clear all player hands
+            foreach (var player in Players.Where(p => p.IsActive))
+            {
+                player.ClearHands();
+            }
+
+            // Notify UI to show cleared state
+            OnPropertyChanged(nameof(DealerCards));
+            OnPropertyChanged(nameof(Players));
+
+            // Brief delay to show cleared table
+            await Task.Delay(300);
+
             // Deduct bet from bankroll
             PlayerBankroll -= CurrentBet;
 
@@ -88,8 +111,6 @@ namespace Blackjack.ViewModels
             humanPlayer.Bankroll = PlayerBankroll;
             humanPlayer.Hands[0].Bet = CurrentBet;
 
-            // Hide betting UI
-            IsBetting = false;
             GameMessage = "Processing bets...";
 
             // Place AI bets

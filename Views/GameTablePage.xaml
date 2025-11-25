@@ -85,12 +85,6 @@
                                                    HorizontalOptions="Center"
                                                    Spacing="-35"/>
                         </ScrollView>
-
-                        <Label Text="{Binding DealerTotal, StringFormat='Total: {0}'}"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="White"
-                               HorizontalOptions="Center"/>
                     </VerticalStackLayout>
                 </Border>
 

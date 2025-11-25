@@ -109,6 +109,14 @@ namespace Blackjack.Views
                     BuildDealerCards();
                 });
             }
+            // When dealer hole card is revealed/hidden
+            else if (e.PropertyName == nameof(GameTableViewModel.DealerHoleCardFaceDown))
+            {
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    BuildDealerCards();
+                });
+            }
             // When Players property changes (cards dealt, etc.)
             else if (e.PropertyName == nameof(GameTableViewModel.Players))
             {
@@ -216,6 +224,30 @@ namespace Blackjack.Views
 
                 cardBorder.Content = cardImage;
                 DealerCardsContainer.Children.Add(cardBorder);
+            }
+
+            // Add total badge when hole card is revealed
+            if (!ViewModel.DealerHoleCardFaceDown)
+            {
+                var totalBadge = new Border
+                {
+                    BackgroundColor = Color.FromArgb("#D4AF37"),
+                    StrokeThickness = 0,
+                    Padding = new Thickness(10, 6),
+                    StrokeShape = new RoundRectangle { CornerRadius = 8 },
+                    VerticalOptions = LayoutOptions.Center,
+                    Margin = new Thickness(15, 0, 0, 0),
+                    Content = new Label
+                    {
+                        Text = ViewModel.DealerTotal,
+                        FontSize = 18,
+                        FontAttributes = FontAttributes.Bold,
+                        TextColor = Colors.Black,
+                        HorizontalOptions = LayoutOptions.Center,
+                        VerticalOptions = LayoutOptions.Center
+                    }
+                };
+                DealerCardsContainer.Children.Add(totalBadge);
             }
         }
 
