@@ -66,25 +66,31 @@ namespace Blackjack.Models
 
         /// <summary>
         /// True if the hand contains an Ace counted as 11 (soft hand).
+        /// A hand is soft when at least one Ace can be counted as 11 without busting.
         /// </summary>
         public bool IsSoft
         {
             get
             {
-                int total = 0;
-                bool hasAce = false;
+                int baseTotal = 0;  // Total with all Aces counted as 1
+                int aceCount = 0;
 
                 foreach (var card in Cards)
                 {
-                    total += card.Value;
                     if (card.Rank == Rank.Ace)
                     {
-                        hasAce = true;
+                        baseTotal += 1;  // Count Ace as 1
+                        aceCount++;
+                    }
+                    else
+                    {
+                        baseTotal += card.Value;
                     }
                 }
 
-                // Soft hand: has an Ace AND counting it as 11 doesn't bust
-                return hasAce && total <= 21;
+                // Soft hand: has an Ace AND counting one Ace as 11 doesn't bust
+                // (i.e., base total + 10 <= 21)
+                return aceCount > 0 && (baseTotal + 10) <= 21;
             }
         }
 

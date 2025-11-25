@@ -21,9 +21,9 @@ namespace Blackjack.Models
         public decimal StartingBankroll { get; set; }
 
         /// <summary>
-        /// Number of decks in the shoe (fixed at 6 for this implementation).
+        /// Number of decks in the shoe (configurable: 1, 2, 4, 6, or 8).
         /// </summary>
-        public int NumberOfDecks { get; }
+        public int NumberOfDecks { get; set; }
 
         /// <summary>
         /// Dealer hits on soft 17 (H17 rule - standard for this game).

@@ -26,6 +26,9 @@ namespace Blackjack.Views
             if (BindingContext is MainMenuViewModel viewModel)
             {
                 await viewModel.InitializeAsync();
+
+                // Reload settings (in case user changed them in Settings page)
+                viewModel.ReloadSettings();
             }
         }
     }
