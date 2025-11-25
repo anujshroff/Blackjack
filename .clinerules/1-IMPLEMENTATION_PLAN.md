@@ -8,83 +8,50 @@
 **Goal**: Connect game logic with UI and implement complete game rounds
 ### Phase 4: AI Players (Intelligence) - ✅ COMPLETE
 **Goal**: Implement intelligent computer opponents
-
-### Phase 5: Polish and Features (Enhancement)
+### Phase 5: Polish and Features (Enhancement) - ✅ COMPLETE
 **Goal**: Add polish, additional features, and platform optimizations
 
-- [x] **Bankroll Persistence**
-  - [x] Create BankrollService with Save/Load methods using MAUI Preferences API
-  - [x] Save player bankroll after each round settlement completes
-  - [x] Load bankroll on game initialization (fallback to GameSettings.StartingBankroll)
-  - [x] Add "Reset Bankroll" button to MainMenuPage
-  - [x] Auto-reset bankroll on MainMenuPage load if bankroll is $0
-
-- [x] **Settings Menu**
-  - [x] Create SettingsPage.xaml and ViewModel
-  - [x] Add table minimum configuration (persisted)
-  - [x] Add table maximum configuration (persisted)
-  - [x] Add starting bankroll configuration (persisted)
-  - [x] Add number of decks picker: 1, 2, 4, 6, or 8 (persisted)
-  - [x] Create SettingsService with Save/Load using MAUI Preferences API
-  - [x] Load settings on app startup
-  - [x] Update GameSettings.NumberOfDecks to be settable
-
-- [ ] **Platform Optimizations**
-  - [ ] **Windows**: Desktop-optimized layout and controls
-  - [ ] **Android**: Touch-optimized, landscape-only layout
-  - [ ] **iOS**: Touch-optimized, landscape-only layout
-
 ### Phase 6: Testing and Refinement (Quality Assurance)
-**Goal**: Ensure quality, performance, and correct functionality
+**Goal**: Ensure quality and correct functionality through unit tests
 
-- [ ] **Unit Tests - Game Logic**
-  - [ ] Test card value calculations
-  - [ ] Test hand evaluation (soft/hard/blackjack/bust)
-  - [ ] Test deck shuffling and dealing
-  - [ ] Test payout calculations
-  - [ ] Test dealer H17 logic
-  - [ ] Test split rules
-  - [ ] Test double down rules
-  - [ ] Test insurance calculations
+- [ ] **Unit Tests - Hand Evaluation**
+  - [ ] TotalValue: Simple hands (7+5=12), face cards (K+Q=20)
+  - [ ] TotalValue: Single Ace as 11 (A+6=17), Ace as 1 (A+6+9=16)
+  - [ ] TotalValue: Multiple Aces (A+A=12, A+A+9=21, A+A+A=13)
+  - [ ] TotalValue: Blackjack value (A+K=21)
+  - [ ] IsSoft: Soft hands (A+2=13, A+6=17, A+7=18)
+  - [ ] IsSoft: NOT soft after bust protection (A+6+8=15 hard)
+  - [ ] IsSoft: Multi-ace scenarios (A+A+3=15 soft)
+  - [ ] IsBlackjack: True blackjack (A+K, A+10, A+Q, A+J)
+  - [ ] IsBlackjack: NOT blackjack (7+7+7=21, A+5+5=21, 10+10=20)
+  - [ ] IsBusted: Just busted (10+6+7=23), not busted (10+6+5=21)
+  - [ ] IsBusted: Ace saves from bust (10+6+A=17)
+  - [ ] IsPair: True pairs (8+8, K+K), mixed 10-values (K+Q, 10+J)
+  - [ ] IsPair: NOT pair (three cards, different values)
+
+- [ ] **Unit Tests - Payout Calculations**
+  - [ ] Blackjack 3:2 ($10→$25, $25→$62.50, $100→$250)
+  - [ ] Win 1:1 ($10→$20, $100→$200)
+  - [ ] Insurance 2:1 ($5→$15, $50→$150)
+  - [ ] Push (return original bet)
+  - [ ] Even Money ($10 blackjack→$20)
+
+- [ ] **Unit Tests - Game Rules Validation**
+  - [ ] CanSplit: Valid pairs with sufficient bankroll
+  - [ ] CanSplit: Mixed 10-values (K-Q) allowed
+  - [ ] CanSplit: Rejected - non-pair, max splits reached, insufficient bankroll
+  - [ ] CanDoubleDown: First two cards with sufficient bankroll
+  - [ ] CanDoubleDown: After split (DAS enabled vs disabled)
+  - [ ] CanDoubleDown: Rejected - after hit, after split Aces, insufficient bankroll
+  - [ ] CanHit: Active hand, soft 17
+  - [ ] CanHit: Rejected - busted, standing, blackjack
+  - [ ] CanStand: Any active non-busted hand
+  - [ ] CanStand: Rejected - busted or already standing
 
 - [ ] **Unit Tests - Basic Strategy**
-  - [ ] Test hard totals strategy lookups
-  - [ ] Test soft totals strategy lookups
-  - [ ] Test pair splitting strategy lookups
-  - [ ] Test strategy decision accuracy
-
-- [ ] **UI Testing - Windows**
-  - [ ] Test all pages and navigation
-  - [ ] Test mouse and keyboard controls
-  - [ ] Test window resizing behavior
-  - [ ] Test visual layout and spacing
-
-- [ ] **UI Testing - Android**
-  - [ ] Test on phone (landscape)
-  - [ ] Test on tablet (landscape)
-  - [ ] Test touch controls and gestures
-  - [ ] Test adaptive layouts
-  - [ ] Test back button behavior
-
-- [ ] **UI Testing - iOS**
-  - [ ] Test on iPhone (landscape)
-  - [ ] Test on iPad (landscape)
-  - [ ] Test touch controls and gestures
-  - [ ] Test adaptive layouts
-  - [ ] Test iOS-specific navigation
-
-- [ ] **Performance Optimization**
-  - [ ] Profile app startup time (target <3 seconds)
-  - [ ] Implement image caching for cards
-  - [ ] Optimize memory usage
-  - [ ] Test app responsiveness during AI turns
-
-- [ ] **Acceptance Criteria Verification**
-  - [ ] Verify app runs on Windows, Android, iOS
-  - [ ] Verify 7-seat table with selection
-  - [ ] Verify 0-6 AI player configuration
-  - [ ] Verify all player actions work correctly
-  - [ ] Verify dealer hits soft 17
-  - [ ] Verify no surrender option
-  - [ ] Verify AI uses optimal Basic Strategy
-  - [ ] Verify correct payouts (3:2, 1:1, 2:1)
+  - [ ] Hard totals: 8 vs 6→Hit, 11 vs any→Double, 12 vs 2→Hit, 12 vs 4→Stand
+  - [ ] Hard totals: 16 vs 10→Hit, 17+ vs any→Stand
+  - [ ] Soft totals: 13 vs 5→Double, 17 vs 3→Double, 18 vs 9→Hit
+  - [ ] Soft totals: 18 vs 2→Double, 19 vs 6→Double, 19 vs others→Stand
+  - [ ] Pairs: A-A→Split, 8-8→Split, 10-10→Stand, 5-5 vs 9→Double
+  - [ ] Pairs: 9-9 vs 7→Stand, 4-4 vs 5→Split, 2-2 vs 8→Hit

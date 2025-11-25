@@ -54,16 +54,16 @@ namespace Blackjack.Models
 
         /// <summary>
         /// Shuffles the deck using the Fisher-Yates shuffle algorithm.
+        /// Uses Random.Shared for thread-safe, properly-seeded randomization.
         /// </summary>
         public void Shuffle()
         {
-            Random random = new();
             int n = _cards.Count;
 
-            // Fisher-Yates shuffle
+            // Fisher-Yates shuffle using Random.Shared (thread-safe singleton in .NET 6+)
             for (int i = n - 1; i > 0; i--)
             {
-                int j = random.Next(i + 1);
+                int j = Random.Shared.Next(i + 1);
                 (_cards[j], _cards[i]) = (_cards[i], _cards[j]);
             }
 
