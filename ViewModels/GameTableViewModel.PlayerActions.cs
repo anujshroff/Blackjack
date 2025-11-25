@@ -501,9 +501,9 @@ namespace Blackjack.ViewModels
                                     await Task.Delay(1000);
                                     actionComplete = true;
                                 }
-                                else if (hand.TotalValue >= 17)
+                                else
                                 {
-                                    // Re-evaluate after hit
+                                    // Always re-evaluate strategy after each hit
                                     recommendedAction = _basicStrategy.GetRecommendedAction(hand, Dealer.UpCard);
                                 }
                             }

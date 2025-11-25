@@ -12,38 +12,27 @@
 ### Phase 5: Polish and Features (Enhancement)
 **Goal**: Add polish, additional features, and platform optimizations
 
-- [ ] **Save/Load Game**
-  - [ ] Implement game state serialization
-  - [ ] Save game to local storage
-  - [ ] Load game from local storage
-  - [ ] Handle save game on app close
-  - [ ] Add continue game option
+- [x] **Bankroll Persistence**
+  - [x] Create BankrollService with Save/Load methods using MAUI Preferences API
+  - [x] Save player bankroll after each round settlement completes
+  - [x] Load bankroll on game initialization (fallback to GameSettings.StartingBankroll)
+  - [x] Add "Reset Bankroll" button to MainMenuPage
+  - [x] Auto-reset bankroll on MainMenuPage load if bankroll is $0
 
-- [ ] **Settings Menu**
-  - [ ] Create SettingsPage.xaml and ViewModel
-  - [ ] Add animation speed control
-  - [ ] Add table minimum/maximum configuration
-  - [ ] Add starting bankroll configuration
-  - [ ] Add number of decks display (locked at 6)
-
-- [ ] **Animations**
-  - [ ] Smooth card dealing animations
-  - [ ] Card flip animations
-  - [ ] Chip movement animations
-  - [ ] Win/loss celebration animations
-  - [ ] Shuffle animation
+- [x] **Settings Menu**
+  - [x] Create SettingsPage.xaml and ViewModel
+  - [x] Add table minimum configuration (persisted)
+  - [x] Add table maximum configuration (persisted)
+  - [x] Add starting bankroll configuration (persisted)
+  - [x] Add number of decks picker: 1, 2, 4, 6, or 8 (persisted)
+  - [x] Create SettingsService with Save/Load using MAUI Preferences API
+  - [x] Load settings on app startup
+  - [x] Update GameSettings.NumberOfDecks to be settable
 
 - [ ] **Platform Optimizations**
-  - [ ] **Windows**: Desktop layout with mouse/keyboard controls
-  - [ ] **Windows**: Window resizing support
-  - [ ] **Windows**: Larger table view for desktop
-  - [ ] **Android**: Touch-optimized controls
-  - [ ] **Android**: Portrait and landscape support
-  - [ ] **Android**: Adaptive layout for phones/tablets
-  - [ ] **iOS**: Touch-optimized controls
-  - [ ] **iOS**: Portrait and landscape support
-  - [ ] **iOS**: Adaptive layout for iPhones/iPads
-  - [ ] **iOS**: iOS-specific gestures and patterns
+  - [ ] **Windows**: Desktop-optimized layout and controls
+  - [ ] **Android**: Touch-optimized, landscape-only layout
+  - [ ] **iOS**: Touch-optimized, landscape-only layout
 
 ### Phase 6: Testing and Refinement (Quality Assurance)
 **Goal**: Ensure quality, performance, and correct functionality
@@ -69,25 +58,23 @@
   - [ ] Test mouse and keyboard controls
   - [ ] Test window resizing behavior
   - [ ] Test visual layout and spacing
-  - [ ] Test animations and transitions
 
 - [ ] **UI Testing - Android**
-  - [ ] Test on phone (portrait/landscape)
-  - [ ] Test on tablet (portrait/landscape)
+  - [ ] Test on phone (landscape)
+  - [ ] Test on tablet (landscape)
   - [ ] Test touch controls and gestures
   - [ ] Test adaptive layouts
   - [ ] Test back button behavior
 
 - [ ] **UI Testing - iOS**
-  - [ ] Test on iPhone (portrait/landscape)
-  - [ ] Test on iPad (portrait/landscape)
+  - [ ] Test on iPhone (landscape)
+  - [ ] Test on iPad (landscape)
   - [ ] Test touch controls and gestures
   - [ ] Test adaptive layouts
   - [ ] Test iOS-specific navigation
 
 - [ ] **Performance Optimization**
   - [ ] Profile app startup time (target <3 seconds)
-  - [ ] Optimize animation frame rates (target 60 FPS)
   - [ ] Implement image caching for cards
   - [ ] Optimize memory usage
   - [ ] Test app responsiveness during AI turns
@@ -101,11 +88,3 @@
   - [ ] Verify no surrender option
   - [ ] Verify AI uses optimal Basic Strategy
   - [ ] Verify correct payouts (3:2, 1:1, 2:1)
-  - [ ] Verify 6-deck shoe with shuffle point
-
-- [ ] **Bug Fixes and Refinements**
-  - [ ] Address any identified bugs
-  - [ ] Refine UI based on testing feedback
-  - [ ] Improve animation smoothness
-  - [ ] Polish visual design
-  - [ ] Optimize code structure
