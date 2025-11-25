@@ -12,26 +12,22 @@
 ### Phase 5: Polish and Features (Enhancement)
 **Goal**: Add polish, additional features, and platform optimizations
 
-- [ ] **Save/Load Game**
-  - [ ] Implement game state serialization
-  - [ ] Save game to local storage
-  - [ ] Load game from local storage
-  - [ ] Handle save game on app close
-  - [ ] Add continue game option
+- [ ] **Bankroll Persistence**
+  - [ ] Create BankrollService with Save/Load methods using MAUI Preferences API
+  - [ ] Save player bankroll after each round settlement completes
+  - [ ] Load bankroll on game initialization (fallback to GameSettings.StartingBankroll)
+  - [ ] Add "Reset Bankroll" button to MainMenuPage
+  - [ ] Auto-reset bankroll on MainMenuPage load if bankroll is $0
 
 - [ ] **Settings Menu**
   - [ ] Create SettingsPage.xaml and ViewModel
-  - [ ] Add animation speed control
-  - [ ] Add table minimum/maximum configuration
-  - [ ] Add starting bankroll configuration
-  - [ ] Add number of decks display (locked at 6)
-
-- [ ] **Animations**
-  - [ ] Smooth card dealing animations
-  - [ ] Card flip animations
-  - [ ] Chip movement animations
-  - [ ] Win/loss celebration animations
-  - [ ] Shuffle animation
+  - [ ] Add table minimum configuration (persisted)
+  - [ ] Add table maximum configuration (persisted)
+  - [ ] Add starting bankroll configuration (persisted)
+  - [ ] Add number of decks picker: 1, 2, 4, 6, or 8 (persisted)
+  - [ ] Create SettingsService with Save/Load using MAUI Preferences API
+  - [ ] Load settings on app startup
+  - [ ] Update GameSettings.NumberOfDecks to be settable
 
 - [ ] **Platform Optimizations**
   - [ ] **Windows**: Desktop layout with mouse/keyboard controls
@@ -69,7 +65,6 @@
   - [ ] Test mouse and keyboard controls
   - [ ] Test window resizing behavior
   - [ ] Test visual layout and spacing
-  - [ ] Test animations and transitions
 
 - [ ] **UI Testing - Android**
   - [ ] Test on phone (portrait/landscape)
@@ -87,7 +82,6 @@
 
 - [ ] **Performance Optimization**
   - [ ] Profile app startup time (target <3 seconds)
-  - [ ] Optimize animation frame rates (target 60 FPS)
   - [ ] Implement image caching for cards
   - [ ] Optimize memory usage
   - [ ] Test app responsiveness during AI turns
@@ -106,6 +100,5 @@
 - [ ] **Bug Fixes and Refinements**
   - [ ] Address any identified bugs
   - [ ] Refine UI based on testing feedback
-  - [ ] Improve animation smoothness
   - [ ] Polish visual design
   - [ ] Optimize code structure
