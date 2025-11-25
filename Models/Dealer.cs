@@ -3,9 +3,13 @@ namespace Blackjack.Models
     /// <summary>
     /// Represents the dealer in a Blackjack game.
     /// </summary>
-    public class Dealer
+    /// <remarks>
+    /// Creates a dealer with the specified soft 17 rule.
+    /// </remarks>
+    /// <param name="hitsSoft17">True for H17 (dealer hits soft 17), false for S17 (dealer stands on soft 17)</param>
+    public class Dealer(bool hitsSoft17)
     {
-        public Hand Hand { get; set; }
+        public Hand Hand { get; set; } = new Hand();
 
         /// <summary>
         /// The dealer's face-up card (visible to all players).
@@ -20,12 +24,18 @@ namespace Blackjack.Models
         /// <summary>
         /// True if the hole card has been revealed.
         /// </summary>
-        public bool HoleCardRevealed { get; set; }
+        public bool HoleCardRevealed { get; set; } = false;
 
-        public Dealer()
+        /// <summary>
+        /// Whether the dealer hits on soft 17 (H17 rule).
+        /// </summary>
+        public bool HitsSoft17 { get; set; } = hitsSoft17;
+
+        /// <summary>
+        /// Creates a dealer with the default H17 rule (hits soft 17).
+        /// </summary>
+        public Dealer() : this(hitsSoft17: true)
         {
-            Hand = new Hand();
-            HoleCardRevealed = false;
         }
 
         /// <summary>
@@ -45,15 +55,16 @@ namespace Blackjack.Models
         }
 
         /// <summary>
-        /// Determines if the dealer should hit according to H17 rules.
+        /// Determines if the dealer should hit based on the configured soft 17 rule.
         /// H17: Dealer hits on soft 17, stands on hard 17 and all 18+.
+        /// S17: Dealer stands on all 17s (soft and hard).
         /// </summary>
         /// <returns>True if dealer should hit, false if dealer should stand.</returns>
         public bool ShouldHit()
         {
             int total = Hand.TotalValue;
 
-            // Stand on hard 17 and all 18+
+            // Stand on 18+
             if (total >= 18)
                 return false;
 
@@ -61,9 +72,9 @@ namespace Blackjack.Models
             if (total == 17 && !Hand.IsSoft)
                 return false;
 
-            // Hit on soft 17 (H17 rule)
+            // Soft 17: hit or stand based on rule setting
             if (total == 17 && Hand.IsSoft)
-                return true;
+                return HitsSoft17;
 
             // Hit on anything less than 17
             if (total < 17)

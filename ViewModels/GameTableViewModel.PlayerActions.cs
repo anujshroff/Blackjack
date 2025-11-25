@@ -451,6 +451,27 @@ namespace Blackjack.ViewModels
                     continue;
                 }
 
+                // Check if this hand needs its second card (split hand waiting)
+                if (hand.NeedsSecondCard)
+                {
+                    GameMessage = $"Dealing second card to hand {_currentHandIndex + 1}...";
+                    await Task.Delay(500);
+
+                    var secondCard = _deck.DealCard();
+                    if (secondCard != null)
+                    {
+                        hand.AddCard(secondCard);
+                        hand.NeedsSecondCard = false;
+                        GameMessage = $"{player.Name} - Hand {_currentHandIndex + 1} receives {secondCard.Rank} of {secondCard.Suit}";
+                        OnPropertyChanged(nameof(Players));
+                        await Task.Delay(600);
+                    }
+                }
+
+                // Update viewed hand index to show the current hand in UI
+                ViewedHandIndex = _currentHandIndex;
+                OnPropertyChanged(nameof(ViewedHandIndex));
+
                 // Show thinking message
                 GameMessage = $"{player.Name} thinking...";
                 await Task.Delay(800);
@@ -608,8 +629,18 @@ namespace Blackjack.ViewModels
                     }
                 }
 
+                // Notify UI after completing this hand to update status display
+                OnPropertyChanged(nameof(Players));
+
                 // Move to next hand
                 _currentHandIndex++;
+
+                // Update viewed hand index if moving to next hand for this player
+                if (_currentHandIndex < player.Hands.Count)
+                {
+                    ViewedHandIndex = _currentHandIndex;
+                    OnPropertyChanged(nameof(ViewedHandIndex));
+                }
             }
 
             // All hands for this AI player complete, move to next player

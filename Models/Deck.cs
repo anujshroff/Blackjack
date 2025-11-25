@@ -1,23 +1,30 @@
 namespace Blackjack.Models
 {
     /// <summary>
-    /// Represents a 6-deck shoe used in casino Blackjack.
+    /// Represents a multi-deck shoe used in casino Blackjack.
     /// </summary>
     public class Deck
     {
         private readonly List<Card> _cards;
         private int _cardsDealt;
-        private const int NUMBER_OF_DECKS = 6;
+        private readonly int _numberOfDecks;
         private const int CARDS_PER_DECK = 52;
-        private const int TOTAL_CARDS = NUMBER_OF_DECKS * CARDS_PER_DECK; // 312 cards
-        private const double SHUFFLE_PENETRATION = 0.75; // Shuffle after 75% dealt (~234 cards)
+        private readonly int _totalCards;
+        private const double SHUFFLE_PENETRATION = 0.75; // Shuffle after 75% dealt
 
         public int CardsRemaining => _cards.Count;
         public int CardsDealt => _cardsDealt;
-        public bool NeedsReshuffle => _cardsDealt >= (int)(TOTAL_CARDS * SHUFFLE_PENETRATION);
+        public int NumberOfDecks => _numberOfDecks;
+        public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * SHUFFLE_PENETRATION);
 
-        public Deck()
+        /// <summary>
+        /// Creates a new deck shoe with the specified number of decks.
+        /// </summary>
+        /// <param name="numberOfDecks">Number of decks in the shoe (default: 6)</param>
+        public Deck(int numberOfDecks = 6)
         {
+            _numberOfDecks = numberOfDecks;
+            _totalCards = _numberOfDecks * CARDS_PER_DECK;
             _cards = [];
             _cardsDealt = 0;
             InitializeShoe();
@@ -25,14 +32,14 @@ namespace Blackjack.Models
         }
 
         /// <summary>
-        /// Initializes the 6-deck shoe with all 312 cards.
+        /// Initializes the shoe with all cards from the configured number of decks.
         /// </summary>
         private void InitializeShoe()
         {
             _cards.Clear();
 
-            // Create 6 decks
-            for (int deck = 0; deck < NUMBER_OF_DECKS; deck++)
+            // Create decks based on configuration
+            for (int deck = 0; deck < _numberOfDecks; deck++)
             {
                 // For each deck, create all 52 cards
                 foreach (Suit suit in Enum.GetValues<Suit>())

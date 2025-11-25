@@ -128,7 +128,7 @@ namespace Blackjack.ViewModels
         /// The human player's current bankroll.
         /// </summary>
         [ObservableProperty]
-        private decimal playerBankroll = 5000m;
+        private decimal playerBankroll;
 
         /// <summary>
         /// The human player's current bet amount.
@@ -267,8 +267,8 @@ namespace Blackjack.ViewModels
         {
             Title = "Blackjack Table";
 
-            // Initialize dealer
-            Dealer = new Dealer();
+            // Initialize dealer with soft 17 rule from settings
+            Dealer = new Dealer(Settings.DealerHitsSoft17);
 
             // Initialize 7 empty player positions
             for (int i = 1; i <= 7; i++)
@@ -312,12 +312,15 @@ namespace Blackjack.ViewModels
                 p.Bankroll = 0m;
             }
 
+            // Set starting bankroll from settings
+            PlayerBankroll = Settings.StartingBankroll;
+
             // Mark the human player position
             var humanPlayer = Players[humanPosition - 1];
             humanPlayer.Name = "You";
             humanPlayer.IsHuman = true;
             humanPlayer.IsActive = true;
-            humanPlayer.Bankroll = PlayerBankroll;
+            humanPlayer.Bankroll = Settings.StartingBankroll;
 
             // Mark AI player positions at exact seats
             int aiNumber = 1;
@@ -327,7 +330,7 @@ namespace Blackjack.ViewModels
                 aiPlayer.Name = $"AI Player {aiNumber}";
                 aiPlayer.IsHuman = false;
                 aiPlayer.IsActive = true;
-                aiPlayer.Bankroll = 5000m; // AI starts with same bankroll
+                aiPlayer.Bankroll = Settings.StartingBankroll;
                 aiNumber++;
             }
 
@@ -339,8 +342,8 @@ namespace Blackjack.ViewModels
             // Initialize game rules service
             _gameRules = new Services.GameRules(Settings);
 
-            // Initialize deck
-            _deck = new Deck();
+            // Initialize deck with number of decks from settings
+            _deck = new Deck(Settings.NumberOfDecks);
 
             // Initialize Basic Strategy service
             _basicStrategy = new Services.BasicStrategy();

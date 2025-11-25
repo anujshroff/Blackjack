@@ -33,10 +33,18 @@ namespace Blackjack.Services
         /// <summary>
         /// Checks if a player can double down on the given hand.
         /// </summary>
-        public static bool CanDoubleDown(Models.Hand hand, Models.Player player, bool isSplitAce = false)
+        /// <param name="hand">The hand to check</param>
+        /// <param name="player">The player who owns the hand</param>
+        /// <param name="isSplitHand">True if this hand was created from a split</param>
+        /// <param name="isSplitAce">True if this hand was created from splitting Aces</param>
+        public bool CanDoubleDown(Models.Hand hand, Models.Player player, bool isSplitHand = false, bool isSplitAce = false)
         {
-            // Cannot double on split Aces
+            // Cannot double on split Aces (always blocked regardless of DAS setting)
             if (isSplitAce)
+                return false;
+
+            // Check if doubling after split is allowed
+            if (isSplitHand && !_settings.DoubleAfterSplit)
                 return false;
 
             // Must be exactly 2 cards (first action only)

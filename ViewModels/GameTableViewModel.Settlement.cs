@@ -108,13 +108,12 @@ namespace Blackjack.ViewModels
                 await Task.Delay(1500);
             }
 
-            // Reset for new round
+            // Reset for new round (keep cards visible until next deal)
             CurrentPhase = GamePhase.Betting;
             IsBetting = true;
             CurrentBet = 0;
             CanConfirmBet = false;
-            DealerHoleCardFaceDown = true;
-            DealerTotal = "--";
+            // Note: Cards remain visible until player bets and hits Deal
 
             // Clear insurance tracking
             _insuranceBets.Clear();

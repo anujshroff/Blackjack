@@ -19,20 +19,14 @@ namespace Blackjack.ViewModels
                 return;
             }
 
-            // Check if all players busted - if so, skip dealer turn
-            bool allPlayersBusted = Players
+            // Check if dealer needs to draw - only if there are standing hands to compare
+            // Dealer doesn't need to draw if all hands are either busted or blackjack
+            bool anyStandingHands = Players
                 .Where(p => p.IsActive)
-                .All(p => p.Hands.All(h => h.Status == HandStatus.Busted));
+                .SelectMany(p => p.Hands)
+                .Any(h => h.Status == HandStatus.Standing);
 
-            if (allPlayersBusted)
-            {
-                GameMessage = "All players busted. Dealer wins!";
-                await Task.Delay(1500);
-                await StartNewRound();
-                return;
-            }
-
-            // Reveal dealer's hole card
+            // Reveal dealer's hole card (always reveal, even if no standing hands)
             GameMessage = "Dealer revealing hole card...";
             await Task.Delay(1000);
 
@@ -46,6 +40,14 @@ namespace Blackjack.ViewModels
 
             GameMessage = $"Dealer has {DealerTotal}";
             await Task.Delay(1000);
+
+            // If no standing hands (all busted or blackjack), skip to settlement
+            if (!anyStandingHands)
+            {
+                CurrentPhase = GamePhase.Settlement;
+                await SettleAllHands();
+                return;
+            }
 
             // Dealer draws cards according to H17 rules
             while (Dealer.ShouldHit())
