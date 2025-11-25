@@ -30,16 +30,9 @@
   - [ ] Update GameSettings.NumberOfDecks to be settable
 
 - [ ] **Platform Optimizations**
-  - [ ] **Windows**: Desktop layout with mouse/keyboard controls
-  - [ ] **Windows**: Window resizing support
-  - [ ] **Windows**: Larger table view for desktop
-  - [ ] **Android**: Touch-optimized controls
-  - [ ] **Android**: Portrait and landscape support
-  - [ ] **Android**: Adaptive layout for phones/tablets
-  - [ ] **iOS**: Touch-optimized controls
-  - [ ] **iOS**: Portrait and landscape support
-  - [ ] **iOS**: Adaptive layout for iPhones/iPads
-  - [ ] **iOS**: iOS-specific gestures and patterns
+  - [ ] **Windows**: Desktop-optimized layout and controls
+  - [ ] **Android**: Touch-optimized, landscape-only layout
+  - [ ] **iOS**: Touch-optimized, landscape-only layout
 
 ### Phase 6: Testing and Refinement (Quality Assurance)
 **Goal**: Ensure quality, performance, and correct functionality
@@ -67,15 +60,15 @@
   - [ ] Test visual layout and spacing
 
 - [ ] **UI Testing - Android**
-  - [ ] Test on phone (portrait/landscape)
-  - [ ] Test on tablet (portrait/landscape)
+  - [ ] Test on phone (landscape)
+  - [ ] Test on tablet (landscape)
   - [ ] Test touch controls and gestures
   - [ ] Test adaptive layouts
   - [ ] Test back button behavior
 
 - [ ] **UI Testing - iOS**
-  - [ ] Test on iPhone (portrait/landscape)
-  - [ ] Test on iPad (portrait/landscape)
+  - [ ] Test on iPhone (landscape)
+  - [ ] Test on iPad (landscape)
   - [ ] Test touch controls and gestures
   - [ ] Test adaptive layouts
   - [ ] Test iOS-specific navigation
@@ -95,10 +88,3 @@
   - [ ] Verify no surrender option
   - [ ] Verify AI uses optimal Basic Strategy
   - [ ] Verify correct payouts (3:2, 1:1, 2:1)
-  - [ ] Verify 6-deck shoe with shuffle point
-
-- [ ] **Bug Fixes and Refinements**
-  - [ ] Address any identified bugs
-  - [ ] Refine UI based on testing feedback
-  - [ ] Polish visual design
-  - [ ] Optimize code structure
