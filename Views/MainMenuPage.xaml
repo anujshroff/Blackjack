@@ -7,11 +7,8 @@
              x:DataType="viewmodels:MainMenuViewModel"
              Shell.NavBarIsVisible="False">
 
-    <!-- Use proportional sizing like GameTablePage for responsive design -->
-    <Grid RowDefinitions="*,Auto"
-          RowSpacing="0">
-
-        <!-- Background Gradient -->
+    <!-- Background Gradient -->
+    <Grid>
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0"
                                  EndPoint="0,1">
@@ -22,116 +19,105 @@
             </LinearGradientBrush>
         </Grid.Background>
 
-        <!-- Main Content - Centered in available space -->
-        <Grid Grid.Row="0"
-              VerticalOptions="Center"
-              HorizontalOptions="Center">
+        <!-- Full-screen horizontal landscape layout using proportional columns -->
+        <Grid ColumnDefinitions="0.15*,Auto,0.05*,Auto,0.05*,Auto,0.05*,Auto,0.15*"
+              VerticalOptions="Fill"
+              HorizontalOptions="Fill">
 
+            <!-- Column 1: Logo -->
+            <Border
+                Grid.Column="1"
+                StrokeThickness="0"
+                Background="{StaticResource PrimaryBrush}"
+                HeightRequest="90"
+                WidthRequest="90"
+                StrokeShape="RoundRectangle 45"
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
+                <ic:FluentIcon
+                    Icon="PlayingCards"
+                    IconVariant="Filled"
+                    FontSize="48"
+                    ForegroundColor="{StaticResource White}"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"/>
+            </Border>
+
+            <!-- Column 3: Title and Subtitle -->
             <VerticalStackLayout
-                Spacing="16"
+                Grid.Column="3"
+                Spacing="4"
+                VerticalOptions="Center"
+                HorizontalOptions="Start">
+                <Label
+                    Text="Blackjack"
+                    FontSize="32"
+                    FontAttributes="Bold"
+                    TextColor="{StaticResource Primary}"/>
+                <Label
+                    Text="Play Casino-Style Blackjack"
+                    FontSize="13"
+                    TextColor="{StaticResource Gray500}"/>
+            </VerticalStackLayout>
+
+            <!-- Column 5: Bankroll Display -->
+            <Border
+                Grid.Column="5"
+                BackgroundColor="{StaticResource Gray100}"
+                StrokeThickness="0"
+                Padding="16,10"
+                StrokeShape="RoundRectangle 12"
+                VerticalOptions="Center"
+                HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                    <Label
+                        Text="Bankroll"
+                        FontSize="12"
+                        TextColor="{StaticResource Gray500}"
+                        HorizontalOptions="Center"/>
+                    <Label
+                        Text="{Binding SavedBankroll, StringFormat='${0:N0}'}"
+                        FontSize="22"
+                        FontAttributes="Bold"
+                        TextColor="{StaticResource Primary}"
+                        HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Column 7: Buttons -->
+            <VerticalStackLayout
+                Grid.Column="7"
+                Spacing="10"
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
 
-                <!-- App Icon/Logo Area -->
-                <Border
-                    StrokeThickness="0"
-                    Background="{StaticResource PrimaryBrush}"
-                    HeightRequest="85"
-                    WidthRequest="85"
-                    StrokeShape="RoundRectangle 42"
-                    HorizontalOptions="Center">
-                    <ic:FluentIcon
-                        Icon="PlayingCards"
-                        IconVariant="Filled"
-                        FontSize="46"
-                        ForegroundColor="{StaticResource White}"/>
-                </Border>
-
-                <!-- Title -->
-                <Label
-                    Text="Blackjack"
-                    FontSize="36"
-                    FontAttributes="Bold"
-                    TextColor="{StaticResource Primary}"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    Margin="0,0,0,0"/>
-
-                <!-- Subtitle -->
-                <Label
-                    Text="Play Vegas-style Blackjack"
-                    FontSize="16"
-                    TextColor="{StaticResource Gray500}"
-                    HorizontalOptions="Center"
-                    HorizontalTextAlignment="Center"
-                    Margin="0,0,0,4"/>
-
-                <!-- Bankroll Display -->
-                <Border
-                    BackgroundColor="{StaticResource Gray100}"
-                    StrokeThickness="0"
-                    Padding="16,10"
-                    StrokeShape="RoundRectangle 12"
-                    HorizontalOptions="Center"
-                    Margin="0,0,0,4">
-                    <VerticalStackLayout Spacing="2">
-                        <Label
-                            Text="Current Bankroll"
-                            FontSize="12"
-                            TextColor="{StaticResource Gray500}"
-                            HorizontalOptions="Center"
-                            HorizontalTextAlignment="Center"/>
-                        <Label
-                            Text="{Binding SavedBankroll, StringFormat='${0:N0}'}"
-                            FontSize="24"
-                            FontAttributes="Bold"
-                            TextColor="{StaticResource Primary}"
-                            HorizontalOptions="Center"
-                            HorizontalTextAlignment="Center"/>
-                    </VerticalStackLayout>
-                </Border>
-
-                <!-- Start Game Button (Primary) -->
+                <!-- Start Game Button -->
                 <Button
                     Text="Start Game"
                     Command="{Binding StartGameCommand}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="{StaticResource White}"
-                    FontSize="18"
+                    FontSize="16"
                     FontAttributes="Bold"
-                    HeightRequest="48"
-                    WidthRequest="260"
-                    CornerRadius="24"
-                    HorizontalOptions="Center">
+                    HeightRequest="46"
+                    WidthRequest="140"
+                    CornerRadius="23">
                     <Button.Shadow>
                         <Shadow Brush="{StaticResource Primary}"
                                 Opacity="0.3"
-                                Radius="10"
-                                Offset="0,4"/>
+                                Radius="8"
+                                Offset="0,3"/>
                     </Button.Shadow>
                 </Button>
 
-                <!-- Reset Bankroll Button -->
-                <Button
-                    Text="Reset Bankroll"
-                    Command="{Binding ResetBankrollCommand}"
-                    BackgroundColor="Transparent"
-                    TextColor="{StaticResource Gray600}"
-                    FontSize="14"
-                    HeightRequest="36"
-                    WidthRequest="180"
-                    HorizontalOptions="Center"
-                    IsVisible="{Binding HasSavedBankroll}"/>
-
-                <!-- Settings Button (Secondary) -->
+                <!-- Settings Button -->
                 <Border
                     Stroke="{StaticResource Secondary}"
                     StrokeThickness="2"
                     BackgroundColor="Transparent"
-                    HeightRequest="44"
-                    WidthRequest="260"
-                    StrokeShape="RoundRectangle 22"
-                    HorizontalOptions="Center">
+                    HeightRequest="42"
+                    WidthRequest="140"
+                    StrokeShape="RoundRectangle 21">
                     <Grid>
                         <Grid.GestureRecognizers>
                             <TapGestureRecognizer Command="{Binding OpenSettingsCommand}"/>
@@ -139,20 +125,33 @@
                         <HorizontalStackLayout
                             HorizontalOptions="Center"
                             VerticalOptions="Center"
-                            Spacing="8">
+                            Spacing="6">
                             <ic:FluentIcon
                                 Icon="Settings"
                                 IconVariant="Regular"
-                                FontSize="18"
+                                FontSize="16"
                                 ForegroundColor="{StaticResource Secondary}"/>
                             <Label
                                 Text="Settings"
-                                FontSize="16"
+                                FontSize="14"
                                 TextColor="{StaticResource Secondary}"
                                 VerticalOptions="Center"/>
                         </HorizontalStackLayout>
                     </Grid>
                 </Border>
+
+                <!-- Reset Bankroll Button -->
+                <Button
+                    Text="Reset"
+                    Command="{Binding ResetBankrollCommand}"
+                    BackgroundColor="{StaticResource Gray200}"
+                    TextColor="{StaticResource Gray600}"
+                    FontSize="13"
+                    HeightRequest="36"
+                    WidthRequest="100"
+                    CornerRadius="18"
+                    HorizontalOptions="Center"
+                    IsVisible="{Binding HasSavedBankroll}"/>
 
                 <!-- Exit Button (Windows Only) -->
                 <Button
@@ -162,23 +161,20 @@
                     BackgroundColor="Transparent"
                     TextColor="{StaticResource Gray500}"
                     FontSize="13"
-                    HeightRequest="36"
-                    WidthRequest="90"
+                    HeightRequest="32"
+                    WidthRequest="70"
                     HorizontalOptions="Center"
-                    Margin="0,4,0,0"
                     IsVisible="False"/>
             </VerticalStackLayout>
         </Grid>
 
-        <!-- Footer - Always at bottom -->
+        <!-- Version in corner -->
         <Label
-            Grid.Row="1"
             Text="v1.0"
-            FontSize="11"
+            FontSize="10"
             TextColor="{StaticResource Gray400}"
-            HorizontalOptions="Center"
-            HorizontalTextAlignment="Center"
+            HorizontalOptions="End"
             VerticalOptions="End"
-            Margin="0,0,0,10"/>
+            Margin="0,0,15,10"/>
     </Grid>
 </ContentPage>
