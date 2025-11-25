@@ -12,12 +12,12 @@
 ### Phase 5: Polish and Features (Enhancement)
 **Goal**: Add polish, additional features, and platform optimizations
 
-- [ ] **Bankroll Persistence**
-  - [ ] Create BankrollService with Save/Load methods using MAUI Preferences API
-  - [ ] Save player bankroll after each round settlement completes
-  - [ ] Load bankroll on game initialization (fallback to GameSettings.StartingBankroll)
-  - [ ] Add "Reset Bankroll" button to MainMenuPage
-  - [ ] Auto-reset bankroll on MainMenuPage load if bankroll is $0
+- [x] **Bankroll Persistence**
+  - [x] Create BankrollService with Save/Load methods using MAUI Preferences API
+  - [x] Save player bankroll after each round settlement completes
+  - [x] Load bankroll on game initialization (fallback to GameSettings.StartingBankroll)
+  - [x] Add "Reset Bankroll" button to MainMenuPage
+  - [x] Auto-reset bankroll on MainMenuPage load if bankroll is $0
 
 - [ ] **Settings Menu**
   - [ ] Create SettingsPage.xaml and ViewModel

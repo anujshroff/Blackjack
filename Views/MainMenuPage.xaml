@@ -66,6 +66,31 @@
                     HorizontalTextAlignment="Center"
                     Margin="0,0,0,4"/>
 
+                <!-- Bankroll Display -->
+                <Border
+                    BackgroundColor="{StaticResource Gray100}"
+                    StrokeThickness="0"
+                    Padding="16,10"
+                    StrokeShape="RoundRectangle 12"
+                    HorizontalOptions="Center"
+                    Margin="0,0,0,4">
+                    <VerticalStackLayout Spacing="2">
+                        <Label
+                            Text="Current Bankroll"
+                            FontSize="12"
+                            TextColor="{StaticResource Gray500}"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"/>
+                        <Label
+                            Text="{Binding SavedBankroll, StringFormat='${0:N0}'}"
+                            FontSize="24"
+                            FontAttributes="Bold"
+                            TextColor="{StaticResource Primary}"
+                            HorizontalOptions="Center"
+                            HorizontalTextAlignment="Center"/>
+                    </VerticalStackLayout>
+                </Border>
+
                 <!-- Start Game Button (Primary) -->
                 <Button
                     Text="Start Game"
@@ -85,6 +110,18 @@
                                 Offset="0,4"/>
                     </Button.Shadow>
                 </Button>
+
+                <!-- Reset Bankroll Button -->
+                <Button
+                    Text="Reset Bankroll"
+                    Command="{Binding ResetBankrollCommand}"
+                    BackgroundColor="Transparent"
+                    TextColor="{StaticResource Gray600}"
+                    FontSize="14"
+                    HeightRequest="36"
+                    WidthRequest="180"
+                    HorizontalOptions="Center"
+                    IsVisible="{Binding HasSavedBankroll}"/>
 
                 <!-- Settings Button (Secondary) -->
                 <Border

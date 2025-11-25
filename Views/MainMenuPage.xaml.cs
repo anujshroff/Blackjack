@@ -26,6 +26,9 @@ namespace Blackjack.Views
             if (BindingContext is MainMenuViewModel viewModel)
             {
                 await viewModel.InitializeAsync();
+
+                // Refresh bankroll state (handles auto-reset if bankroll is $0)
+                viewModel.RefreshBankrollState();
             }
         }
     }
