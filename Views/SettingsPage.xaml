@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.SettingsPage"
+             x:DataType="viewmodels:SettingsViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Background Gradient -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                <GradientStop Color="{StaticResource Tertiary}"
+                              Offset="0.0"/>
+                <GradientStop Color="{StaticResource White}"
+                              Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Main Layout: Header | Content | Actions -->
+        <Grid RowDefinitions="Auto,*,Auto"
+              Padding="20">
+
+            <!-- Header Row -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  Margin="0,0,0,15">
+
+                <!-- Back Button -->
+                <Border Grid.Column="0"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeThickness="1"
+                        BackgroundColor="{StaticResource White}"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <ic:FluentIcon
+                            Icon="ArrowLeft"
+                            IconVariant="Regular"
+                            FontSize="20"
+                            ForegroundColor="{StaticResource Gray600}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Title with Unsaved Changes Indicator -->
+                <HorizontalStackLayout Grid.Column="1"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Spacing="10">
+                    <Label Text="Settings"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center"/>
+
+                    <!-- Unsaved Changes Badge -->
+                    <Border BackgroundColor="{StaticResource Secondary}"
+                            StrokeThickness="0"
+                            Padding="10,4"
+                            StrokeShape="RoundRectangle 10"
+                            IsVisible="{Binding HasUnsavedChanges}"
+                            VerticalOptions="Center">
+                        <Label Text="Unsaved Changes"
+                               FontSize="11"
+                               TextColor="{StaticResource White}"
+                               VerticalOptions="Center"/>
+                    </Border>
+                </HorizontalStackLayout>
+
+                <!-- Reset Button -->
+                <Border Grid.Column="2"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeThickness="1"
+                        BackgroundColor="{StaticResource White}"
+                        HeightRequest="40"
+                        Padding="15,0"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ResetToDefaultsCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <HorizontalStackLayout Spacing="6"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                            <ic:FluentIcon
+                                Icon="ArrowReset"
+                                IconVariant="Regular"
+                                FontSize="16"
+                                ForegroundColor="{StaticResource Gray600}"/>
+                            <Label Text="Reset"
+                                   FontSize="13"
+                                   TextColor="{StaticResource Gray600}"
+                                   VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <!-- Scrollable Settings Content -->
+            <ScrollView Grid.Row="1"
+                        VerticalScrollBarVisibility="Default">
+                <VerticalStackLayout Spacing="12"
+                                     Padding="0,10">
+
+                    <!-- Table Minimum Setting -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Table Minimum"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="Minimum bet required to play"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="0">
+                                    <Label Text="$"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray600}"
+                                           VerticalOptions="Center"
+                                           Margin="12,0,0,0"/>
+                                    <Entry Text="{Binding TableMinimum}"
+                                           Keyboard="Numeric"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray900}"
+                                           WidthRequest="80"
+                                           BackgroundColor="Transparent"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Maximum Setting -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Table Maximum"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="Maximum bet allowed per hand"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="0">
+                                    <Label Text="$"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray600}"
+                                           VerticalOptions="Center"
+                                           Margin="12,0,0,0"/>
+                                    <Entry Text="{Binding TableMaximum}"
+                                           Keyboard="Numeric"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray900}"
+                                           WidthRequest="80"
+                                           BackgroundColor="Transparent"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Starting Bankroll Setting -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Starting Bankroll"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="Initial amount when starting fresh"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    VerticalOptions="Center">
+                                <HorizontalStackLayout Spacing="0">
+                                    <Label Text="$"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray600}"
+                                           VerticalOptions="Center"
+                                           Margin="12,0,0,0"/>
+                                    <Entry Text="{Binding StartingBankroll}"
+                                           Keyboard="Numeric"
+                                           FontSize="16"
+                                           TextColor="{StaticResource Gray900}"
+                                           WidthRequest="80"
+                                           BackgroundColor="Transparent"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Number of Decks Setting -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="*,Auto">
+                            <VerticalStackLayout Grid.Column="0"
+                                                 VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Number of Decks"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="Decks used in the shoe"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1"
+                                    BackgroundColor="{StaticResource Gray100}"
+                                    StrokeThickness="0"
+                                    Padding="0"
+                                    StrokeShape="RoundRectangle 8"
+                                    VerticalOptions="Center"
+                                    WidthRequest="100">
+                                <Picker ItemsSource="{Binding DeckOptions}"
+                                        SelectedItem="{Binding NumberOfDecks}"
+                                        FontSize="16"
+                                        TextColor="{StaticResource Gray900}"/>
+                            </Border>
+                        </Grid>
+                    </Border>
+
+                    <!-- Info Section -->
+                    <Border BackgroundColor="{StaticResource Tertiary}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12"
+                            Margin="0,10,0,0">
+                        <HorizontalStackLayout Spacing="12">
+                            <ic:FluentIcon
+                                Icon="Info"
+                                IconVariant="Regular"
+                                FontSize="20"
+                                ForegroundColor="{StaticResource Primary}"/>
+                            <VerticalStackLayout Spacing="4"
+                                                 VerticalOptions="Center">
+                                <Label Text="Game Rules"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary}"/>
+                                <Label Text="• Dealer hits on soft 17 (H17)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• Blackjack pays 3:2"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• Insurance pays 2:1"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• Double after split allowed"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• Split up to 3 times (4 hands)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- Save Button Row -->
+            <Grid Grid.Row="2"
+                  Margin="0,15,0,0">
+                <Button Text="Save Settings"
+                        Command="{Binding SaveSettingsCommand}"
+                        IsEnabled="{Binding HasUnsavedChanges}"
+                        FontSize="16"
+                        FontAttributes="Bold"
+                        HeightRequest="50"
+                        WidthRequest="200"
+                        CornerRadius="25"
+                        HorizontalOptions="Center">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="BackgroundColor"
+                                    Value="{StaticResource Gray300}"/>
+                            <Setter Property="TextColor"
+                                    Value="{StaticResource Gray500}"/>
+                            <Style.Triggers>
+                                <DataTrigger TargetType="Button"
+                                             Binding="{Binding HasUnsavedChanges}"
+                                             Value="True">
+                                    <Setter Property="BackgroundColor"
+                                            Value="{StaticResource Primary}"/>
+                                    <Setter Property="TextColor"
+                                            Value="{StaticResource White}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    <Button.Shadow>
+                        <Shadow Brush="{StaticResource Primary}"
+                                Opacity="0.3"
+                                Radius="8"
+                                Offset="0,3"/>
+                    </Button.Shadow>
+                </Button>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</ContentPage>

@@ -19,15 +19,15 @@
   - [x] Add "Reset Bankroll" button to MainMenuPage
   - [x] Auto-reset bankroll on MainMenuPage load if bankroll is $0
 
-- [ ] **Settings Menu**
-  - [ ] Create SettingsPage.xaml and ViewModel
-  - [ ] Add table minimum configuration (persisted)
-  - [ ] Add table maximum configuration (persisted)
-  - [ ] Add starting bankroll configuration (persisted)
-  - [ ] Add number of decks picker: 1, 2, 4, 6, or 8 (persisted)
-  - [ ] Create SettingsService with Save/Load using MAUI Preferences API
-  - [ ] Load settings on app startup
-  - [ ] Update GameSettings.NumberOfDecks to be settable
+- [x] **Settings Menu**
+  - [x] Create SettingsPage.xaml and ViewModel
+  - [x] Add table minimum configuration (persisted)
+  - [x] Add table maximum configuration (persisted)
+  - [x] Add starting bankroll configuration (persisted)
+  - [x] Add number of decks picker: 1, 2, 4, 6, or 8 (persisted)
+  - [x] Create SettingsService with Save/Load using MAUI Preferences API
+  - [x] Load settings on app startup
+  - [x] Update GameSettings.NumberOfDecks to be settable
 
 - [ ] **Platform Optimizations**
   - [ ] **Windows**: Desktop-optimized layout and controls

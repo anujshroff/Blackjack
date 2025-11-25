@@ -27,8 +27,8 @@ namespace Blackjack.Views
             {
                 await viewModel.InitializeAsync();
 
-                // Refresh bankroll state (handles auto-reset if bankroll is $0)
-                viewModel.RefreshBankrollState();
+                // Reload settings (in case user changed them in Settings page)
+                viewModel.ReloadSettings();
             }
         }
     }

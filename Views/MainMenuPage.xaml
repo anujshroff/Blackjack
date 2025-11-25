@@ -38,9 +38,7 @@
                     Icon="PlayingCards"
                     IconVariant="Filled"
                     FontSize="48"
-                    ForegroundColor="{StaticResource White}"
-                    HorizontalOptions="Center"
-                    VerticalOptions="Center"/>
+                    ForegroundColor="{StaticResource White}"/>
             </Border>
 
             <!-- Column 3: Title and Subtitle -->

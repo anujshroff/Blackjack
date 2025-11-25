@@ -141,7 +141,13 @@ namespace Blackjack.ViewModels
         /// Game settings including table minimum and maximum bets.
         /// </summary>
         [ObservableProperty]
-        private GameSettings settings = new();
+        private GameSettings settings = new()
+        {
+            TableMinimum = SettingsService.LoadTableMinimum(),
+            TableMaximum = SettingsService.LoadTableMaximum(),
+            StartingBankroll = SettingsService.LoadStartingBankroll(),
+            NumberOfDecks = SettingsService.LoadNumberOfDecks()
+        };
 
         /// <summary>
         /// AI betting service for generating AI bets.

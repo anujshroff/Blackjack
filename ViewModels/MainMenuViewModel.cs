@@ -13,7 +13,7 @@ namespace Blackjack.ViewModels
     public partial class MainMenuViewModel : ViewModelBase
     {
         private readonly BankrollService _bankrollService;
-        private readonly GameSettings _settings = new();
+        private readonly GameSettings _settings;
 
         /// <summary>
         /// Indicates if there is a saved bankroll.
@@ -37,6 +37,16 @@ namespace Blackjack.ViewModels
         {
             Title = "Blackjack";
             _bankrollService = bankrollService;
+
+            // Load settings from persistent storage
+            _settings = new GameSettings
+            {
+                TableMinimum = SettingsService.LoadTableMinimum(),
+                TableMaximum = SettingsService.LoadTableMaximum(),
+                StartingBankroll = SettingsService.LoadStartingBankroll(),
+                NumberOfDecks = SettingsService.LoadNumberOfDecks()
+            };
+
             StartingBankroll = _settings.StartingBankroll;
 
             // Load current bankroll state
@@ -93,8 +103,7 @@ namespace Blackjack.ViewModels
         }
 
         /// <summary>
-        /// Command to open settings.
-        /// Placeholder for future implementation.
+        /// Command to open settings page.
         /// </summary>
         [RelayCommand]
         private async Task OpenSettings()
@@ -106,14 +115,27 @@ namespace Blackjack.ViewModels
             {
                 IsBusy = true;
 
-                await Shell.Current.DisplayAlertAsync("Coming Soon",
-                    "Settings page will be available in Phase 5.",
-                    "OK");
+                await Shell.Current.GoToAsync(nameof(SettingsPage));
             }
             finally
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>
+        /// Reloads settings from persistent storage.
+        /// Should be called when returning from the Settings page.
+        /// </summary>
+        public void ReloadSettings()
+        {
+            _settings.TableMinimum = SettingsService.LoadTableMinimum();
+            _settings.TableMaximum = SettingsService.LoadTableMaximum();
+            _settings.StartingBankroll = SettingsService.LoadStartingBankroll();
+            _settings.NumberOfDecks = SettingsService.LoadNumberOfDecks();
+
+            StartingBankroll = _settings.StartingBankroll;
+            RefreshBankrollState();
         }
 
         /// <summary>
