@@ -14,11 +14,8 @@ namespace Blackjack.Services
         /// </summary>
         public static bool CanHit(Models.Hand hand)
         {
-            // Can hit if not busted and not standing
-            return !hand.IsBusted &&
-                   hand.Status != Models.HandStatus.Busted &&
-                   hand.Status != Models.HandStatus.Standing &&
-                   hand.Status != Models.HandStatus.Blackjack;
+            // Can only hit on an active, non-busted hand
+            return hand.Status == Models.HandStatus.Active && !hand.IsBusted;
         }
 
         /// <summary>
