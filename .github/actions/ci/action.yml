@@ -33,7 +33,7 @@ runs:
         queries: +security-extended
 
     - name: Build
-      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} -p:PublishTrimmed=false -p:AndroidLinkMode=None
+      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} -p:PublishTrimmed=false -p:AndroidLinkMode=None -p:RunAOTCompilation=false
       shell: bash
 
     - name: Test
