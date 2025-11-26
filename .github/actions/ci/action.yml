@@ -37,7 +37,7 @@ runs:
       shell: bash
 
     - name: Test
-      run: dotnet test --configuration ${{ inputs.CONFIGURATION }}
+      run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
       shell: bash
 
     - name: Dependency Review
