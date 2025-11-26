@@ -22,6 +22,10 @@ runs:
       with:
         dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
 
+    - name: Install .NET Workloads
+      run: dotnet workload restore
+      shell: bash
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
