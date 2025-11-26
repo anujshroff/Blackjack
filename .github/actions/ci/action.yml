@@ -33,7 +33,7 @@ runs:
         queries: +security-extended
 
     - name: Build
-      run: dotnet build --configuration ${{ inputs.CONFIGURATION }}
+      run: dotnet build src/Blackjack/Blackjack.csproj -f net10.0-android --configuration ${{ inputs.CONFIGURATION }}
       shell: bash
 
     - name: Test
