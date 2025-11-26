@@ -22,6 +22,10 @@ runs:
       with:
         dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
 
+    - name: Install .NET Workloads
+      run: dotnet workload restore
+      shell: bash
+
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v4
       with:
@@ -29,11 +33,11 @@ runs:
         queries: +security-extended
 
     - name: Build
-      run: dotnet build --configuration ${{ inputs.CONFIGURATION }}
+      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} -p:PublishTrimmed=false -p:AndroidLinkMode=None -p:RunAOTCompilation=false
       shell: bash
 
     - name: Test
-      run: dotnet test --configuration ${{ inputs.CONFIGURATION }}
+      run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
       shell: bash
 
     - name: Dependency Review
