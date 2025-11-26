@@ -67,7 +67,8 @@
                 StrokeShape="RoundRectangle 12"
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
-                <VerticalStackLayout Spacing="2" HorizontalOptions="Center">
+                <VerticalStackLayout Spacing="2"
+                        HorizontalOptions="Center">
                     <Label
                         Text="Bankroll"
                         FontSize="12"
@@ -168,7 +169,7 @@
 
         <!-- Version in corner -->
         <Label
-            Text="v1.0"
+            Text="{Binding VersionDisplay}"
             FontSize="10"
             TextColor="{StaticResource Gray400}"
             HorizontalOptions="End"
