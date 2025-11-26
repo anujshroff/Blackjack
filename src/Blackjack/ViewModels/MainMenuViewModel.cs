@@ -3,6 +3,7 @@ using Blackjack.Services;
 using Blackjack.Views;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Reflection;
 
 namespace Blackjack.ViewModels
 {
@@ -32,6 +33,30 @@ namespace Blackjack.ViewModels
         /// </summary>
         [ObservableProperty]
         private decimal startingBankroll;
+
+        /// <summary>
+        /// Gets the version string to display.
+        /// Returns "Development" in DEBUG builds, "Alpha" for version 0.0.0, 
+        /// or major.minor.build for release builds.
+        /// </summary>
+#pragma warning disable CA1822 // Mark members as static
+        public string VersionDisplay
+#pragma warning restore CA1822 // Mark members as static
+        {
+            get
+            {
+#if DEBUG
+                return "Development";
+#else
+                Version? version = Assembly.GetExecutingAssembly().GetName().Version;
+                if (version == null || version == new Version(0, 0, 0, 0))
+                {
+                    return "Alpha";
+                }
+                return $"{version.Major}.{version.Minor}.{version.Build}";
+#endif
+            }
+        }
 
         public MainMenuViewModel(BankrollService bankrollService)
         {
