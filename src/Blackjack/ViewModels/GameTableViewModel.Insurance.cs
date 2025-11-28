@@ -226,15 +226,8 @@ namespace Blackjack.ViewModels
                 GameMessage = "Dealer has Blackjack!";
                 await Task.Delay(1500);
 
-                // Settle all hands immediately
+                // Settle all hands and start new round (handles bankruptcy, shuffle, etc.)
                 await SettleHandsForDealerBlackjack();
-
-                // Return to betting phase
-                CurrentPhase = GamePhase.Betting;
-                IsBetting = true;
-                CurrentBet = 0;
-                CanConfirmBet = false;
-                GameMessage = "Round over. Place your bet for next round.";
             }
             else
             {
@@ -326,10 +319,16 @@ namespace Blackjack.ViewModels
                 if (player.IsHuman)
                 {
                     PlayerBankroll = player.Bankroll;
+
+                    // Save bankroll to persistent storage
+                    Services.BankrollService.SaveBankroll(PlayerBankroll);
                 }
 
                 await Task.Delay(800);
             }
+
+            // Start new round (handles bankruptcy check, shuffle check, etc.)
+            await StartNewRound();
         }
 
         /// <summary>
