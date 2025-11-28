@@ -267,6 +267,10 @@ namespace Blackjack.ViewModels
 
             foreach (var player in Players.Where(p => p.IsActive))
             {
+                // Update viewed player to show current player being settled
+                ViewedPlayerPosition = player.SeatPosition;
+                OnPropertyChanged(nameof(ViewedPlayerPosition));
+
                 var hand = player.Hands[0];
                 decimal payout = 0;
 
@@ -326,6 +330,10 @@ namespace Blackjack.ViewModels
 
                 await Task.Delay(800);
             }
+
+            // Show human player's summary after all hands are settled
+            ViewedPlayerPosition = HumanPlayerPosition;
+            OnPropertyChanged(nameof(ViewedPlayerPosition));
 
             // Start new round (handles bankruptcy check, shuffle check, etc.)
             await StartNewRound();
