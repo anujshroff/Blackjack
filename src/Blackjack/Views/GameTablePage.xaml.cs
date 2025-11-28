@@ -252,20 +252,90 @@ namespace Blackjack.Views
         }
 
         /// <summary>
-        /// Build the player summary strip showing all players in compact form.
+        /// Build the player summary strip showing all 7 seat positions.
         /// </summary>
         private void BuildPlayerSummaryStrip()
         {
             PlayerSummaryStrip.Children.Clear();
 
-            foreach (var player in ViewModel.Players)
+            // Show all 7 seat positions (1-7)
+            for (int seatPosition = 1; seatPosition <= 7; seatPosition++)
             {
-                if (!player.IsActive)
-                    continue;
+                var player = ViewModel.Players[seatPosition - 1];
+                Border summaryCard;
 
-                var summaryCard = CreatePlayerSummaryCard(player);
+                if (player.IsActive)
+                {
+                    // Active player - show full summary
+                    summaryCard = CreatePlayerSummaryCard(player);
+                }
+                else
+                {
+                    // Vacant seat - show placeholder
+                    summaryCard = CreateVacantSeatCard(seatPosition);
+                }
+
+                // Set the column position in the Grid
+                Grid.SetColumn(summaryCard, seatPosition - 1);
                 PlayerSummaryStrip.Children.Add(summaryCard);
             }
+        }
+
+        /// <summary>
+        /// Create a placeholder card for a vacant seat.
+        /// </summary>
+        private static Border CreateVacantSeatCard(int seatPosition)
+        {
+            var vacantBorder = new Border
+            {
+                BackgroundColor = Color.FromArgb("#10FFFFFF"),
+                Stroke = Colors.Transparent,
+                StrokeThickness = 0,
+                Padding = 3,
+                StrokeShape = new RoundRectangle { CornerRadius = 6 },
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            var content = new VerticalStackLayout
+            {
+                Spacing = 2,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Center
+            };
+
+            // Position label
+            content.Add(new Label
+            {
+                Text = $"P{seatPosition}",
+                FontSize = 9,
+                FontAttributes = FontAttributes.Bold,
+                TextColor = Color.FromArgb("#4A5568"),
+                HorizontalOptions = LayoutOptions.Center
+            });
+
+            // Empty seat icon
+            var seatIcon = new FluentIcon
+            {
+                Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.PersonAvailable,
+                IconVariant = FluentIcons.Common.IconVariant.Regular,
+                FontSize = 12,
+                ForegroundColor = Color.FromArgb("#4A5568")
+            };
+            content.Add(seatIcon);
+
+            // Vacant text
+            content.Add(new Label
+            {
+                Text = "VACANT",
+                FontSize = 8,
+                TextColor = Color.FromArgb("#4A5568"),
+                HorizontalOptions = LayoutOptions.Center
+            });
+
+            vacantBorder.Content = content;
+
+            return vacantBorder;
         }
 
         /// <summary>
@@ -325,8 +395,8 @@ namespace Blackjack.Views
                 Stroke = borderColor,
                 StrokeThickness = borderColor == Colors.Transparent ? 0 : 2,
                 Padding = 3,
-                WidthRequest = 58,
-                // Removed HeightRequest to allow natural sizing
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center,
                 StrokeShape = new RoundRectangle { CornerRadius = 6 }
             };
 

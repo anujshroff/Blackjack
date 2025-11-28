@@ -121,15 +121,13 @@
                 </Border>
             </Grid>
 
-            <!-- Row 1: Player Summary Strip -->
-            <ScrollView Grid.Row="1"
-                        Orientation="Horizontal"
-                        HorizontalScrollBarVisibility="Never"
-                        Margin="3,0">
-                <HorizontalStackLayout x:Name="PlayerSummaryStrip"
-                                       Spacing="3"
-                                       Padding="2"/>
-            </ScrollView>
+            <!-- Row 1: Player Summary Strip (7 seats) -->
+            <Grid Grid.Row="1"
+                  x:Name="PlayerSummaryStrip"
+                  ColumnDefinitions="*,*,*,*,*,*,*"
+                  ColumnSpacing="3"
+                  Margin="3,0"
+                  Padding="2"/>
 
             <!-- Row 2: All Controls in One Row -->
             <Border Grid.Row="2"
