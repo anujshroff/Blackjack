@@ -155,25 +155,13 @@ namespace Blackjack.Views
         }
 
         /// <summary>
-        /// Update layout based on game phase (expand dealer area during dealer turn).
+        /// Update layout based on game phase.
         /// </summary>
         private void UpdateLayoutForPhase()
         {
-            // During dealer's turn, expand dealer area to full width
-            bool isDealerTurn = ViewModel.CurrentPhase == GamePhase.DealerAction;
-
-            if (isDealerTurn)
-            {
-                // Expand dealer area to use both columns
-                Grid.SetColumnSpan(DealerAreaBorder, 2);
-                ActiveHandAreaBorder.IsVisible = false;
-            }
-            else
-            {
-                // Normal layout: dealer on left, active hand on right
-                Grid.SetColumnSpan(DealerAreaBorder, 1);
-                ActiveHandAreaBorder.IsVisible = true;
-            }
+            // Keep consistent layout: dealer on left, active hand on right
+            Grid.SetColumnSpan(DealerAreaBorder, 1);
+            ActiveHandAreaBorder.IsVisible = true;
         }
 
         /// <summary>
@@ -539,10 +527,6 @@ namespace Blackjack.Views
         private void BuildActiveHandDisplay()
         {
             ActiveHandArea.Children.Clear();
-
-            // Don't show active hand during dealer's turn
-            if (ViewModel.CurrentPhase == GamePhase.DealerAction)
-                return;
 
             // Keep the Return to Active button
             if (ReturnToActiveButton.Parent == null)
