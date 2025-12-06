@@ -1,0 +1,44 @@
+name: 'Build - Android'
+description: 'Build - Android'
+inputs:
+  CONFIGURATION:
+    required: false
+    default: 'Release'
+  DOTNET_CORE_VERSION: 
+    required: false
+    default: '10.x'
+  GITHUB_TOKEN:
+    required: true
+  
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
+
+    - name: Run Branch Release Versioning
+      id: nextversion
+      uses: ./.github/actions/versioning
+
+    - name: Build
+      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ steps.nextversion.outputs.VERSION }} /p:AssemblyVersion=${{ steps.nextversion.outputs.ASSEMBLYSEMVER }}
+      shell: bash
+
+    - name: Test
+      run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
+      shell: bash
+
+    - name: Publish
+      run: |
+        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android /p:Version=${{ steps.nextversion.outputs.VERSION }} /p:AssemblyVersion=${{ steps.nextversion.outputs.ASSEMBLYSEMVER }}
+      shell: bash
+
+    - name: Push Git Tag
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "github-actions@users.noreply.github.com"
+        git tag v${{ steps.nextversion.outputs.VERSION }}
+        git push origin v${{ steps.nextversion.outputs.VERSION }}
+      shell: bash
