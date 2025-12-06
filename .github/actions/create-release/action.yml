@@ -1,0 +1,33 @@
+name: 'Create GitHub Release'
+description: 'Create a GitHub Release with Android artifacts'
+inputs:
+  GITHUB_TOKEN:
+    required: true
+  VERSION:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download Android Artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: android-release
+        path: ./release-artifacts
+
+    - name: List Artifacts
+      shell: bash
+      run: |
+        echo "Creating release v${{ inputs.VERSION }}"
+        echo "Contents of release-artifacts:"
+        ls -la ./release-artifacts/
+
+    - name: Create GitHub Release
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.GITHUB_TOKEN }}
+      run: |
+        gh release create "v${{ inputs.VERSION }}" \
+          --title "v${{ inputs.VERSION }}" \
+          ./release-artifacts/*-Signed.apk \
+          ./release-artifacts/*-Signed.aab

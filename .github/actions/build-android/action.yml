@@ -9,7 +9,11 @@ inputs:
     default: '10.x'
   GITHUB_TOKEN:
     required: true
-  
+  VERSION:
+    required: true
+  ASSEMBLYSEMVER:
+    required: true
+
 runs:
   using: 'composite'
   steps:
@@ -18,12 +22,8 @@ runs:
       with:
         dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
 
-    - name: Run Branch Release Versioning
-      id: nextversion
-      uses: ./.github/actions/versioning
-
     - name: Build
-      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ steps.nextversion.outputs.VERSION }} /p:AssemblyVersion=${{ steps.nextversion.outputs.ASSEMBLYSEMVER }}
+      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
       shell: bash
 
     - name: Test
@@ -32,13 +32,13 @@ runs:
 
     - name: Publish
       run: |
-        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android /p:Version=${{ steps.nextversion.outputs.VERSION }} /p:AssemblyVersion=${{ steps.nextversion.outputs.ASSEMBLYSEMVER }}
+        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
       shell: bash
 
-    - name: Push Git Tag
-      run: |
-        git config user.name "GitHub Actions"
-        git config user.email "github-actions@users.noreply.github.com"
-        git tag v${{ steps.nextversion.outputs.VERSION }}
-        git push origin v${{ steps.nextversion.outputs.VERSION }}
-      shell: bash
+    - name: Upload Android Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-release
+        path: |
+          ${{ github.workspace }}/publish-android/*-Signed.apk
+          ${{ github.workspace }}/publish-android/*-Signed.aab
