@@ -1,0 +1,44 @@
+name: 'Build - Android'
+description: 'Build - Android'
+inputs:
+  CONFIGURATION:
+    required: false
+    default: 'Release'
+  DOTNET_CORE_VERSION: 
+    required: false
+    default: '10.x'
+  GITHUB_TOKEN:
+    required: true
+  VERSION:
+    required: true
+  ASSEMBLYSEMVER:
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET SDK
+      uses: actions/setup-dotnet@v5
+      with:
+        dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
+
+    - name: Build
+      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
+      shell: bash
+
+    - name: Test
+      run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
+      shell: bash
+
+    - name: Publish
+      run: |
+        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
+      shell: bash
+
+    - name: Upload Android Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: android-release
+        path: |
+          ${{ github.workspace }}/publish-android/*-Signed.apk
+          ${{ github.workspace }}/publish-android/*-Signed.aab
