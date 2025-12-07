@@ -54,7 +54,9 @@ runs:
           /p:AndroidSigningKeyStore=${{ github.workspace }}/keystore.jks \
           /p:AndroidSigningKeyAlias=${{ inputs.ANDROID_KEY_ALIAS }} \
           /p:AndroidSigningKeyPass=${{ inputs.ANDROID_KEYSTORE_PASSWORD }} \
-          /p:AndroidSigningStorePass=${{ inputs.ANDROID_KEYSTORE_PASSWORD }}
+          /p:AndroidSigningStorePass=${{ inputs.ANDROID_KEYSTORE_PASSWORD }} \
+          /p:ApplicationDisplayVersion=${{ inputs.VERSION }} \
+          /p:ApplicationVersion=${{ github.run_number }}
       shell: bash
 
     - name: Upload Android Artifacts
