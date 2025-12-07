@@ -2,16 +2,15 @@ name: 'Deploy to Play Store'
 description: 'Deploy Android AAB to Google Play Store'
 inputs:
   WORKLOAD_IDENTITY_PROVIDER:
-    description: 'GCP Workload Identity Provider'
     required: true
   SERVICE_ACCOUNT:
-    description: 'GCP Service Account email'
+    required: true
+  VERSION:
     required: true
   PACKAGE_NAME:
-    description: 'Android package name'
-    required: true
+    required: false
+    default: 'com.anujshroff.blackjack'
   TRACK:
-    description: 'Play Store track (internal, alpha, beta, production)'
     required: false
     default: 'internal'
 
@@ -47,3 +46,4 @@ runs:
         releaseFiles: ./release-artifacts/*-Signed.aab
         track: ${{ inputs.TRACK }}
         status: "draft"
+        releaseName: "v${{ inputs.VERSION }}"
