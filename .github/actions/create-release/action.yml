@@ -29,5 +29,4 @@ runs:
       run: |
         gh release create "v${{ inputs.VERSION }}" \
           --title "v${{ inputs.VERSION }}" \
-          ./release-artifacts/*-Signed.apk \
-          ./release-artifacts/*-Signed.aab
+          ./release-artifacts/*-Signed.apk
