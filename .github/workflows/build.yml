@@ -71,3 +71,23 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ needs.versioning.outputs.VERSION }}
+
+  deploy-playstore:
+    runs-on: ubuntu-latest
+    needs: [versioning, build-android]
+    environment: android
+
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - uses: actions/checkout@v6
+        name: Checkout
+
+      - uses: ./.github/actions/deploy-playstore/
+        name: Deploy to Play Store
+        with:
+          WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          PACKAGE_NAME: com.anujshroff.blackjack
