@@ -58,7 +58,7 @@ runs:
       shell: bash
 
     - name: Upload Android Artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: android-release
         path: |

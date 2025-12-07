@@ -19,7 +19,7 @@ jobs:
       ASSEMBLYSEMVER: ${{ steps.version.outputs.ASSEMBLYSEMVER }}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout
         with:
           fetch-depth: 0
@@ -41,7 +41,7 @@ jobs:
     environment: android
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout
         with:
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
     needs: [versioning, build-android]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         name: Checkout
         with:
           fetch-depth: 0
