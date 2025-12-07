@@ -1,0 +1,48 @@
+name: 'Deploy to Play Store'
+description: 'Deploy Android AAB to Google Play Store'
+inputs:
+  WORKLOAD_IDENTITY_PROVIDER:
+    description: 'GCP Workload Identity Provider'
+    required: true
+  SERVICE_ACCOUNT:
+    description: 'GCP Service Account email'
+    required: true
+  PACKAGE_NAME:
+    description: 'Android package name'
+    required: true
+  TRACK:
+    description: 'Play Store track (internal, alpha, beta, production)'
+    required: false
+    default: 'internal'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Download Android Artifacts
+      uses: actions/download-artifact@v6
+      with:
+        name: android-release
+        path: ./release-artifacts
+
+    - name: List Artifacts
+      shell: bash
+      run: |
+        echo "Deploying to Play Store (${{ inputs.TRACK }} track)"
+        echo "Contents of release-artifacts:"
+        ls -la ./release-artifacts/
+
+    - name: Authenticate to Google Cloud
+      id: auth
+      uses: google-github-actions/auth@v3
+      with:
+        workload_identity_provider: ${{ inputs.WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ inputs.SERVICE_ACCOUNT }}
+        create_credentials_file: true
+
+    - name: Upload to Play Store
+      uses: r0adkll/upload-google-play@v1
+      with:
+        serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
+        packageName: ${{ inputs.PACKAGE_NAME }}
+        releaseFiles: ./release-artifacts/*-Signed.aab
+        track: ${{ inputs.TRACK }}
