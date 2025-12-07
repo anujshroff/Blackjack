@@ -22,6 +22,10 @@ runs:
       with:
         dotnet-version: ${{ inputs.DOTNET_CORE_VERSION }}
 
+    - name: Restore Workloads
+      run: dotnet workload restore
+      shell: bash
+
     - name: Build
       run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
       shell: bash
