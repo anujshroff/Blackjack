@@ -13,6 +13,12 @@ inputs:
     required: true
   ASSEMBLYSEMVER:
     required: true
+  ANDROID_KEYSTORE_BASE64:
+    required: true
+  ANDROID_KEYSTORE_PASSWORD:
+    required: true
+  ANDROID_KEY_ALIAS:
+    required: true
 
 runs:
   using: 'composite'
@@ -34,9 +40,21 @@ runs:
       run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
       shell: bash
 
+    - name: Decode Keystore
+      run: |
+        echo "${{ inputs.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > ${{ github.workspace }}/keystore.jks
+      shell: bash
+
     - name: Publish
       run: |
-        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
+        dotnet publish ${{ github.workspace }}/src/Blackjack --configuration ${{ inputs.CONFIGURATION }} -f net10.0-android --output ${{ github.workspace }}/publish-android \
+          /p:Version=${{ inputs.VERSION }} \
+          /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }} \
+          /p:AndroidKeyStore=true \
+          /p:AndroidSigningKeyStore=${{ github.workspace }}/keystore.jks \
+          /p:AndroidSigningKeyAlias=${{ inputs.ANDROID_KEY_ALIAS }} \
+          /p:AndroidSigningKeyPass=${{ inputs.ANDROID_KEYSTORE_PASSWORD }} \
+          /p:AndroidSigningStorePass=${{ inputs.ANDROID_KEYSTORE_PASSWORD }}
       shell: bash
 
     - name: Upload Android Artifacts
