@@ -90,4 +90,4 @@ jobs:
         with:
           WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
           SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
-          PACKAGE_NAME: com.anujshroff.blackjack
+          VERSION: ${{ needs.versioning.outputs.VERSION }}
