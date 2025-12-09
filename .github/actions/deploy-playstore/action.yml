@@ -45,5 +45,4 @@ runs:
         packageName: ${{ inputs.PACKAGE_NAME }}
         releaseFiles: ./release-artifacts/*-Signed.aab
         track: ${{ inputs.TRACK }}
-        status: "draft"
         releaseName: "v${{ inputs.VERSION }}"
