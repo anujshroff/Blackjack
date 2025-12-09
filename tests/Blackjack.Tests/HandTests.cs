@@ -171,6 +171,39 @@ public class HandTests
         Assert.Equal(20, hand.TotalValue);
     }
 
+    [Fact]
+    public void IsBlackjack_SplitAceWithTen_ReturnsFalse()
+    {
+        // Split Ace + 10 = 21 but NOT blackjack (from split)
+        var hand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        hand.IsFromSplit = true;  // Mark as coming from a split
+
+        Assert.False(hand.IsBlackjack);
+        Assert.Equal(21, hand.TotalValue);
+    }
+
+    [Fact]
+    public void IsBlackjack_SplitTensWithAce_ReturnsFalse()
+    {
+        // Split 10 + Ace = 21 but NOT blackjack (from split)
+        var hand = CardHelper.CreateHand(Rank.Ten, Rank.Ace);
+        hand.IsFromSplit = true;  // Mark as coming from a split
+
+        Assert.False(hand.IsBlackjack);
+        Assert.Equal(21, hand.TotalValue);
+    }
+
+    [Fact]
+    public void IsBlackjack_NaturalAceKing_NotFromSplit_ReturnsTrue()
+    {
+        // Natural A + K = 21 (blackjack, not from split)
+        var hand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        hand.IsFromSplit = false;  // Explicitly not from split
+
+        Assert.True(hand.IsBlackjack);
+        Assert.Equal(21, hand.TotalValue);
+    }
+
     #endregion
 
     #region IsBusted Tests
