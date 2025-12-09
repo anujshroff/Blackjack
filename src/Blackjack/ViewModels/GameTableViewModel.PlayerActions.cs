@@ -178,6 +178,7 @@ namespace Blackjack.ViewModels
             hand.Cards.Clear();
             hand.AddCard(card1);
             hand.HandIndex = 0;
+            hand.IsFromSplit = true;  // Mark as split hand (not eligible for blackjack payout)
 
             // Create second hand with second card
             var newHand = new Hand
@@ -185,7 +186,8 @@ namespace Blackjack.ViewModels
                 Bet = hand.Bet,
                 Status = HandStatus.Active,
                 HandIndex = 1,
-                NeedsSecondCard = true  // Mark as waiting for second card
+                NeedsSecondCard = true,  // Mark as waiting for second card
+                IsFromSplit = true  // Mark as split hand (not eligible for blackjack payout)
             };
             newHand.AddCard(card2);
             player.Hands.Insert(_currentHandIndex + 1, newHand);
@@ -571,13 +573,15 @@ namespace Blackjack.ViewModels
                                 hand.Cards.Clear();
                                 hand.AddCard(card1);
                                 hand.HandIndex = _currentHandIndex;
+                                hand.IsFromSplit = true;  // Mark as split hand (not eligible for blackjack payout)
 
                                 var newHand = new Hand
                                 {
                                     Bet = hand.Bet,
                                     Status = HandStatus.Active,
                                     HandIndex = _currentHandIndex + 1,
-                                    NeedsSecondCard = true  // Mark as waiting for second card
+                                    NeedsSecondCard = true,  // Mark as waiting for second card
+                                    IsFromSplit = true  // Mark as split hand (not eligible for blackjack payout)
                                 };
                                 newHand.AddCard(card2);
                                 player.Hands.Insert(_currentHandIndex + 1, newHand);

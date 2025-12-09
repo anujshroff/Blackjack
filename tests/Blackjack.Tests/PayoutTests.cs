@@ -250,4 +250,105 @@ public class PayoutTests
     }
 
     #endregion
+
+    #region Split Hand Payout Tests
+
+    [Fact]
+    public void SettleHand_SplitAceWithTen_PaysOneToOne_NotThreeToTwo()
+    {
+        // Split Ace + King = 21 but NOT blackjack (from split)
+        var playerHand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        playerHand.Bet = 20m;
+        playerHand.IsFromSplit = true;  // Mark as coming from a split
+
+        var dealer = new Dealer();
+        dealer.AddCard(CardHelper.Ten());
+        dealer.AddCard(CardHelper.Eight()); // Dealer has 18
+
+        var payout = _gameRules.SettleHand(playerHand, dealer);
+
+        // Should pay 1:1 ($40), NOT 3:2 ($50) because it's from a split
+        Assert.Equal(40m, payout);
+        Assert.Equal(HandStatus.Won, playerHand.Status);
+        Assert.NotEqual(HandStatus.Blackjack, playerHand.Status);
+    }
+
+    [Fact]
+    public void SettleHand_SplitTensWithAce_PaysOneToOne_NotThreeToTwo()
+    {
+        // Split Ten + Ace = 21 but NOT blackjack (from split)
+        var playerHand = CardHelper.CreateHand(Rank.Ten, Rank.Ace);
+        playerHand.Bet = 100m;
+        playerHand.IsFromSplit = true;  // Mark as coming from a split
+
+        var dealer = new Dealer();
+        dealer.AddCard(CardHelper.Ten());
+        dealer.AddCard(CardHelper.Seven()); // Dealer has 17
+
+        var payout = _gameRules.SettleHand(playerHand, dealer);
+
+        // Should pay 1:1 ($200), NOT 3:2 ($250) because it's from a split
+        Assert.Equal(200m, payout);
+        Assert.Equal(HandStatus.Won, playerHand.Status);
+    }
+
+    [Fact]
+    public void SettleHand_NaturalBlackjack_NotFromSplit_PaysThreeToTwo()
+    {
+        // Natural A + K = 21 (blackjack, not from split)
+        var playerHand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        playerHand.Bet = 20m;
+        playerHand.IsFromSplit = false;  // Explicitly not from split
+
+        var dealer = new Dealer();
+        dealer.AddCard(CardHelper.Ten());
+        dealer.AddCard(CardHelper.Eight()); // Dealer has 18
+
+        var payout = _gameRules.SettleHand(playerHand, dealer);
+
+        // Should pay 3:2 ($50) because it's a natural blackjack
+        Assert.Equal(50m, payout);
+        Assert.Equal(HandStatus.Blackjack, playerHand.Status);
+    }
+
+    [Fact]
+    public void SettleHand_SplitHandVsDealerBlackjack_Loses()
+    {
+        // Split Ace + King = 21 but loses to dealer blackjack
+        var playerHand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        playerHand.Bet = 20m;
+        playerHand.IsFromSplit = true;  // Mark as coming from a split
+
+        var dealer = new Dealer();
+        dealer.AddCard(CardHelper.Ace());
+        dealer.AddCard(CardHelper.King()); // Dealer has blackjack
+
+        var payout = _gameRules.SettleHand(playerHand, dealer);
+
+        // Split 21 loses to dealer blackjack (no push)
+        Assert.Equal(0m, payout);
+        Assert.Equal(HandStatus.Lost, playerHand.Status);
+    }
+
+    [Fact]
+    public void SettleHand_SplitHandTiesWithDealer21_Push()
+    {
+        // Split Ace + King = 21 ties with dealer 21 (not blackjack)
+        var playerHand = CardHelper.CreateHand(Rank.Ace, Rank.King);
+        playerHand.Bet = 50m;
+        playerHand.IsFromSplit = true;  // Mark as coming from a split
+
+        var dealer = new Dealer();
+        dealer.AddCard(CardHelper.Ten());
+        dealer.AddCard(CardHelper.Five());
+        dealer.AddCard(CardHelper.Six()); // Dealer has 21 (not blackjack)
+
+        var payout = _gameRules.SettleHand(playerHand, dealer);
+
+        // Both have 21, push - bet returned
+        Assert.Equal(50m, payout);
+        Assert.Equal(HandStatus.Push, playerHand.Status);
+    }
+
+    #endregion
 }
