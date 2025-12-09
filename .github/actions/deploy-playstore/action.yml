@@ -46,3 +46,4 @@ runs:
         releaseFiles: ./release-artifacts/*-Signed.aab
         track: ${{ inputs.TRACK }}
         releaseName: "v${{ inputs.VERSION }}"
+        status: "draft"
