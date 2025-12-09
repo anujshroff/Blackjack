@@ -34,6 +34,11 @@ namespace Blackjack.Models
         public int HandIndex { get; set; }
 
         /// <summary>
+        /// Indicates if this hand was created from a split (not eligible for natural blackjack payout).
+        /// </summary>
+        public bool IsFromSplit { get; set; }
+
+        /// <summary>
         /// Gets the total value of the hand, automatically handling Aces as 1 or 11.
         /// </summary>
         public int TotalValue
@@ -95,12 +100,16 @@ namespace Blackjack.Models
         }
 
         /// <summary>
-        /// True if this is a natural Blackjack (Ace + 10-value card on first 2 cards).
+        /// True if this is a natural Blackjack (Ace + 10-value card on first 2 cards, not from a split).
         /// </summary>
         public bool IsBlackjack
         {
             get
             {
+                // Split hands cannot have natural blackjack - they pay 1:1 instead of 3:2
+                if (IsFromSplit)
+                    return false;
+
                 if (Cards.Count != 2)
                     return false;
 
@@ -162,6 +171,7 @@ namespace Blackjack.Models
             Cards.Clear();
             Bet = 0;
             Status = HandStatus.Active;
+            IsFromSplit = false;
         }
 
         /// <summary>
