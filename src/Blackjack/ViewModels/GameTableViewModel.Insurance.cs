@@ -323,9 +323,6 @@ namespace Blackjack.ViewModels
                 if (player.IsHuman)
                 {
                     PlayerBankroll = player.Bankroll;
-
-                    // Save bankroll to persistent storage
-                    Services.BankrollService.SaveBankroll(PlayerBankroll);
                 }
 
                 await Task.Delay(800);
