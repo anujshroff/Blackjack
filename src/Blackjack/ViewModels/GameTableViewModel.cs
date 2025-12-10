@@ -409,5 +409,13 @@ namespace Blackjack.ViewModels
             OnPropertyChanged(nameof(ViewedHandIndex));
         }
 
+        /// <summary>
+        /// Called automatically when PlayerBankroll property changes.
+        /// Saves the bankroll to persistent storage to prevent cheating by exiting the app.
+        /// </summary>
+        partial void OnPlayerBankrollChanged(decimal value)
+        {
+            BankrollService.SaveBankroll(value);
+        }
     }
 }
