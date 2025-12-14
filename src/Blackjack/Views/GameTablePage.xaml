@@ -21,7 +21,7 @@
     </ContentPage.Resources>
 
     <Grid>
-        <!-- Background: Classic Vegas Green Table -->
+        <!-- Background: Classic Casino Green Table -->
         <Grid>
             <!-- Base layer: Dark green foundation -->
             <BoxView BackgroundColor="#0A3A28"/>
