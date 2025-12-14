@@ -34,11 +34,10 @@
                 StrokeShape="RoundRectangle 45"
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
-                <ic:FluentIcon
-                    Icon="PlayingCards"
-                    IconVariant="Filled"
-                    FontSize="48"
-                    ForegroundColor="{StaticResource White}"/>
+                <Image
+                    Source="appiconfg.png"
+                    HeightRequest="64"
+                    WidthRequest="64"/>
             </Border>
 
             <!-- Column 3: Title and Subtitle -->
