@@ -25,12 +25,14 @@ namespace Blackjack
             builder.Services.AddTransient<SeatSelectionViewModel>();
             builder.Services.AddTransient<GameTableViewModel>();
             builder.Services.AddTransient<SettingsViewModel>();
+            builder.Services.AddTransient<AboutViewModel>();
 
             // Register Views
             builder.Services.AddSingleton<MainMenuPage>();
             builder.Services.AddTransient<SeatSelectionPage>();
             builder.Services.AddTransient<GameTablePage>();
             builder.Services.AddTransient<SettingsPage>();
+            builder.Services.AddTransient<AboutPage>();
 
             // Register Services
             builder.Services.AddSingleton<BasicStrategy>();

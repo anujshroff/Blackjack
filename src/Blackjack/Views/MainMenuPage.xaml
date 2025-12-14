@@ -67,7 +67,7 @@
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
                 <VerticalStackLayout Spacing="2"
-                        HorizontalOptions="Center">
+                                     HorizontalOptions="Center">
                     <Label
                         Text="Bankroll"
                         FontSize="12"
@@ -110,7 +110,7 @@
 
                 <!-- Settings Button -->
                 <Border
-                    Stroke="{StaticResource Secondary}"
+                    Stroke="{StaticResource Gray400}"
                     StrokeThickness="2"
                     BackgroundColor="Transparent"
                     HeightRequest="42"
@@ -128,28 +128,76 @@
                                 Icon="Settings"
                                 IconVariant="Regular"
                                 FontSize="16"
-                                ForegroundColor="{StaticResource Secondary}"/>
+                                ForegroundColor="{StaticResource Gray600}"/>
                             <Label
                                 Text="Settings"
                                 FontSize="14"
-                                TextColor="{StaticResource Secondary}"
+                                TextColor="{StaticResource Gray600}"
+                                VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
+
+                <!-- About Button -->
+                <Border
+                    Stroke="{StaticResource Gray400}"
+                    StrokeThickness="2"
+                    BackgroundColor="Transparent"
+                    HeightRequest="42"
+                    WidthRequest="140"
+                    StrokeShape="RoundRectangle 21">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding OpenAboutCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Spacing="6">
+                            <ic:FluentIcon
+                                Icon="Info"
+                                IconVariant="Regular"
+                                FontSize="16"
+                                ForegroundColor="{StaticResource Gray600}"/>
+                            <Label
+                                Text="About"
+                                FontSize="14"
+                                TextColor="{StaticResource Gray600}"
                                 VerticalOptions="Center"/>
                         </HorizontalStackLayout>
                     </Grid>
                 </Border>
 
                 <!-- Reset Bankroll Button -->
-                <Button
-                    Text="Reset"
-                    Command="{Binding ResetBankrollCommand}"
-                    BackgroundColor="{StaticResource Gray200}"
-                    TextColor="{StaticResource Gray600}"
-                    FontSize="13"
-                    HeightRequest="36"
-                    WidthRequest="100"
-                    CornerRadius="18"
-                    HorizontalOptions="Center"
-                    IsVisible="{Binding HasSavedBankroll}"/>
+                <Border
+                    Stroke="{StaticResource Gray400}"
+                    StrokeThickness="2"
+                    BackgroundColor="Transparent"
+                    HeightRequest="42"
+                    WidthRequest="140"
+                    StrokeShape="RoundRectangle 21"
+                    IsVisible="{Binding HasSavedBankroll}">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding ResetBankrollCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <HorizontalStackLayout
+                            HorizontalOptions="Center"
+                            VerticalOptions="Center"
+                            Spacing="6">
+                            <ic:FluentIcon
+                                Icon="ArrowReset"
+                                IconVariant="Regular"
+                                FontSize="16"
+                                ForegroundColor="{StaticResource Gray600}"/>
+                            <Label
+                                Text="Reset"
+                                FontSize="14"
+                                TextColor="{StaticResource Gray600}"
+                                VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Grid>
+                </Border>
 
                 <!-- Exit Button (Windows Only) -->
                 <Button

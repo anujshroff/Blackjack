@@ -13,6 +13,7 @@
 
             <!-- Converters -->
             <converters:BoolToOpacityConverter x:Key="BoolToOpacityConverter"/>
+            <converters:BoolToChevronConverter x:Key="BoolToChevronConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
