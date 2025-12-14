@@ -26,10 +26,10 @@ All game data (settings, bankroll) is stored locally on your device using the pl
 
 When you download this application from the Google Play Store or other distribution platforms, those platforms may independently collect certain information according to their own privacy policies. This may include:
 
-- Download and installation statistics
-- Device information for compatibility purposes
-- Crash reports (if you have opted in to share diagnostics with Google)
-- Basic app usage statistics
+- Download, installation, and uninstall statistics
+- Device information (models, OS versions, countries)
+- Crash reports and ANRs (based on user diagnostic sharing preferences)
+- User ratings and reviews
 
 **We cannot control what data distribution platforms collect. Aggregated statistics may be visible to us through developer consoles.** For information about what these platforms collect, please refer to [Google's Privacy Policy](https://policies.google.com/privacy) and [Microsoft's Privacy Statement](https://privacy.microsoft.com/).
 
