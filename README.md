@@ -1,6 +1,6 @@
 # Ashtonne's Blackjack
 
-A classic casino blackjack experience built with .NET MAUI. Play against the dealer with AI opponents at the table, using authentic Las Vegas rules and mathematically optimal Basic Strategy.
+A classic casino blackjack experience built with .NET MAUI. Play against the dealer with AI opponents at the table, using authentic classic casino rules and mathematically optimal basic strategy.
 
 ## Availability
 
@@ -26,7 +26,7 @@ This app was built with respect for the player in mind:
 
 ## Features
 
-- **Standard Las Vegas Rules** - 6-deck shoe with authentic casino gameplay
+- **Classic Casino Rules** - 6-deck shoe with authentic casino gameplay
 - **Player-Favorable 3:2 Blackjack Payout** - The good odds, not the 6:5 found at many casinos
 - **Full Game Actions**:
   - Hit, Stand, Double Down, Split
