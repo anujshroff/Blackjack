@@ -1,57 +1,4 @@
-# PowerShell script to create Google Play Store assets
-# Creates combined app icon SVG (512x512) and feature graphic SVG (1024x500)
-
-# Output folder
-$storeAssetsPath = "StoreAssets"
-
-# Colors (matching the card table)
-$casinoGreen = "#0C4A32"
-$iconWhite = "#ffffff"
-
-Write-Host "Creating Google Play Store assets..." -ForegroundColor Green
-Write-Host ""
-
-# Create output directory if it doesn't exist
-if (-not (Test-Path $storeAssetsPath)) {
-    New-Item -ItemType Directory -Path $storeAssetsPath | Out-Null
-    Write-Host "  [OK] Created $storeAssetsPath directory" -ForegroundColor Cyan
-}
-
-# Create combined app icon SVG (512x512)
-# This merges the background and foreground into a single file
-$appIconCombinedSvg = @"
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg width="512" height="512" viewBox="0 0 512 512" version="1.1" xmlns="http://www.w3.org/2000/svg">
-    <!-- Background: Casino Green -->
-    <rect x="0" y="0" width="512" height="512" fill="$casinoGreen" />
-    
-    <!-- Foreground: Playing Cards with Spade -->
-    <!-- Back card (slightly rotated and offset) -->
-    <g transform="translate(256,256) rotate(-15) translate(-256,-256)">
-        <rect x="144" y="99" width="202" height="292" rx="18" ry="18" fill="$iconWhite" opacity="0.7"/>
-    </g>
-    
-    <!-- Front card -->
-    <g transform="translate(256,256) rotate(10) translate(-256,-256)">
-        <rect x="166" y="121" width="202" height="292" rx="18" ry="18" fill="$iconWhite"/>
-        
-        <!-- Spade symbol in center -->
-        <g transform="translate(267, 267)">
-            <!-- Spade shape -->
-            <path d="M0,-56 C-34,-22 -56,11 -56,39 C-56,62 -39,79 -17,79 C-6,79 3,73 9,65 L0,101 L-22,101 L-22,112 L22,112 L22,101 L0,101 L-9,65 C-3,73 6,79 17,79 C39,79 56,62 56,39 C56,11 34,-22 0,-56 Z" 
-                  fill="#1a1a1a"/>
-        </g>
-    </g>
-</svg>
-"@
-
-$appIconCombinedSvg | Out-File -FilePath "$storeAssetsPath\appicon_512.svg" -Encoding UTF8 -NoNewline
-Write-Host "  [OK] Created appicon_512.svg (512x512 combined icon)" -ForegroundColor Cyan
-
-# Create feature graphic SVG (1024x500)
-# Professional banner with scattered chips, app icon, title, and tagline overlaid
-$featureGraphicSvg = @"
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+﻿<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg width="1024" height="500" viewBox="0 0 1024 500" version="1.1" xmlns="http://www.w3.org/2000/svg">
     <defs>
         <!-- Radial gradient matching game table colors -->
@@ -73,7 +20,7 @@ $featureGraphicSvg = @"
     
     <!-- ============== SCATTERED CHIPS (Background Layer) ============== -->
     
-    <!-- Chip `$5 (red) - bottom left -->
+    <!-- Chip $5 (red) - bottom left -->
     <g transform="translate(80, 420) rotate(-12)">
         <circle r="75" fill="#8B0000" stroke="#5a0000" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -86,11 +33,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#DC143C" stroke="#B00020" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="#ffffff" text-anchor="middle">5</text>
     </g>
     
-    <!-- Chip `$25 (green) - top left -->
+    <!-- Chip $25 (green) - top left -->
     <g transform="translate(50, 100) rotate(8)">
         <circle r="75" fill="#0d5e0d" stroke="#084508" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -103,11 +50,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#228B22" stroke="#1a6b1a" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle">25</text>
     </g>
     
-    <!-- Chip `$100 (black) - overlapping top left -->
+    <!-- Chip $100 (black) - overlapping top left -->
     <g transform="translate(130, 140) rotate(-5)">
         <circle r="75" fill="#0a0a0a" stroke="#000000" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -120,11 +67,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#1a1a1a" stroke="#333333" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">100</text>
     </g>
     
-    <!-- Chip `$1 (white) - bottom center-left -->
+    <!-- Chip $1 (white) - bottom center-left -->
     <g transform="translate(200, 380) rotate(15)">
         <circle r="75" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#000000"/>
@@ -137,11 +84,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#000000"/>
         <circle r="58" fill="#f5f5f5" stroke="#d0d0d0" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333333" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333333" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="#333333" text-anchor="middle">1</text>
     </g>
     
-    <!-- Chip `$500 (purple) - top right -->
+    <!-- Chip $500 (purple) - top right -->
     <g transform="translate(920, 80) rotate(-10)">
         <circle r="75" fill="#4B0082" stroke="#2d004e" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#FFD700"/>
@@ -154,11 +101,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#FFD700"/>
         <circle r="58" fill="#7B2CBF" stroke="#5a1f8f" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#FFD700" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFD700" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFD700" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#FFD700" text-anchor="middle">500</text>
     </g>
     
-    <!-- Chip `$25 (green) - top right, left of $500 -->
+    <!-- Chip $25 (green) - top right, left of  -->
     <g transform="translate(820, 60) rotate(12)">
         <circle r="75" fill="#0d5e0d" stroke="#084508" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -171,11 +118,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#228B22" stroke="#1a6b1a" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="30" font-weight="bold" fill="#ffffff" text-anchor="middle">25</text>
     </g>
     
-    <!-- Chip `$5 (red) - bottom right -->
+    <!-- Chip $5 (red) - bottom right -->
     <g transform="translate(900, 400) rotate(25)">
         <circle r="75" fill="#8B0000" stroke="#5a0000" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -188,11 +135,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#DC143C" stroke="#B00020" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="#ffffff" text-anchor="middle">5</text>
     </g>
     
-    <!-- Chip `$100 (black) - bottom right overlapping -->
+    <!-- Chip $100 (black) - bottom right overlapping -->
     <g transform="translate(820, 450) rotate(-8)">
         <circle r="75" fill="#0a0a0a" stroke="#000000" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#ffffff"/>
@@ -205,11 +152,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#ffffff"/>
         <circle r="58" fill="#1a1a1a" stroke="#333333" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#ffffff" text-anchor="middle">100</text>
     </g>
     
-    <!-- Chip `$1 (white) - top center -->
+    <!-- Chip $1 (white) - top center -->
     <g transform="translate(500, 30) rotate(5)">
         <circle r="75" fill="#2c2c2c" stroke="#1a1a1a" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#000000"/>
@@ -222,11 +169,11 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#000000"/>
         <circle r="58" fill="#f5f5f5" stroke="#d0d0d0" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#333333" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333333" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#333333" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="35" font-weight="bold" fill="#333333" text-anchor="middle">1</text>
     </g>
     
-    <!-- Chip `$500 (purple) - bottom center -->
+    <!-- Chip $500 (purple) - bottom center -->
     <g transform="translate(550, 470) rotate(-18)">
         <circle r="75" fill="#4B0082" stroke="#2d004e" stroke-width="2"/>
         <circle cx="0" cy="-65" r="6" fill="#FFD700"/>
@@ -239,7 +186,7 @@ $featureGraphicSvg = @"
         <circle cx="-46" cy="-46" r="6" fill="#FFD700"/>
         <circle r="58" fill="#7B2CBF" stroke="#5a1f8f" stroke-width="3"/>
         <circle r="42" fill="none" stroke="#FFD700" stroke-width="2" stroke-dasharray="4,4"/>
-        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFD700" text-anchor="middle">`$</text>
+        <text y="-8" font-family="Arial, sans-serif" font-size="20" font-weight="bold" fill="#FFD700" text-anchor="middle">$</text>
         <text y="25" font-family="Arial, sans-serif" font-size="28" font-weight="bold" fill="#FFD700" text-anchor="middle">500</text>
     </g>
     
@@ -254,7 +201,7 @@ $featureGraphicSvg = @"
         
         <!-- Front card -->
         <g transform="rotate(10)">
-            <rect x="-70" y="-100" width="140" height="200" rx="12" ry="12" fill="$iconWhite"/>
+            <rect x="-70" y="-100" width="140" height="200" rx="12" ry="12" fill="#ffffff"/>
             
             <!-- Spade symbol in center -->
             <path d="M0,-38 C-23,-15 -38,8 -38,27 C-38,42 -27,53 -11,53 C-3,53 3,50 6,45 L0,69 L-15,69 L-15,77 L15,77 L15,69 L0,69 L-6,45 C-3,50 3,53 11,53 C27,53 38,42 38,27 C38,8 23,-15 0,-38 Z" 
@@ -278,23 +225,3 @@ $featureGraphicSvg = @"
           fill="#94A3B8"
           text-anchor="middle">Classic Casino Blackjack</text>
 </svg>
-"@
-
-$featureGraphicSvg | Out-File -FilePath "$storeAssetsPath\feature_graphic_1024x500.svg" -Encoding UTF8 -NoNewline
-Write-Host "  [OK] Created feature_graphic_1024x500.svg (1024x500 feature graphic)" -ForegroundColor Cyan
-
-Write-Host ""
-Write-Host "========================================" -ForegroundColor Green
-Write-Host "Successfully created store assets!" -ForegroundColor Green
-Write-Host "========================================" -ForegroundColor Green
-Write-Host ""
-Write-Host "Files created in $storeAssetsPath\:" -ForegroundColor Yellow
-Write-Host "  - appicon_512.svg (512x512 - convert to PNG for Google Play)" -ForegroundColor White
-Write-Host "  - feature_graphic_1024x500.svg (1024x500 - convert to PNG for Google Play)" -ForegroundColor White
-Write-Host ""
-Write-Host "Next steps:" -ForegroundColor Yellow
-Write-Host "  1. Convert SVG files to PNG using:" -ForegroundColor White
-Write-Host "     - https://cloudconvert.com/svg-to-png" -ForegroundColor Gray
-Write-Host "     - https://svgtopng.com/" -ForegroundColor Gray
-Write-Host "     - Inkscape, ImageMagick, or similar tool" -ForegroundColor Gray
-Write-Host ""
