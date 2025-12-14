@@ -373,7 +373,7 @@
                                        FontSize="16"
                                        FontAttributes="Bold"
                                        TextColor="{StaticResource Gray900}"/>
-                                <Label Text="github.com/anujshroff/Blackjack"
+                                <Label Text="blackjack.anujshroff.com"
                                        FontSize="12"
                                        TextColor="{StaticResource Gray500}"/>
                             </VerticalStackLayout>
