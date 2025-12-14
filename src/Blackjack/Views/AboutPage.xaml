@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.AboutPage"
+             x:DataType="viewmodels:AboutViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Background Gradient -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                <GradientStop Color="{StaticResource Tertiary}"
+                              Offset="0.0"/>
+                <GradientStop Color="{StaticResource White}"
+                              Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Main Layout: Header | Content -->
+        <Grid RowDefinitions="Auto,*"
+              Padding="20">
+
+            <!-- Header Row -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  Margin="0,0,0,15">
+
+                <!-- Back Button -->
+                <Border Grid.Column="0"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeThickness="1"
+                        BackgroundColor="{StaticResource White}"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <ic:FluentIcon
+                            Icon="ArrowLeft"
+                            IconVariant="Regular"
+                            FontSize="20"
+                            ForegroundColor="{StaticResource Gray600}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Title -->
+                <Label Grid.Column="1"
+                       Text="About"
+                       FontSize="24"
+                       FontAttributes="Bold"
+                       TextColor="{StaticResource Primary}"
+                       HorizontalOptions="Center"
+                       VerticalOptions="Center"/>
+
+                <!-- Placeholder for symmetry -->
+                <BoxView Grid.Column="2"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         Color="Transparent"/>
+            </Grid>
+
+            <!-- Scrollable Content -->
+            <ScrollView Grid.Row="1"
+                        VerticalScrollBarVisibility="Default">
+                <VerticalStackLayout Spacing="12"
+                                     Padding="0,10">
+
+                    <!-- App Identity Card -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <HorizontalStackLayout Spacing="16"
+                                               HorizontalOptions="Center">
+                            <!-- App Icon -->
+                            <Border StrokeThickness="0"
+                                    Background="{StaticResource PrimaryBrush}"
+                                    HeightRequest="64"
+                                    WidthRequest="64"
+                                    StrokeShape="RoundRectangle 12">
+                                <Image Source="appiconfg.png"
+                                       HeightRequest="48"
+                                       WidthRequest="48"/>
+                            </Border>
+                            <!-- App Name & Version -->
+                            <VerticalStackLayout VerticalOptions="Center"
+                                                 Spacing="2">
+                                <Label Text="Ashtonne's Blackjack"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="{Binding VersionDisplay}"
+                                       FontSize="14"
+                                       TextColor="{StaticResource Gray500}"/>
+                                <Label Text="© 2025 Anuj Shroff"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray400}"
+                                       Margin="0,4,0,0"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- Developer Card -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <HorizontalStackLayout Spacing="12">
+                            <ic:FluentIcon Icon="Person"
+                                           IconVariant="Regular"
+                                           FontSize="20"
+                                           ForegroundColor="{StaticResource Primary}"/>
+                            <VerticalStackLayout VerticalOptions="Center">
+                                <Label Text="Developed by"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                                <Label Text="Anuj Shroff"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                    <!-- AI Notice Card -->
+                    <Border BackgroundColor="{StaticResource Tertiary}"
+                            StrokeThickness="0"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 12">
+                        <VerticalStackLayout Spacing="8">
+                            <HorizontalStackLayout Spacing="8">
+                                <ic:FluentIcon Icon="Sparkle"
+                                               IconVariant="Regular"
+                                               FontSize="18"
+                                               ForegroundColor="{StaticResource Primary}"/>
+                                <Label Text="AI-Assisted Development"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary}"
+                                       VerticalOptions="Center"/>
+                            </HorizontalStackLayout>
+                            <Label Text="This project was entirely generated using AI, leveraging Cline with Claude (Anthropic). From game logic and UI design to card graphics and documentation, every aspect was created through AI-assisted development."
+                                   FontSize="12"
+                                   TextColor="{StaticResource Gray600}"
+                                   LineBreakMode="WordWrap"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Credits Expandable Section -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="0"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <VerticalStackLayout>
+                            <!-- Header (Tappable) -->
+                            <Grid Padding="16"
+                                  ColumnDefinitions="Auto,*,Auto">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleCreditsCommand}"/>
+                                </Grid.GestureRecognizers>
+                                <ic:FluentIcon Grid.Column="0"
+                                               Icon="Heart"
+                                               IconVariant="Regular"
+                                               FontSize="20"
+                                               ForegroundColor="{StaticResource Secondary}"/>
+                                <Label Grid.Column="1"
+                                       Text="Credits &amp; Acknowledgments"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"
+                                       VerticalOptions="Center"
+                                       Margin="12,0,0,0"/>
+                                <ic:FluentIcon Grid.Column="2"
+                                               Icon="{Binding IsCreditsExpanded, Converter={StaticResource BoolToChevronConverter}}"
+                                               IconVariant="Regular"
+                                               FontSize="16"
+                                               ForegroundColor="{StaticResource Gray500}"/>
+                            </Grid>
+                            <!-- Expandable Content -->
+                            <VerticalStackLayout IsVisible="{Binding IsCreditsExpanded}"
+                                                 Padding="16,0,16,16"
+                                                 Spacing="12">
+                                <BoxView HeightRequest="1"
+                                         Color="{StaticResource Gray200}"/>
+                                <!-- Libraries -->
+                                <Label Text="Libraries"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• .NET MAUI - Microsoft (MIT License)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• CommunityToolkit.Mvvm - .NET Foundation (MIT License)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• FluentIcons.Maui - David Revet (MIT License)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <!-- Fonts -->
+                                <Label Text="Fonts"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray600}"
+                                       Margin="0,8,0,0"/>
+                                <Label Text="• Open Sans - Google Fonts / Steve Matteson (Apache 2.0)"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <!-- AI -->
+                                <Label Text="AI Development"
+                                       FontSize="13"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray600}"
+                                       Margin="0,8,0,0"/>
+                                <Label Text="• Cline - AI coding assistant"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                                <Label Text="• Claude by Anthropic - Claude Sonnet &amp; Opus models"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- License Expandable Section -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="0"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <VerticalStackLayout>
+                            <!-- Header (Tappable) -->
+                            <Grid Padding="16"
+                                  ColumnDefinitions="Auto,*,Auto">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding ToggleLicenseCommand}"/>
+                                </Grid.GestureRecognizers>
+                                <ic:FluentIcon Grid.Column="0"
+                                               Icon="DocumentText"
+                                               IconVariant="Regular"
+                                               FontSize="20"
+                                               ForegroundColor="{StaticResource Primary}"/>
+                                <Label Grid.Column="1"
+                                       Text="MIT License"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"
+                                       VerticalOptions="Center"
+                                       Margin="12,0,0,0"/>
+                                <ic:FluentIcon Grid.Column="2"
+                                               Icon="{Binding IsLicenseExpanded, Converter={StaticResource BoolToChevronConverter}}"
+                                               IconVariant="Regular"
+                                               FontSize="16"
+                                               ForegroundColor="{StaticResource Gray500}"/>
+                            </Grid>
+                            <!-- Expandable Content -->
+                            <VerticalStackLayout IsVisible="{Binding IsLicenseExpanded}"
+                                                 Padding="16,0,16,16">
+                                <BoxView HeightRequest="1"
+                                         Color="{StaticResource Gray200}"
+                                         Margin="0,0,0,12"/>
+                                <Label Text="{Binding LicenseText}"
+                                       FontSize="11"
+                                       TextColor="{StaticResource Gray600}"
+                                       FontFamily="OpenSansRegular"
+                                       LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Privacy Policy Expandable Section -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="0"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <VerticalStackLayout>
+                            <!-- Header (Tappable) -->
+                            <Grid Padding="16"
+                                  ColumnDefinitions="Auto,*,Auto">
+                                <Grid.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding TogglePrivacyCommand}"/>
+                                </Grid.GestureRecognizers>
+                                <ic:FluentIcon Grid.Column="0"
+                                               Icon="ShieldCheckmark"
+                                               IconVariant="Regular"
+                                               FontSize="20"
+                                               ForegroundColor="{StaticResource Primary}"/>
+                                <Label Grid.Column="1"
+                                       Text="Privacy Policy"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"
+                                       VerticalOptions="Center"
+                                       Margin="12,0,0,0"/>
+                                <ic:FluentIcon Grid.Column="2"
+                                               Icon="{Binding IsPrivacyExpanded, Converter={StaticResource BoolToChevronConverter}}"
+                                               IconVariant="Regular"
+                                               FontSize="16"
+                                               ForegroundColor="{StaticResource Gray500}"/>
+                            </Grid>
+                            <!-- Expandable Content -->
+                            <VerticalStackLayout IsVisible="{Binding IsPrivacyExpanded}"
+                                                 Padding="16,0,16,16">
+                                <BoxView HeightRequest="1"
+                                         Color="{StaticResource Gray200}"
+                                         Margin="0,0,0,12"/>
+                                <Label Text="{Binding PrivacyPolicyText}"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"
+                                       LineBreakMode="WordWrap"/>
+                            </VerticalStackLayout>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Source Code Button -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <Grid ColumnDefinitions="Auto,*,Auto">
+                            <Grid.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding OpenSourceCodeCommand}"/>
+                            </Grid.GestureRecognizers>
+                            <ic:FluentIcon Grid.Column="0"
+                                           Icon="Code"
+                                           IconVariant="Regular"
+                                           FontSize="20"
+                                           ForegroundColor="{StaticResource Primary}"/>
+                            <VerticalStackLayout Grid.Column="1"
+                                                 VerticalOptions="Center"
+                                                 Margin="12,0,0,0">
+                                <Label Text="Source Code"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Gray900}"/>
+                                <Label Text="blackjack.anujshroff.com"
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray500}"/>
+                            </VerticalStackLayout>
+                            <ic:FluentIcon Grid.Column="2"
+                                           Icon="Open"
+                                           IconVariant="Regular"
+                                           FontSize="16"
+                                           ForegroundColor="{StaticResource Gray400}"
+                                           VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <!-- Bottom Spacing -->
+                    <BoxView HeightRequest="20"
+                             Color="Transparent"/>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+    </Grid>
+</ContentPage>

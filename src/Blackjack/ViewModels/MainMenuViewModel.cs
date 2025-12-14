@@ -149,6 +149,27 @@ namespace Blackjack.ViewModels
         }
 
         /// <summary>
+        /// Command to open about page.
+        /// </summary>
+        [RelayCommand]
+        private async Task OpenAbout()
+        {
+            if (IsBusy)
+                return;
+
+            try
+            {
+                IsBusy = true;
+
+                await Shell.Current.GoToAsync(nameof(AboutPage));
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>
         /// Reloads settings from persistent storage.
         /// Should be called when returning from the Settings page.
         /// </summary>
