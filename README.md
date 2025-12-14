@@ -15,14 +15,14 @@ A classic casino blackjack experience built with .NET MAUI. Play against the dea
 
 This app was built with respect for the player in mind:
 
-| Commitment | Status |
-|------------|--------|
-| **No Ads** | ✅ Zero advertisements |
-| **No In-App Purchases** | ✅ Completely free to play |
-| **No Developer Telemetry** | ✅ We collect absolutely no data |
-| **Open Source** | ✅ Full source code available |
+| Commitment | Description |
+|------------|-------------|
+| **No Ads** | Zero advertisements |
+| **No In-App Purchases** | Completely free to play |
+| **No Data Collection Code** | Zero analytics or telemetry code |
+| **Open Source** | Full source code available |
 
-> **Note:** While we do not collect any telemetry or user data, app distribution platforms (Google Play Store, etc.) may collect their own analytics independent of this application. We have no control over marketplace-level data collection.
+> **Note:** The application source code contains no telemetry, analytics, or data collection. App distribution platforms (Google Play Store, etc.) may independently collect their own metrics outside of our control.
 
 ## Features
 
@@ -35,7 +35,6 @@ This app was built with respect for the player in mind:
 - **AI Opponents** - Play alongside AI players using mathematically optimal Basic Strategy
 - **Multi-Seat Table** - Choose your seat at the table
 - **Configurable Settings** - Adjustable bet limits and game options
-- **Beautiful Graphics** - Custom SVG card and chip artwork
 
 ## Game Rules
 
