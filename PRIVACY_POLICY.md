@@ -31,7 +31,7 @@ When you download this application from the Google Play Store or other distribut
 - Crash reports (if you have opted in to share diagnostics with Google)
 - Basic app usage statistics
 
-**We have no access to or control over data collected by distribution platforms.** For information about what Google collects, please refer to [Google's Privacy Policy](https://policies.google.com/privacy).
+**We cannot control what data distribution platforms collect. Aggregated statistics may be visible to us through developer consoles.** For information about what these platforms collect, please refer to [Google's Privacy Policy](https://policies.google.com/privacy) and [Microsoft's Privacy Statement](https://privacy.microsoft.com/).
 
 ## Open Source Transparency
 
