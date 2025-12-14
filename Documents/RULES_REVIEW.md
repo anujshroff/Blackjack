@@ -1,12 +1,12 @@
 # Blackjack Rules Review
 
-This document reviews the implemented blackjack rules against standard Las Vegas casino rules.
+This document reviews the implemented blackjack rules against classic casino rules.
 
 ---
 
 ## Table Configuration
 
-| Setting | Implemented Value | Standard Vegas | Status |
+| Setting | Implemented Value | Classic Casino | Status |
 |---------|-------------------|----------------|--------|
 | Number of Decks | 6 (from GameSettings) | 6-8 common | ✅ Standard |
 | Shuffle Point | 75% penetration (~234 cards) | 65-80% typical | ✅ Standard |
@@ -20,7 +20,7 @@ All configuration values are now sourced from `GameSettings.cs` for centralized 
 
 ## Dealer Rules
 
-| Rule | Implemented | Standard Vegas | Status |
+| Rule | Implemented | Classic Casino | Status |
 |------|-------------|----------------|--------|
 | Dealer hits on Soft 17 (H17) | ✅ Yes (from GameSettings) | Most casinos | ✅ Standard |
 | Dealer stands on Hard 17+ | ✅ Yes | Universal | ✅ Standard |
@@ -33,14 +33,14 @@ The `DealerHitsSoft17` setting is configurable in `GameSettings.cs` (default: tr
 
 ## Payouts
 
-| Outcome | Implemented | Standard Vegas | Status |
+| Outcome | Implemented | Classic Casino | Status |
 |---------|-------------|----------------|--------|
 | Blackjack | 3:2 (1.5x bet) | 3:2 or 6:5 | ✅ Standard (Good) |
 | Regular Win | 1:1 (even money) | 1:1 | ✅ Standard |
 | Insurance | 2:1 | 2:1 | ✅ Standard |
 | Push | Bet returned | Bet returned | ✅ Standard |
 
-**Note:** The 3:2 blackjack payout is the player-favorable standard. Many Vegas casinos have moved to 6:5, which is worse for players. This implementation uses the better 3:2 rule.
+**Note:** The 3:2 blackjack payout is the player-favorable standard. Many casinos have moved to 6:5, which is worse for players. This implementation uses the better 3:2 rule.
 
 ---
 
@@ -162,7 +162,7 @@ The AI players use mathematically optimal Basic Strategy for H17 rules. Key deci
 
 ## Game Flow
 
-| Phase | Implementation | Standard Casino | Status |
+| Phase | Implementation | Classic Casino | Status |
 |-------|----------------|-----------------|--------|
 | Betting | Player places bet, AI auto-bets | Same | ✅ |
 | Dealing | 1 card each, dealer up, 1 card each, dealer hole | Correct order | ✅ |
@@ -191,7 +191,7 @@ The AI players use mathematically optimal Basic Strategy for H17 rules. Key deci
 - Correct Basic Strategy for AI players
 
 ### ℹ️ Intentional Design Decisions
-- **No Surrender** - Not implemented by design. While some Vegas casinos offer late surrender, many don't. This is a valid game configuration.
+- **No Surrender** - Not implemented by design. While some casinos offer late surrender, many don't. This is a valid game configuration.
 
 ### ⚠️ Potential Enhancements (Not Bugs)
 None identified. The implementation follows standard US blackjack rules correctly.
@@ -200,7 +200,7 @@ None identified. The implementation follows standard US blackjack rules correctl
 
 ## Conclusion
 
-**This implementation correctly follows standard Las Vegas blackjack rules.** All core mechanics, payouts, and player actions are implemented according to typical US casino standards. The AI players use mathematically correct Basic Strategy for the H17 rule set.
+**This implementation correctly follows classic casino blackjack rules.** All core mechanics, payouts, and player actions are implemented according to typical US classic casino standards. The AI players use mathematically correct Basic Strategy for the H17 rule set.
 
 The only notable omission is the Surrender option, which was intentionally excluded from the design requirements. This is acceptable as surrender availability varies by casino.
 
