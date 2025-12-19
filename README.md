@@ -7,9 +7,6 @@ A classic casino blackjack experience built with .NET MAUI. Play against the dea
 | Platform | Status |
 |----------|--------|
 | **Google Play Store** | 🔜 Coming Soon |
-| **Windows** | 🔜 Coming Soon |
-
-*Ashtonne's Blackjack will be available on app stores soon.*
 
 ## Privacy & Philosophy
 
@@ -58,7 +55,6 @@ This app was built with respect for the player in mind:
 ### Supported Platforms
 
 - **Android** (API 21+)
-- **Windows** (Windows 10 version 1809+)
 
 ## Building from Source
 

@@ -32,12 +32,8 @@ runs:
       run: dotnet workload restore
       shell: bash
 
-    - name: Build
-      run: dotnet build --configuration ${{ inputs.CONFIGURATION }} /p:Version=${{ inputs.VERSION }} /p:AssemblyVersion=${{ inputs.ASSEMBLYSEMVER }}
-      shell: bash
-
     - name: Test
-      run: dotnet test --configuration ${{ inputs.CONFIGURATION }} --no-build
+      run: dotnet test --configuration ${{ inputs.CONFIGURATION }}
       shell: bash
 
     - name: Decode Keystore
