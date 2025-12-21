@@ -626,8 +626,8 @@ namespace Blackjack.ViewModels
                             }
                             else
                             {
-                                // Can't split, use hard total strategy
-                                recommendedAction = _basicStrategy.GetRecommendedAction(hand, Dealer.UpCard);
+                                // Can't split, get action excluding split option to avoid infinite loop
+                                recommendedAction = _basicStrategy.GetRecommendedAction(hand, Dealer.UpCard, excludeSplit: true);
                             }
                             break;
                     }
