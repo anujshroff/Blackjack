@@ -331,6 +331,64 @@ public class BasicStrategyTests
 
     #endregion
 
+    #region ExcludeSplit Tests (Infinite Loop Prevention)
+
+    [Fact]
+    public void ExcludeSplit_EightsVsSix_ReturnsHitInsteadOfSplit()
+    {
+        // 8-8 vs 6 normally = Split, but with excludeSplit=true should return Hit (total 16 vs 6 = Stand, but fallback is Hit)
+        var hand = CardHelper.CreateHand(Rank.Eight, Rank.Eight);
+        var dealerUpCard = CardHelper.Six();
+
+        // Without excludeSplit, should return Split
+        var normalAction = _strategy.GetRecommendedAction(hand, dealerUpCard);
+        Assert.Equal(PlayerAction.Split, normalAction);
+
+        // With excludeSplit=true, should NOT return Split (prevents infinite loop)
+        var excludeSplitAction = _strategy.GetRecommendedAction(hand, dealerUpCard, excludeSplit: true);
+        Assert.NotEqual(PlayerAction.Split, excludeSplitAction);
+        // 16 vs 6 = Stand per hard totals strategy
+        Assert.Equal(PlayerAction.Stand, excludeSplitAction);
+    }
+
+    [Fact]
+    public void ExcludeSplit_AcesVsTen_ReturnsHitInsteadOfSplit()
+    {
+        // A-A vs 10 normally = Split, but with excludeSplit=true should return Hit (soft 12)
+        var hand = CardHelper.CreateHand(Rank.Ace, Rank.Ace);
+        var dealerUpCard = CardHelper.Ten();
+
+        // Without excludeSplit, should return Split
+        var normalAction = _strategy.GetRecommendedAction(hand, dealerUpCard);
+        Assert.Equal(PlayerAction.Split, normalAction);
+
+        // With excludeSplit=true, should NOT return Split (prevents infinite loop)
+        var excludeSplitAction = _strategy.GetRecommendedAction(hand, dealerUpCard, excludeSplit: true);
+        Assert.NotEqual(PlayerAction.Split, excludeSplitAction);
+        // Soft 12 vs 10 = Hit per soft totals strategy (no explicit entry, fallback to hit)
+        Assert.Equal(PlayerAction.Hit, excludeSplitAction);
+    }
+
+    [Fact]
+    public void ExcludeSplit_SixesVsFour_ReturnsHitInsteadOfSplit()
+    {
+        // 6-6 vs 4 normally = Split, but with excludeSplit=true should return Stand (hard 12 vs 4)
+        var hand = CardHelper.CreateHand(Rank.Six, Rank.Six);
+        var dealerUpCard = CardHelper.Four();
+
+        // Without excludeSplit, should return Split
+        var normalAction = _strategy.GetRecommendedAction(hand, dealerUpCard);
+        Assert.Equal(PlayerAction.Split, normalAction);
+
+        // With excludeSplit=true, should NOT return Split (prevents infinite loop)
+        var excludeSplitAction = _strategy.GetRecommendedAction(hand, dealerUpCard, excludeSplit: true);
+        Assert.NotEqual(PlayerAction.Split, excludeSplitAction);
+        // 12 vs 4 = Stand per hard totals strategy
+        Assert.Equal(PlayerAction.Stand, excludeSplitAction);
+    }
+
+    #endregion
+
     #region Helper Methods
 
     /// <summary>
