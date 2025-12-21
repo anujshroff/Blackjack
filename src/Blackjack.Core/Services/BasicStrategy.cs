@@ -36,12 +36,16 @@ namespace Blackjack.Services
         /// <summary>
         /// Gets the recommended action for a given hand against dealer's up card.
         /// </summary>
-        public PlayerAction GetRecommendedAction(Models.Hand playerHand, Models.Card dealerUpCard)
+        /// <param name="playerHand">The player's current hand</param>
+        /// <param name="dealerUpCard">The dealer's visible card</param>
+        /// <param name="excludeSplit">When true, skips pair splitting logic (used when split is not available)</param>
+        public PlayerAction GetRecommendedAction(Models.Hand playerHand, Models.Card dealerUpCard, bool excludeSplit = false)
         {
             int dealerValue = BasicStrategy.GetDealerValue(dealerUpCard);
 
             // Check for pairs first (must be exactly 2 cards of same value)
-            if (playerHand.IsPair)
+            // Skip pair check if excludeSplit is true (e.g., when max splits reached or insufficient bankroll)
+            if (!excludeSplit && playerHand.IsPair)
             {
                 return GetPairAction(playerHand.Cards[0].Value, dealerValue);
             }

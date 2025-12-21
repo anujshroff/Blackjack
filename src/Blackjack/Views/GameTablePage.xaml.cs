@@ -271,6 +271,7 @@ namespace Blackjack.Views
 
         /// <summary>
         /// Create a placeholder card for a vacant seat.
+        /// Uses same Grid layout structure as occupied seats for consistency.
         /// </summary>
         private static Border CreateVacantSeatCard(int seatPosition)
         {
@@ -279,27 +280,45 @@ namespace Blackjack.Views
                 BackgroundColor = Color.FromArgb("#10FFFFFF"),
                 Stroke = Colors.Transparent,
                 StrokeThickness = 0,
-                Padding = 3,
+                Padding = new Thickness(4),
                 StrokeShape = new RoundRectangle { CornerRadius = 6 },
                 HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center
+                VerticalOptions = LayoutOptions.Fill
             };
 
-            var content = new VerticalStackLayout
+            // Use same 2-column Grid layout as occupied seats
+            var mainGrid = new Grid
             {
-                Spacing = 2,
-                HorizontalOptions = LayoutOptions.Center,
-                VerticalOptions = LayoutOptions.Center
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition { Height = GridLength.Auto }
+                },
+                ColumnSpacing = 4,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center  // Center content vertically
+            };
+
+            // LEFT COLUMN: Position and icon - right-aligned toward center
+            var leftColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End
             };
 
             // Position label
-            content.Add(new Label
+            leftColumn.Add(new Label
             {
                 Text = $"P{seatPosition}",
                 FontSize = 9,
                 FontAttributes = FontAttributes.Bold,
-                TextColor = Color.FromArgb("#4A5568"),
-                HorizontalOptions = LayoutOptions.Center
+                TextColor = Color.FromArgb("#9CA3AF"),
+                HorizontalOptions = LayoutOptions.End
             });
 
             // Empty seat icon
@@ -308,26 +327,45 @@ namespace Blackjack.Views
                 Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.PersonAvailable,
                 IconVariant = FluentIcons.Common.IconVariant.Regular,
                 FontSize = 12,
-                ForegroundColor = Color.FromArgb("#4A5568")
+                ForegroundColor = Color.FromArgb("#9CA3AF"),
+                HorizontalOptions = LayoutOptions.End
             };
-            content.Add(seatIcon);
+            leftColumn.Add(seatIcon);
 
-            // Vacant text
-            content.Add(new Label
+            Grid.SetColumn(leftColumn, 0);
+            Grid.SetRow(leftColumn, 0);
+            mainGrid.Children.Add(leftColumn);
+
+            // RIGHT COLUMN: Vacant text - left-aligned toward center
+            var rightColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start
+            };
+
+            rightColumn.Add(new Label
             {
                 Text = "VACANT",
                 FontSize = 8,
-                TextColor = Color.FromArgb("#4A5568"),
-                HorizontalOptions = LayoutOptions.Center
+                TextColor = Color.FromArgb("#9CA3AF"),
+                HorizontalOptions = LayoutOptions.Start
             });
 
-            vacantBorder.Content = content;
+            Grid.SetColumn(rightColumn, 1);
+            Grid.SetRow(rightColumn, 0);
+            mainGrid.Children.Add(rightColumn);
+
+            vacantBorder.Content = mainGrid;
 
             return vacantBorder;
         }
 
         /// <summary>
-        /// Create a compact summary card for a player.
+        /// Create a compact summary card for a player with 2-column layout.
+        /// Left column: player info (position, icon, bet, bankroll) - right-aligned
+        /// Right column: hand values (H1, H2, H3, H4) - left-aligned
+        /// Both columns meet in the center with a gap
         /// </summary>
         private Border CreatePlayerSummaryCard(Player player)
         {
@@ -348,49 +386,40 @@ namespace Blackjack.Views
                 backgroundColor = Color.FromArgb("#20F59E0B");
             }
 
-            // Determine status text and color
-            var statusText = "";
-            var statusColor = Colors.White;
-
-            if (player.Hands.Count > 0 && player.Hands[0].Cards.Count > 0)
-            {
-                var hand = player.Hands[0];
-                if (hand.IsBusted)
-                {
-                    statusText = "BUST";
-                    statusColor = Color.FromArgb("#EF4444"); // Red
-                }
-                else if (hand.IsBlackjack)
-                {
-                    statusText = "BJ!";
-                    statusColor = Color.FromArgb("#FFD700"); // Gold
-                }
-                else if (hand.Status == HandStatus.Standing)
-                {
-                    statusText = hand.TotalValue.ToString();
-                    statusColor = Colors.White;
-                }
-                else if (hand.Cards.Count > 0)
-                {
-                    statusText = hand.TotalValue.ToString();
-                    statusColor = Colors.White;
-                }
-            }
-
             var summaryBorder = new Border
             {
                 BackgroundColor = backgroundColor,
                 Stroke = borderColor,
                 StrokeThickness = borderColor == Colors.Transparent ? 0 : 2,
-                Padding = 3,
+                Padding = new Thickness(4),
                 HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Fill,
                 StrokeShape = new RoundRectangle { CornerRadius = 6 }
             };
 
-            var content = new VerticalStackLayout
+            // Always use 2-column Grid layout for consistency
+            var mainGrid = new Grid
             {
-                Spacing = 2
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition { Height = GridLength.Auto }
+                },
+                ColumnSpacing = 4,
+                HorizontalOptions = LayoutOptions.Fill,
+                VerticalOptions = LayoutOptions.Center  // Center content vertically
+            };
+
+            // LEFT COLUMN: Player info - content right-aligned (toward center)
+            var leftColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End  // Right-align content toward center
             };
 
             // Position label with split indicator
@@ -398,22 +427,16 @@ namespace Blackjack.Views
                 ? $"P{player.SeatPosition} ({player.Hands.Count}H)"
                 : $"P{player.SeatPosition}";
 
-            content.Add(new Label
+            leftColumn.Add(new Label
             {
                 Text = positionText,
                 FontSize = 9,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Color.FromArgb("#D4AF37"),
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.End
             });
 
-            // Player icon and name
-            var iconStack = new HorizontalStackLayout
-            {
-                Spacing = 2,
-                HorizontalOptions = LayoutOptions.Center
-            };
-
+            // Player icon - brighter colors for visibility
             var playerIcon = new FluentIcon
             {
                 Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.Person,
@@ -423,39 +446,62 @@ namespace Blackjack.Views
                 FontSize = 12,
                 ForegroundColor = player.IsHuman ?
                     Color.FromArgb("#3B82F6") :
-                    Color.FromArgb("#64748B")
+                    Color.FromArgb("#9CA3AF"),  // Brighter gray for AI icons
+                HorizontalOptions = LayoutOptions.End
             };
-            iconStack.Add(playerIcon);
-            content.Add(iconStack);
+            leftColumn.Add(playerIcon);
 
             // Total bet amount across all hands
             var totalBet = player.Hands.Sum(h => h.Bet);
             if (totalBet > 0)
             {
-                content.Add(new Label
+                leftColumn.Add(new Label
                 {
                     Text = $"${totalBet:N0}",
-                    FontSize = 10,
+                    FontSize = 9,
                     FontAttributes = FontAttributes.Bold,
                     TextColor = Color.FromArgb("#10B981"),
-                    HorizontalOptions = LayoutOptions.Center
+                    HorizontalOptions = LayoutOptions.End
                 });
             }
 
-            // Status - show all hand totals for splits, or single status
-            if (player.Hands.Count > 1 && player.Hands.Any(h => h.Cards.Count > 0))
+            // Show bankroll for AI players - brighter color for visibility
+            if (!player.IsHuman)
             {
-                // Multiple hands - show each status compactly
-                var statusStack = new VerticalStackLayout
+                leftColumn.Add(new Label
                 {
-                    Spacing = 1,
-                    HorizontalOptions = LayoutOptions.Center
-                };
+                    Text = $"${player.Bankroll:N0}",
+                    FontSize = 8,
+                    TextColor = Color.FromArgb("#D1D5DB"),  // Brighter light gray
+                    HorizontalOptions = LayoutOptions.End
+                });
+            }
 
+            Grid.SetColumn(leftColumn, 0);
+            Grid.SetRow(leftColumn, 0);
+            mainGrid.Children.Add(leftColumn);
+
+            // RIGHT COLUMN: Hand values - content left-aligned (toward center)
+            var rightColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start  // Left-align content toward center
+            };
+
+            // Check if we have cards to display
+            bool hasCards = player.Hands.Any(h => h.Cards.Count > 0);
+
+            if (hasCards)
+            {
+                int handNum = 1;
                 foreach (var hand in player.Hands)
                 {
                     if (hand.Cards.Count == 0)
+                    {
+                        handNum++;
                         continue;
+                    }
 
                     string handStatus;
                     Color handColor;
@@ -463,7 +509,7 @@ namespace Blackjack.Views
                     if (hand.NeedsSecondCard)
                     {
                         handStatus = "?";
-                        handColor = Color.FromArgb("#6B7280");
+                        handColor = Color.FromArgb("#9CA3AF");  // Brighter for visibility
                     }
                     else if (hand.IsBusted)
                     {
@@ -475,43 +521,44 @@ namespace Blackjack.Views
                         handStatus = "BJ";
                         handColor = Color.FromArgb("#FFD700");
                     }
-                    else if (hand.Status == HandStatus.Standing)
-                    {
-                        handStatus = hand.TotalValue.ToString();
-                        handColor = Colors.White;
-                    }
                     else
                     {
                         handStatus = hand.TotalValue.ToString();
                         handColor = Colors.White;
                     }
 
-                    statusStack.Add(new Label
+                    // Always show "H1 16" format to identify the hand
+                    var displayText = $"H{handNum} {handStatus}";
+
+                    rightColumn.Add(new Label
                     {
-                        Text = handStatus,
+                        Text = displayText,
                         FontSize = 9,
                         FontAttributes = FontAttributes.Bold,
                         TextColor = handColor,
-                        HorizontalOptions = LayoutOptions.Center
+                        HorizontalOptions = LayoutOptions.Start
                     });
-                }
 
-                content.Add(statusStack);
+                    handNum++;
+                }
             }
-            else if (!string.IsNullOrEmpty(statusText))
+            else
             {
-                // Single hand - show normal status
-                content.Add(new Label
+                // No cards yet - show placeholder dash (brighter for visibility)
+                rightColumn.Add(new Label
                 {
-                    Text = statusText,
-                    FontSize = 11,
-                    FontAttributes = FontAttributes.Bold,
-                    TextColor = statusColor,
-                    HorizontalOptions = LayoutOptions.Center
+                    Text = "—",
+                    FontSize = 9,
+                    TextColor = Color.FromArgb("#9CA3AF"),
+                    HorizontalOptions = LayoutOptions.Start
                 });
             }
 
-            summaryBorder.Content = content;
+            Grid.SetColumn(rightColumn, 1);
+            Grid.SetRow(rightColumn, 0);
+            mainGrid.Children.Add(rightColumn);
+
+            summaryBorder.Content = mainGrid;
 
             // Add tap gesture to view this player
             var tapGesture = new TapGestureRecognizer();
