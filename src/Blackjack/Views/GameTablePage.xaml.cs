@@ -271,6 +271,7 @@ namespace Blackjack.Views
 
         /// <summary>
         /// Create a placeholder card for a vacant seat.
+        /// Uses same Grid layout structure as occupied seats for consistency.
         /// </summary>
         private static Border CreateVacantSeatCard(int seatPosition)
         {
@@ -279,49 +280,83 @@ namespace Blackjack.Views
                 BackgroundColor = Color.FromArgb("#10FFFFFF"),
                 Stroke = Colors.Transparent,
                 StrokeThickness = 0,
-                Padding = 3,
+                Padding = new Thickness(4),
                 StrokeShape = new RoundRectangle { CornerRadius = 6 },
                 HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Fill  // Fill to center content vertically
+                VerticalOptions = LayoutOptions.Fill
             };
 
-            var content = new VerticalStackLayout
+            // Use same 2-column Grid layout as occupied seats
+            var mainGrid = new Grid
             {
-                Spacing = 2,
-                HorizontalOptions = LayoutOptions.Center,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) },
+                    new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) }
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition { Height = GridLength.Auto }
+                },
+                ColumnSpacing = 4,
+                HorizontalOptions = LayoutOptions.Fill,
                 VerticalOptions = LayoutOptions.Center  // Center content vertically
             };
 
-            // Position label - brighter color for visibility
-            content.Add(new Label
+            // LEFT COLUMN: Position and icon - right-aligned toward center
+            var leftColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.End
+            };
+
+            // Position label
+            leftColumn.Add(new Label
             {
                 Text = $"P{seatPosition}",
                 FontSize = 9,
                 FontAttributes = FontAttributes.Bold,
                 TextColor = Color.FromArgb("#9CA3AF"),
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.End
             });
 
-            // Empty seat icon - brighter color
+            // Empty seat icon
             var seatIcon = new FluentIcon
             {
                 Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.PersonAvailable,
                 IconVariant = FluentIcons.Common.IconVariant.Regular,
                 FontSize = 12,
-                ForegroundColor = Color.FromArgb("#9CA3AF")
+                ForegroundColor = Color.FromArgb("#9CA3AF"),
+                HorizontalOptions = LayoutOptions.End
             };
-            content.Add(seatIcon);
+            leftColumn.Add(seatIcon);
 
-            // Vacant text - brighter color
-            content.Add(new Label
+            Grid.SetColumn(leftColumn, 0);
+            Grid.SetRow(leftColumn, 0);
+            mainGrid.Children.Add(leftColumn);
+
+            // RIGHT COLUMN: Vacant text - left-aligned toward center
+            var rightColumn = new VerticalStackLayout
+            {
+                Spacing = 1,
+                VerticalOptions = LayoutOptions.Center,
+                HorizontalOptions = LayoutOptions.Start
+            };
+
+            rightColumn.Add(new Label
             {
                 Text = "VACANT",
                 FontSize = 8,
                 TextColor = Color.FromArgb("#9CA3AF"),
-                HorizontalOptions = LayoutOptions.Center
+                HorizontalOptions = LayoutOptions.Start
             });
 
-            vacantBorder.Content = content;
+            Grid.SetColumn(rightColumn, 1);
+            Grid.SetRow(rightColumn, 0);
+            mainGrid.Children.Add(rightColumn);
+
+            vacantBorder.Content = mainGrid;
 
             return vacantBorder;
         }
