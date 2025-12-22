@@ -527,8 +527,10 @@ namespace Blackjack.Views
                         handColor = Colors.White;
                     }
 
-                    // Always show "H1 16" format to identify the hand
-                    var displayText = $"H{handNum} {handStatus}";
+                    // Always show "H1 16" format to identify the hand, with DBL suffix if doubled
+                    var displayText = hand.IsDoubledDown
+                        ? $"H{handNum} {handStatus} DBL"
+                        : $"H{handNum} {handStatus}";
 
                     rightColumn.Add(new Label
                     {
