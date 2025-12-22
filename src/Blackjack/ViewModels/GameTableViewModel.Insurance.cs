@@ -159,17 +159,23 @@ namespace Blackjack.ViewModels
             // Wait for human player decision if needed
             if (_awaitingHumanInsuranceDecision)
             {
-                GameMessage = humanHasBlackjack ?
-                    "Waiting for your Even Money decision..." :
-                    "Waiting for your Insurance decision...";
-
-                // Wait until human decides (by clicking button or we proceed without)
-                // For now, wait 10 seconds then auto-decline
-                int waited = 0;
-                while (_awaitingHumanInsuranceDecision && waited < 100) // 10 seconds max
+                // Get insurance cost for display
+                decimal displayInsuranceCost = 0;
+                if (!humanHasBlackjack && humanPlayer.Hands.Count > 0)
                 {
-                    await Task.Delay(100);
-                    waited++;
+                    displayInsuranceCost = humanPlayer.Hands[0].Bet / 2;
+                }
+
+                // Wait until human decides with visible countdown
+                int secondsRemaining = 10;
+                while (_awaitingHumanInsuranceDecision && secondsRemaining > 0)
+                {
+                    GameMessage = humanHasBlackjack ?
+                        $"Even Money? (auto-decline in {secondsRemaining}s)" :
+                        $"Insurance? ${displayInsuranceCost:N0} (auto-decline in {secondsRemaining}s)";
+
+                    await Task.Delay(1000);
+                    secondsRemaining--;
                 }
 
                 // Auto-decline if player didn't respond
@@ -178,7 +184,7 @@ namespace Blackjack.ViewModels
                     CanInsure = false;
                     CanEvenMoney = false;
                     _awaitingHumanInsuranceDecision = false;
-                    GameMessage = "Insurance declined";
+                    GameMessage = humanHasBlackjack ? "Even Money declined" : "Insurance declined";
                     await Task.Delay(500);
                 }
             }
