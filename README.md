@@ -23,7 +23,7 @@ This app was built with respect for the player in mind:
 
 ## Features
 
-- **Classic Casino Rules** - 6-deck shoe with authentic casino gameplay
+- **Classic Casino Rules** - Configurable deck count (1, 2, 4, 6, or 8) with authentic casino gameplay
 - **Player-Favorable 3:2 Blackjack Payout** - The good odds, not the 6:5 found at many casinos
 - **Full Game Actions**:
   - Hit, Stand, Double Down, Split
@@ -37,7 +37,7 @@ This app was built with respect for the player in mind:
 
 | Rule | Setting |
 |------|---------|
-| Number of Decks | 6 |
+| Number of Decks | 1, 2, 4, 6, or 8 (configurable) |
 | Dealer Hits Soft 17 | Yes (H17) |
 | Blackjack Payout | 3:2 |
 | Double Down | Any two cards |

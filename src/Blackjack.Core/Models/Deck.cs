@@ -9,7 +9,7 @@ namespace Blackjack.Models
         private int _cardsDealt;
         private readonly int _numberOfDecks;
         private readonly int _totalCards;
-        private readonly double SHUFFLE_PENETRATION = 0.75;
+        private readonly double _shufflePenetration;
 
         /// <summary>
         /// Event fired when the deck state changes (card dealt, shuffled, or reset).
@@ -20,12 +20,12 @@ namespace Blackjack.Models
         public int CardsDealt => _cardsDealt;
         public int NumberOfDecks => _numberOfDecks;
         public int TotalCards => _totalCards;
-        public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * SHUFFLE_PENETRATION);
-        
+        public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * _shufflePenetration);
+
         /// <summary>
         /// Number of cards that can be dealt before a reshuffle is needed.
         /// </summary>
-        public int CardsUntilReshuffle => Math.Max(0, (int)(_totalCards * SHUFFLE_PENETRATION) - _cardsDealt);
+        public int CardsUntilReshuffle => Math.Max(0, (int)(_totalCards * _shufflePenetration) - _cardsDealt);
 
         /// <summary>
         /// Creates a new deck shoe with the specified number of decks.
@@ -35,6 +35,15 @@ namespace Blackjack.Models
         {
             _numberOfDecks = numberOfDecks;
             _totalCards = _numberOfDecks * Enum.GetValues<Rank>().Length * Enum.GetValues<Suit>().Length;
+
+            // Set shuffle penetration based on number of decks
+            _shufflePenetration = _numberOfDecks switch
+            {
+                1 => 0.01,    // Reshuffle after every round
+                2 => 0.50,    // Reshuffle after 50% dealt
+                _ => 0.75     // Reshuffle after 75% dealt (4, 6, 8 decks)
+            };
+
             _cards = [];
             _cardsDealt = 0;
             InitializeShoe();
