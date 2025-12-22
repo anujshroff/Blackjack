@@ -39,6 +39,11 @@ namespace Blackjack.Models
         public bool IsFromSplit { get; set; }
 
         /// <summary>
+        /// Indicates if this hand was doubled down (player doubled bet and received one card).
+        /// </summary>
+        public bool IsDoubledDown { get; set; }
+
+        /// <summary>
         /// Gets the total value of the hand, automatically handling Aces as 1 or 11.
         /// </summary>
         public int TotalValue
@@ -172,6 +177,7 @@ namespace Blackjack.Models
             Bet = 0;
             Status = HandStatus.Active;
             IsFromSplit = false;
+            IsDoubledDown = false;
         }
 
         /// <summary>

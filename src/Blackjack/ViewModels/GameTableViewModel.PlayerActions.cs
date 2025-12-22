@@ -92,6 +92,7 @@ namespace Blackjack.ViewModels
             // Deduct additional bet
             player.Bankroll -= hand.Bet;
             hand.Bet *= 2;
+            hand.IsDoubledDown = true;
 
             // Update human player display if applicable
             if (player.IsHuman)
@@ -528,6 +529,7 @@ namespace Blackjack.ViewModels
                             {
                                 player.Bankroll -= hand.Bet;
                                 hand.Bet *= 2;
+                                hand.IsDoubledDown = true;
                                 GameMessage = $"{player.Name} doubles down - bet now ${hand.Bet:N0}";
                                 await Task.Delay(800);
 

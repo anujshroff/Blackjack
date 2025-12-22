@@ -15,7 +15,7 @@
 
         <!-- Main Content - Compact Layout -->
         <Grid Padding="15"
-                RowDefinitions="Auto,*,Auto">
+              RowDefinitions="Auto,*,Auto">
 
             <!-- Header -->
             <Label Grid.Row="0"
@@ -28,7 +28,7 @@
 
             <!-- Center Content - Seats -->
             <Grid Grid.Row="1"
-                    VerticalOptions="Center">
+                  VerticalOptions="Center">
                 <!-- 7 Seats Container -->
                 <FlexLayout x:Name="SeatsContainer"
                             Direction="Row"
@@ -41,8 +41,8 @@
 
             <!-- Bottom Controls -->
             <Grid Grid.Row="2"
-                    RowDefinitions="Auto,Auto,Auto"
-                    RowSpacing="15">
+                  RowDefinitions="Auto,Auto,Auto"
+                  RowSpacing="15">
 
                 <!-- AI Players Control -->
                 <HorizontalStackLayout Grid.Row="0"
