@@ -20,11 +20,11 @@ namespace Blackjack.ViewModels
                 return;
             }
 
-            // Check if deck needs shuffling
+            // Check if deck needs shuffling (reset brings back all cards)
             if (_deck.NeedsReshuffle)
             {
                 GameMessage = "Shuffling deck...";
-                _deck.Shuffle();
+                _deck.Reset();
                 await Task.Delay(1000);
             }
 
