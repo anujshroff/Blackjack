@@ -71,7 +71,7 @@
                     </Border.StrokeShape>
 
                     <VerticalStackLayout Spacing="3">
-                        <Label Text="DEALER"
+                        <Label Text="Dealer"
                                FontSize="14"
                                FontAttributes="Bold"
                                TextColor="#D4AF37"
@@ -213,14 +213,14 @@
                                              HorizontalOptions="Center"
                                              VerticalOptions="Center"
                                              Margin="0,0,10,0">
-                            <Label Text="{Binding CurrentBet, StringFormat='BET: ${0:N0}'}"
+                            <Label Text="{Binding CurrentBet, StringFormat='Bet: ${0:N0}'}"
                                    FontSize="14"
                                    FontAttributes="Bold"
                                    TextColor="White"
                                    HorizontalOptions="Center"/>
                             <HorizontalStackLayout Spacing="4"
                                                    HorizontalOptions="Center">
-                                <Button Text="CLEAR"
+                                <Button Text="Clear"
                                         Command="{Binding ClearBetCommand}"
                                         BackgroundColor="#EF4444"
                                         TextColor="White"
@@ -228,7 +228,7 @@
                                         FontAttributes="Bold"
                                         CornerRadius="4"
                                         Padding="6,4"/>
-                                <Button Text="DEAL"
+                                <Button Text="Deal"
                                         Command="{Binding ConfirmBetCommand}"
                                         IsEnabled="{Binding CanConfirmBet}"
                                         BackgroundColor="#10B981"
@@ -267,7 +267,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="White"/>
-                                <Label Text="HIT"
+                                <Label Text="Hit"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="White"
@@ -294,7 +294,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="White"/>
-                                <Label Text="STAND"
+                                <Label Text="Stand"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="White"
@@ -321,7 +321,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="White"/>
-                                <Label Text="DBL"
+                                <Label Text="Dbl"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="White"
@@ -348,7 +348,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="White"/>
-                                <Label Text="SPLIT"
+                                <Label Text="Split"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="White"
@@ -375,7 +375,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="White"/>
-                                <Label Text="INS"
+                                <Label Text="Ins"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="White"
@@ -402,7 +402,7 @@
                                                IconVariant="Filled"
                                                FontSize="14"
                                                ForegroundColor="#1C1C1C"/>
-                                <Label Text="EVEN"
+                                <Label Text="Even"
                                        FontSize="10"
                                        FontAttributes="Bold"
                                        TextColor="#1C1C1C"
@@ -434,7 +434,7 @@
                                            IconVariant="Filled"
                                            FontSize="14"
                                            ForegroundColor="#10B981"/>
-                            <Label Text="BANKROLL"
+                            <Label Text="Bankroll"
                                    FontSize="8"
                                    TextColor="#80FFFFFF"
                                    VerticalOptions="Center"/>
@@ -471,7 +471,7 @@
                                            IconVariant="Regular"
                                            FontSize="14"
                                            ForegroundColor="White"/>
-                            <Label Text="MENU"
+                            <Label Text="Menu"
                                    FontSize="10"
                                    FontAttributes="Bold"
                                    TextColor="White"
