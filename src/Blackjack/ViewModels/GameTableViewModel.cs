@@ -250,6 +250,18 @@ namespace Blackjack.ViewModels
         private bool canEvenMoney;
 
         /// <summary>
+        /// Number of cards remaining in the shoe.
+        /// </summary>
+        [ObservableProperty]
+        private int cardsRemaining;
+
+        /// <summary>
+        /// Number of cards until the deck needs to be reshuffled.
+        /// </summary>
+        [ObservableProperty]
+        private int cardsUntilReshuffle;
+
+        /// <summary>
         /// Indicates whether the ViewModel has been initialized with navigation parameters.
         /// </summary>
         [ObservableProperty]
@@ -358,6 +370,13 @@ namespace Blackjack.ViewModels
             // Initialize deck with number of decks from settings
             _deck = new Deck(Settings.NumberOfDecks);
 
+            // Subscribe to deck changes to update card stats
+            _deck.DeckChanged += OnDeckChanged;
+            
+            // Initialize deck stats
+            CardsRemaining = _deck.CardsRemaining;
+            CardsUntilReshuffle = _deck.CardsUntilReshuffle;
+
             // Initialize Basic Strategy service
             _basicStrategy = new Services.BasicStrategy();
 
@@ -416,6 +435,19 @@ namespace Blackjack.ViewModels
         partial void OnPlayerBankrollChanged(decimal value)
         {
             BankrollService.SaveBankroll(value);
+        }
+
+        /// <summary>
+        /// Called when the deck state changes (card dealt, shuffled, or reset).
+        /// Updates the card remaining and cards until reshuffle properties.
+        /// </summary>
+        private void OnDeckChanged()
+        {
+            if (_deck != null)
+            {
+                CardsRemaining = _deck.CardsRemaining;
+                CardsUntilReshuffle = _deck.CardsUntilReshuffle;
+            }
         }
     }
 }

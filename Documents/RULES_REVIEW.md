@@ -8,11 +8,21 @@ This document reviews the implemented blackjack rules against classic casino rul
 
 | Setting | Implemented Value | Classic Casino | Status |
 |---------|-------------------|----------------|--------|
-| Number of Decks | 6 (from GameSettings) | 6-8 common | ✅ Standard |
-| Shuffle Point | 75% penetration (~234 cards) | 65-80% typical | ✅ Standard |
+| Number of Decks | 1, 2, 4, 6, or 8 (configurable) | 1-8 common | ✅ Standard |
+| Shuffle Penetration | Dynamic (see below) | Varies by deck count | ✅ Standard |
 | Table Minimum | $5 (from GameSettings) | $5-25 common | ✅ Standard |
 | Table Maximum | $500 (from GameSettings) | Varies | ✅ Standard |
 | Starting Bankroll | $1,000 (from GameSettings) | N/A (player choice) | ✅ Reasonable |
+
+### Shuffle Penetration by Deck Count
+
+Shuffle penetration is automatically set based on the number of decks, following standard US casino practices:
+
+| Decks | Penetration | Cards Before Shuffle | Reasoning |
+|-------|-------------|----------------------|-----------|
+| 1 | ~1% | Reshuffle every round | Standard for single deck to combat card counting |
+| 2 | 50% | ~52 cards dealt | Standard for double deck games |
+| 4+ | 75% | Varies by total cards | Standard shoe game penetration |
 
 All configuration values are now sourced from `GameSettings.cs` for centralized management.
 

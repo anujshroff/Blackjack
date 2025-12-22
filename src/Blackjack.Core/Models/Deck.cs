@@ -8,14 +8,24 @@ namespace Blackjack.Models
         private readonly List<Card> _cards;
         private int _cardsDealt;
         private readonly int _numberOfDecks;
-        private const int CARDS_PER_DECK = 52;
         private readonly int _totalCards;
-        private const double SHUFFLE_PENETRATION = 0.75; // Shuffle after 75% dealt
+        private readonly double _shufflePenetration;
+
+        /// <summary>
+        /// Event fired when the deck state changes (card dealt, shuffled, or reset).
+        /// </summary>
+        public event Action? DeckChanged;
 
         public int CardsRemaining => _cards.Count;
         public int CardsDealt => _cardsDealt;
         public int NumberOfDecks => _numberOfDecks;
-        public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * SHUFFLE_PENETRATION);
+        public int TotalCards => _totalCards;
+        public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * _shufflePenetration);
+
+        /// <summary>
+        /// Number of cards that can be dealt before a reshuffle is needed.
+        /// </summary>
+        public int CardsUntilReshuffle => Math.Max(0, (int)(_totalCards * _shufflePenetration) - _cardsDealt);
 
         /// <summary>
         /// Creates a new deck shoe with the specified number of decks.
@@ -24,7 +34,16 @@ namespace Blackjack.Models
         public Deck(int numberOfDecks = 6)
         {
             _numberOfDecks = numberOfDecks;
-            _totalCards = _numberOfDecks * CARDS_PER_DECK;
+            _totalCards = _numberOfDecks * Enum.GetValues<Rank>().Length * Enum.GetValues<Suit>().Length;
+
+            // Set shuffle penetration based on number of decks
+            _shufflePenetration = _numberOfDecks switch
+            {
+                1 => 0.01,    // Reshuffle after every round
+                2 => 0.50,    // Reshuffle after 50% dealt
+                _ => 0.75     // Reshuffle after 75% dealt (4, 6, 8 decks)
+            };
+
             _cards = [];
             _cardsDealt = 0;
             InitializeShoe();
@@ -41,7 +60,7 @@ namespace Blackjack.Models
             // Create decks based on configuration
             for (int deck = 0; deck < _numberOfDecks; deck++)
             {
-                // For each deck, create all 52 cards
+                // For each deck, create all cards (ranks × suits)
                 foreach (Suit suit in Enum.GetValues<Suit>())
                 {
                     foreach (Rank rank in Enum.GetValues<Rank>())
@@ -68,6 +87,7 @@ namespace Blackjack.Models
             }
 
             _cardsDealt = 0;
+            DeckChanged?.Invoke();
         }
 
         /// <summary>
@@ -84,6 +104,7 @@ namespace Blackjack.Models
             Card card = _cards[0];
             _cards.RemoveAt(0);
             _cardsDealt++;
+            DeckChanged?.Invoke();
             return card;
         }
 
