@@ -8,7 +8,6 @@ namespace Blackjack.Models
         private readonly List<Card> _cards;
         private int _cardsDealt;
         private readonly int _numberOfDecks;
-        private const int CARDS_PER_DECK = 52;
         private readonly int _totalCards;
         private readonly double SHUFFLE_PENETRATION = 0.75;
 
@@ -35,7 +34,7 @@ namespace Blackjack.Models
         public Deck(int numberOfDecks = 6)
         {
             _numberOfDecks = numberOfDecks;
-            _totalCards = _numberOfDecks * CARDS_PER_DECK;
+            _totalCards = _numberOfDecks * Enum.GetValues<Rank>().Length * Enum.GetValues<Suit>().Length;
             _cards = [];
             _cardsDealt = 0;
             InitializeShoe();
@@ -52,7 +51,7 @@ namespace Blackjack.Models
             // Create decks based on configuration
             for (int deck = 0; deck < _numberOfDecks; deck++)
             {
-                // For each deck, create all 52 cards
+                // For each deck, create all cards (ranks × suits)
                 foreach (Suit suit in Enum.GetValues<Suit>())
                 {
                     foreach (Rank rank in Enum.GetValues<Rank>())
