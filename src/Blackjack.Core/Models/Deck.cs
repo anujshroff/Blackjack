@@ -10,12 +10,23 @@ namespace Blackjack.Models
         private readonly int _numberOfDecks;
         private const int CARDS_PER_DECK = 52;
         private readonly int _totalCards;
-        private const double SHUFFLE_PENETRATION = 0.75; // Shuffle after 75% dealt
+        private readonly double SHUFFLE_PENETRATION = 0.75;
+
+        /// <summary>
+        /// Event fired when the deck state changes (card dealt, shuffled, or reset).
+        /// </summary>
+        public event Action? DeckChanged;
 
         public int CardsRemaining => _cards.Count;
         public int CardsDealt => _cardsDealt;
         public int NumberOfDecks => _numberOfDecks;
+        public int TotalCards => _totalCards;
         public bool NeedsReshuffle => _cardsDealt >= (int)(_totalCards * SHUFFLE_PENETRATION);
+        
+        /// <summary>
+        /// Number of cards that can be dealt before a reshuffle is needed.
+        /// </summary>
+        public int CardsUntilReshuffle => Math.Max(0, (int)(_totalCards * SHUFFLE_PENETRATION) - _cardsDealt);
 
         /// <summary>
         /// Creates a new deck shoe with the specified number of decks.
@@ -68,6 +79,7 @@ namespace Blackjack.Models
             }
 
             _cardsDealt = 0;
+            DeckChanged?.Invoke();
         }
 
         /// <summary>
@@ -84,6 +96,7 @@ namespace Blackjack.Models
             Card card = _cards[0];
             _cards.RemoveAt(0);
             _cardsDealt++;
+            DeckChanged?.Invoke();
             return card;
         }
 

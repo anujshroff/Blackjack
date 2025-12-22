@@ -70,22 +70,61 @@
                         <RoundRectangle CornerRadius="10"/>
                     </Border.StrokeShape>
 
-                    <VerticalStackLayout Spacing="3">
-                        <Label Text="Dealer"
-                               FontSize="14"
-                               FontAttributes="Bold"
-                               TextColor="#D4AF37"
-                               HorizontalOptions="Center"/>
+                    <Grid>
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Dealer"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   TextColor="#D4AF37"
+                                   HorizontalOptions="Center"/>
 
-                        <!-- Dealer Cards with ScrollView for overflow handling -->
-                        <ScrollView x:Name="DealerCardsScrollView"
-                                    Orientation="Horizontal"
-                                    HorizontalScrollBarVisibility="Never">
-                            <HorizontalStackLayout x:Name="DealerCardsContainer"
-                                                   HorizontalOptions="Center"
-                                                   Spacing="-35"/>
-                        </ScrollView>
-                    </VerticalStackLayout>
+                            <!-- Dealer Cards with ScrollView for overflow handling -->
+                            <ScrollView x:Name="DealerCardsScrollView"
+                                        Orientation="Horizontal"
+                                        HorizontalScrollBarVisibility="Never">
+                                <HorizontalStackLayout x:Name="DealerCardsContainer"
+                                                       HorizontalOptions="Center"
+                                                       Spacing="-35"/>
+                            </ScrollView>
+                        </VerticalStackLayout>
+
+                        <!-- Cards Remaining Indicator (upper right corner) -->
+                        <Border BackgroundColor="#40000000"
+                                Padding="6,3"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                Margin="0,0,2,0">
+                            <Border.StrokeShape>
+                                <RoundRectangle CornerRadius="4"/>
+                            </Border.StrokeShape>
+                            <VerticalStackLayout Spacing="1">
+                                <HorizontalStackLayout Spacing="3"
+                                                       HorizontalOptions="End">
+                                    <Label Text="{Binding CardsRemaining}"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="#D4AF37"
+                                           VerticalOptions="Center"/>
+                                    <Label Text="remaining"
+                                           FontSize="8"
+                                           TextColor="#80FFFFFF"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="3"
+                                                       HorizontalOptions="End">
+                                    <Label Text="{Binding CardsUntilReshuffle}"
+                                           FontSize="10"
+                                           FontAttributes="Bold"
+                                           TextColor="#D4AF37"
+                                           VerticalOptions="Center"/>
+                                    <Label Text="to shuffle"
+                                           FontSize="8"
+                                           TextColor="#80FFFFFF"
+                                           VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
                 </Border>
 
                 <!-- Active Hand Display (Right side during player turns, hidden during dealer turn) -->
