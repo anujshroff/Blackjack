@@ -527,19 +527,50 @@ namespace Blackjack.Views
                         handColor = Colors.White;
                     }
 
-                    // Always show "H1 16" format to identify the hand, with DBL suffix if doubled
-                    var displayText = hand.IsDoubledDown
-                        ? $"H{handNum} {handStatus} DBL"
-                        : $"H{handNum} {handStatus}";
+                    // Always show "H1 16" format to identify the hand, with double down icon if doubled
+                    var displayText = $"H{handNum} {handStatus}";
 
-                    rightColumn.Add(new Label
+                    if (hand.IsDoubledDown)
                     {
-                        Text = displayText,
-                        FontSize = 9,
-                        FontAttributes = FontAttributes.Bold,
-                        TextColor = handColor,
-                        HorizontalOptions = LayoutOptions.Start
-                    });
+                        // Use HorizontalStackLayout with label and double down icon
+                        var handRow = new HorizontalStackLayout
+                        {
+                            Spacing = 2,
+                            HorizontalOptions = LayoutOptions.Start,
+                            VerticalOptions = LayoutOptions.Center
+                        };
+
+                        handRow.Add(new Label
+                        {
+                            Text = displayText,
+                            FontSize = 9,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = handColor,
+                            VerticalOptions = LayoutOptions.Center
+                        });
+
+                        handRow.Add(new FluentIcon
+                        {
+                            Icon = (FluentIcons.Common.Icon)FluentIcons.Common.Symbol.ChevronDoubleDown,
+                            IconVariant = FluentIcons.Common.IconVariant.Filled,
+                            FontSize = 9,
+                            ForegroundColor = Color.FromArgb("#F59E0B"),  // Orange to match double button
+                            VerticalOptions = LayoutOptions.Center
+                        });
+
+                        rightColumn.Add(handRow);
+                    }
+                    else
+                    {
+                        rightColumn.Add(new Label
+                        {
+                            Text = displayText,
+                            FontSize = 9,
+                            FontAttributes = FontAttributes.Bold,
+                            TextColor = handColor,
+                            HorizontalOptions = LayoutOptions.Start
+                        });
+                    }
 
                     handNum++;
                 }
