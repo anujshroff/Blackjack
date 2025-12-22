@@ -195,17 +195,14 @@ namespace Blackjack.ViewModels
         }
 
         /// <summary>
-        /// AI players automatically decline insurance with a realistic delay.
+        /// AI players automatically decline insurance.
         /// </summary>
         private async Task ProcessAIInsuranceDecisions()
         {
             foreach (var player in Players.Where(p => p.IsActive && !p.IsHuman))
             {
                 // AI always declines insurance per Basic Strategy
-                await Task.Delay(600); // Realistic thinking delay
-                GameMessage = $"{player.Name} declines insurance";
                 _playersDecidedInsurance.Add(player.SeatPosition);
-                await Task.Delay(300);
             }
         }
 
