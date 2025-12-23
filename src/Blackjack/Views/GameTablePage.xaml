@@ -254,6 +254,45 @@
                                                           CommandParameter="1000"/>
                                 </Image.GestureRecognizers>
                             </Image>
+
+                            <!-- Separator -->
+                            <BoxView WidthRequest="1"
+                                     HeightRequest="25"
+                                     BackgroundColor="#40FFFFFF"
+                                     VerticalOptions="Center"/>
+
+                            <!-- 10% Chip -->
+                            <Image Source="chip_10pct.png"
+                                   WidthRequest="35"
+                                   HeightRequest="35"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BetPercentageCommand}"
+                                                          CommandParameter="10"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                            <!-- 50% Chip -->
+                            <Image Source="chip_50pct.png"
+                                   WidthRequest="35"
+                                   HeightRequest="35"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BetPercentageCommand}"
+                                                          CommandParameter="50"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                            <!-- 100% Chip -->
+                            <Image Source="chip_100pct.png"
+                                   WidthRequest="35"
+                                   HeightRequest="35"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding BetPercentageCommand}"
+                                                          CommandParameter="100"/>
+                                </Image.GestureRecognizers>
+                            </Image>
                         </HorizontalStackLayout>
 
                         <!-- Center: Bet Display and Clear/Deal -->
