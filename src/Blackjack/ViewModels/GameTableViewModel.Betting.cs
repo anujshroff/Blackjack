@@ -56,6 +56,26 @@ namespace Blackjack.ViewModels
         }
 
         /// <summary>
+        /// Command to bet a percentage of the player's bankroll.
+        /// </summary>
+        [RelayCommand]
+        private void BetPercentage(object parameter)
+        {
+            if (parameter == null || !decimal.TryParse(parameter.ToString(), out decimal percentage))
+                return;
+
+            // 1) Clear existing bet
+            ClearBet();
+
+            // 2) Calculate amount (capped at table maximum)
+            decimal amount = Math.Floor(PlayerBankroll * (percentage / 100m));
+            amount = Math.Min(amount, Settings.TableMaximum);
+
+            // 3) Call existing method - it handles all the validation
+            AddChip(amount);
+        }
+
+        /// <summary>
         /// Command to confirm the bet and start the round.
         /// </summary>
         [RelayCommand(CanExecute = nameof(CanConfirmBet))]

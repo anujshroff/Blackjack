@@ -76,6 +76,43 @@ $chips = @(
     }
 )
 
+# Percentage chip configurations (Silver/Gray family)
+$percentageChips = @(
+    @{
+        Percentage = 10
+        OuterRing = '#B0B0B0'
+        OuterStroke = '#909090'
+        EdgeDots = '#FFFFFF'
+        Center = '#D3D3D3'
+        CenterStroke = '#B8B8B8'
+        DashedRing = '#808080'
+        TextColor = '#333333'
+        FontSize = 18
+    },
+    @{
+        Percentage = 50
+        OuterRing = '#808080'
+        OuterStroke = '#606060'
+        EdgeDots = '#FFFFFF'
+        Center = '#A9A9A9'
+        CenterStroke = '#909090'
+        DashedRing = '#505050'
+        TextColor = '#1a1a1a'
+        FontSize = 18
+    },
+    @{
+        Percentage = 100
+        OuterRing = '#505050'
+        OuterStroke = '#303030'
+        EdgeDots = '#C0C0C0'
+        Center = '#696969'
+        CenterStroke = '#505050'
+        DashedRing = '#909090'
+        TextColor = '#FFFFFF'
+        FontSize = 16
+    }
+)
+
 # Function to create a chip SVG
 function Create-Chip($config) {
     $value = $config.Value
@@ -113,6 +150,42 @@ $dotsXml  <circle cx="$centerX" cy="$centerY" r="38" fill="$($config.Center)" st
     $svg | Out-File -FilePath "src\Blackjack\Resources\Images\Chips\$fileName" -Encoding UTF8 -NoNewline
 }
 
+# Function to create a percentage chip SVG
+function Create-PercentageChip($config) {
+    $percentage = $config.Percentage
+    $fileName = "chip_${percentage}pct.svg"
+    
+    # Calculate edge dot positions (8 dots evenly spaced around circle)
+    $dotPositions = @(
+        @{x=50; y=8},           # Top
+        @{x=79.4; y=20.6},      # Top-right
+        @{x=92; y=50},          # Right
+        @{x=79.4; y=79.4},      # Bottom-right
+        @{x=50; y=92},          # Bottom
+        @{x=20.6; y=79.4},      # Bottom-left
+        @{x=8; y=50},           # Left
+        @{x=20.6; y=20.6}       # Top-left
+    )
+    
+    # Generate edge dots XML
+    $dotsXml = ""
+    foreach ($pos in $dotPositions) {
+        $dotsXml += "  <circle cx=`"$($pos.x)`" cy=`"$($pos.y)`" r=`"4`" fill=`"$($config.EdgeDots)`"/>`n"
+    }
+    
+    $svg = @"
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="$chipSize" height="$chipSize" viewBox="0 0 $chipSize $chipSize" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="$centerX" cy="$centerY" r="48" fill="$($config.OuterRing)" stroke="$($config.OuterStroke)" stroke-width="1"/>
+$dotsXml  <circle cx="$centerX" cy="$centerY" r="38" fill="$($config.Center)" stroke="$($config.CenterStroke)" stroke-width="2"/>
+  <circle cx="$centerX" cy="$centerY" r="28" fill="none" stroke="$($config.DashedRing)" stroke-width="1.5" stroke-dasharray="2,2"/>
+  <text x="$centerX" y="58" font-family="Arial, sans-serif" font-size="$($config.FontSize)" font-weight="bold" fill="$($config.TextColor)" text-anchor="middle">${percentage}%</text>
+</svg>
+"@
+    
+    $svg | Out-File -FilePath "src\Blackjack\Resources\Images\Chips\$fileName" -Encoding UTF8 -NoNewline
+}
+
 # Generate all chips
 Write-Host "Generating casino chip SVG files..." -ForegroundColor Green
 Write-Host ""
@@ -136,8 +209,30 @@ foreach ($chip in $chips) {
 }
 
 Write-Host ""
+
+# Generate percentage chips
+Write-Host "Generating percentage chip SVG files..." -ForegroundColor Green
+Write-Host ""
+
+$pctChipCount = 0
+
+foreach ($pctChip in $percentageChips) {
+    Create-PercentageChip -config $pctChip
+    $pctChipCount++
+    
+    $colorName = switch ($pctChip.Percentage) {
+        10 { "Light Silver" }
+        50 { "Medium Silver" }
+        100 { "Dark Silver" }
+    }
+    
+    Write-Host "  [OK] Created chip_$($pctChip.Percentage)pct.svg ($colorName - $($pctChip.Percentage)%)" -ForegroundColor Cyan
+}
+
+Write-Host ""
 Write-Host "========================================" -ForegroundColor Green
-Write-Host "Successfully created $chipCount chip files!" -ForegroundColor Green
+Write-Host "Successfully created $chipCount denomination chips!" -ForegroundColor Green
+Write-Host "Successfully created $pctChipCount percentage chips!" -ForegroundColor Green
 Write-Host "========================================" -ForegroundColor Green
 Write-Host ""
 Write-Host "Chip denominations:" -ForegroundColor Yellow
@@ -147,3 +242,8 @@ Write-Host "  - `$25 (Green)"
 Write-Host "  - `$100 (Black)"
 Write-Host "  - `$500 (Purple)"
 Write-Host "  - `$1000 (Yellow/Gold)"
+Write-Host ""
+Write-Host "Percentage chips:" -ForegroundColor Yellow
+Write-Host "  - 10% (Light Silver)"
+Write-Host "  - 50% (Medium Silver)"
+Write-Host "  - 100% (Dark Silver)"
