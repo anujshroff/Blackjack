@@ -62,6 +62,17 @@ $chips = @(
         DashedRing = '#FFD700'
         TextColor = '#FFD700'
         FontSize = 20
+    },
+    @{
+        Value = 1000
+        OuterRing = '#B8860B'
+        OuterStroke = '#8B6508'
+        EdgeDots = '#FFFFFF'
+        Center = '#FFD700'
+        CenterStroke = '#DAA520'
+        DashedRing = '#FFFFFF'
+        TextColor = '#1a1a1a'
+        FontSize = 16
     }
 )
 
@@ -118,6 +129,7 @@ foreach ($chip in $chips) {
         25 { "Green" }
         100 { "Black" }
         500 { "Purple" }
+        1000 { "Yellow/Gold" }
     }
     
     Write-Host "  [OK] Created chip_$($chip.Value).svg ($colorName - `$$($chip.Value))" -ForegroundColor Cyan
@@ -134,3 +146,4 @@ Write-Host "  - `$5 (Red)"
 Write-Host "  - `$25 (Green)"
 Write-Host "  - `$100 (Black)"
 Write-Host "  - `$500 (Purple)"
+Write-Host "  - `$1000 (Yellow/Gold)"

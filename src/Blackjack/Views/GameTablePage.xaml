@@ -244,6 +244,17 @@
                                                           CommandParameter="500"/>
                                 </Image.GestureRecognizers>
                             </Image>
+
+                            <!-- $1000 Chip -->
+                            <Image Source="chip_1000.png"
+                                   WidthRequest="35"
+                                   HeightRequest="35"
+                                   Aspect="AspectFit">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AddChipCommand}"
+                                                          CommandParameter="1000"/>
+                                </Image.GestureRecognizers>
+                            </Image>
                         </HorizontalStackLayout>
 
                         <!-- Center: Bet Display and Clear/Deal -->
