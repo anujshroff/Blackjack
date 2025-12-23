@@ -2,7 +2,6 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
-             xmlns:models="clr-namespace:Blackjack.Models"
              xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
              x:Class="Blackjack.Views.SeatSelectionPage"
              x:DataType="viewmodels:SeatSelectionViewModel"
