@@ -1,3 +1,5 @@
+using System.Security.Cryptography;
+
 namespace Blackjack.Models
 {
     /// <summary>
@@ -82,7 +84,7 @@ namespace Blackjack.Models
             // Fisher-Yates shuffle using Random.Shared (thread-safe singleton in .NET 6+)
             for (int i = n - 1; i > 0; i--)
             {
-                int j = Random.Shared.Next(i + 1);
+                int j = RandomNumberGenerator.GetInt32(0, i + 1);
                 (_cards[j], _cards[i]) = (_cards[i], _cards[j]);
             }
 
