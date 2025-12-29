@@ -36,7 +36,8 @@ namespace Blackjack.Models
         public Deck(int numberOfDecks = 6)
         {
             _numberOfDecks = numberOfDecks;
-            _totalCards = _numberOfDecks * Enum.GetValues<Rank>().Length * Enum.GetValues<Suit>().Length;
+            // Use GetNames to get accurate count (GetValues can have issues with duplicate enum values)
+            _totalCards = _numberOfDecks * Enum.GetNames<Rank>().Length * Enum.GetNames<Suit>().Length;
 
             // Set shuffle penetration based on number of decks
             _shufflePenetration = _numberOfDecks switch
@@ -63,11 +64,13 @@ namespace Blackjack.Models
             for (int deck = 0; deck < _numberOfDecks; deck++)
             {
                 // For each deck, create all cards (ranks × suits)
+                // Use Enum.GetNames to iterate by name, not value (important because face cards share value 10)
                 foreach (Suit suit in Enum.GetValues<Suit>())
                 {
-                    foreach (Rank rank in Enum.GetValues<Rank>())
+                    foreach (string rankName in Enum.GetNames<Rank>())
                     {
-                        _cards.Add(new Card(suit, rank));
+                        Rank rank = Enum.Parse<Rank>(rankName);
+                        _cards.Add(new Card(suit, rank, rankName));
                     }
                 }
             }
@@ -117,6 +120,15 @@ namespace Blackjack.Models
         {
             InitializeShoe();
             Shuffle();
+        }
+
+        /// <summary>
+        /// Returns a read-only copy of the current cards for audit/testing purposes.
+        /// </summary>
+        /// <returns>A read-only list of all cards currently in the deck.</returns>
+        public IReadOnlyList<Card> GetCardsForAudit()
+        {
+            return _cards.AsReadOnly();
         }
     }
 }

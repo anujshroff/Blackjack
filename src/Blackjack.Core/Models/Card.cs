@@ -41,6 +41,12 @@ namespace Blackjack.Models
         public Rank Rank { get; set; }
 
         /// <summary>
+        /// The name of the rank (e.g., "Jack", "Queen", "King").
+        /// Stored explicitly because Rank enum has duplicate values causing ToString() issues.
+        /// </summary>
+        public string RankName { get; set; }
+
+        /// <summary>
         /// Gets the numeric value of the card (2-10 for number cards, 10 for face cards, 11 for Ace).
         /// Note: Ace value is handled at the Hand level (can be 1 or 11).
         /// </summary>
@@ -51,19 +57,15 @@ namespace Blackjack.Models
         /// </summary>
         public string ImagePath { get; set; }
 
-        public Card(Suit suit, Rank rank)
+        public Card(Suit suit, Rank rank, string rankName)
         {
             Suit = suit;
             Rank = rank;
+            RankName = rankName;
 
-            // Map rank to file name using enum name
-            string rankName = rank.ToString().ToLower();
-
-            // Handle numeric ranks (Two through Ten become two through ten)
-            // Face cards and Ace are already correct (jack, queen, king, ace)
-
+            // Map rank to file name using the explicit rank name
             string suitName = suit.ToString().ToLower();
-            ImagePath = $"Resources/Images/Cards/{rankName}_{suitName}.svg";
+            ImagePath = $"Resources/Images/Cards/{rankName.ToLower()}_{suitName}.svg";
         }
 
         /// <summary>
@@ -71,7 +73,7 @@ namespace Blackjack.Models
         /// </summary>
         public override string ToString()
         {
-            return $"{Rank} of {Suit}";
+            return $"{RankName} of {Suit}";
         }
     }
 }

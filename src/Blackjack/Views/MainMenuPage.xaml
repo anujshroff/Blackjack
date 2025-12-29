@@ -24,7 +24,7 @@
               VerticalOptions="Fill"
               HorizontalOptions="Fill">
 
-            <!-- Column 1: Logo -->
+            <!-- Column 1: Logo (tap 10 times for debug menu) -->
             <Border
                 Grid.Column="1"
                 StrokeThickness="0"
@@ -34,6 +34,9 @@
                 StrokeShape="RoundRectangle 45"
                 VerticalOptions="Center"
                 HorizontalOptions="Center">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding LogoTappedCommand}"/>
+                </Border.GestureRecognizers>
                 <Image
                     Source="appiconfg.png"
                     HeightRequest="64"

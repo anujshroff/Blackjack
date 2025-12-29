@@ -26,6 +26,7 @@ namespace Blackjack
             builder.Services.AddTransient<GameTableViewModel>();
             builder.Services.AddTransient<SettingsViewModel>();
             builder.Services.AddTransient<AboutViewModel>();
+            builder.Services.AddTransient<DebugViewModel>();
 
             // Register Views
             builder.Services.AddSingleton<MainMenuPage>();
@@ -33,6 +34,7 @@ namespace Blackjack
             builder.Services.AddTransient<GameTablePage>();
             builder.Services.AddTransient<SettingsPage>();
             builder.Services.AddTransient<AboutPage>();
+            builder.Services.AddTransient<DebugPage>();
 
             // Register Services
             builder.Services.AddSingleton<BasicStrategy>();
