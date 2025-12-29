@@ -29,7 +29,8 @@ namespace Blackjack.Converters
         /// </summary>
         private static string GetCardImageFileName(Card card)
         {
-            string rankName = card.Rank.ToString().ToLower();
+            // Use RankName property to correctly handle face cards (J, Q, K have same enum value as Ten)
+            string rankName = card.RankName.ToLower();
             string suitName = card.Suit.ToString().ToLower();
             return $"{rankName}_{suitName}.png";
         }
@@ -62,7 +63,8 @@ namespace Blackjack.Converters
                 return ImageSource.FromFile("card_back.png");
             }
 
-            string rankName = card.Rank.ToString().ToLower();
+            // Use RankName property to correctly handle face cards (J, Q, K have same enum value as Ten)
+            string rankName = card.RankName.ToLower();
             string suitName = card.Suit.ToString().ToLower();
             return ImageSource.FromFile($"{rankName}_{suitName}.png");
         }

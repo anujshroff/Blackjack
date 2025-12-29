@@ -13,6 +13,7 @@ namespace Blackjack
             Routing.RegisterRoute(nameof(GameTablePage), typeof(GameTablePage));
             Routing.RegisterRoute(nameof(SettingsPage), typeof(SettingsPage));
             Routing.RegisterRoute(nameof(AboutPage), typeof(AboutPage));
+            Routing.RegisterRoute(nameof(DebugPage), typeof(DebugPage));
         }
     }
 }

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.DebugPage"
+             x:DataType="viewmodels:DebugViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Background Gradient -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                <GradientStop Color="{StaticResource Tertiary}"
+                              Offset="0.0"/>
+                <GradientStop Color="{StaticResource White}"
+                              Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Main Layout: Header | Content -->
+        <Grid RowDefinitions="Auto,*"
+              Padding="20">
+
+            <!-- Header Row -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  Margin="0,0,0,15">
+
+                <!-- Back Button -->
+                <Border Grid.Column="0"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeThickness="1"
+                        BackgroundColor="{StaticResource White}"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <ic:FluentIcon
+                            Icon="ArrowLeft"
+                            IconVariant="Regular"
+                            FontSize="20"
+                            ForegroundColor="{StaticResource Gray600}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Title -->
+                <HorizontalStackLayout Grid.Column="1"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Spacing="10">
+                    <ic:FluentIcon
+                        Icon="Bug"
+                        IconVariant="Regular"
+                        FontSize="24"
+                        ForegroundColor="{StaticResource Primary}"/>
+                    <Label Text="Debug Menu"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <!-- Placeholder for symmetry -->
+                <BoxView Grid.Column="2"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         Color="Transparent"/>
+            </Grid>
+
+            <!-- Content Area -->
+            <ScrollView Grid.Row="1"
+                        VerticalScrollBarVisibility="Default">
+                <VerticalStackLayout Spacing="12"
+                                     Padding="0,10">
+
+                    <!-- Deck Audit Section -->
+                    <Border BackgroundColor="{StaticResource White}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <Border.Shadow>
+                            <Shadow Brush="{StaticResource Gray300}"
+                                    Opacity="0.3"
+                                    Radius="6"
+                                    Offset="0,2"/>
+                        </Border.Shadow>
+                        <VerticalStackLayout Spacing="12">
+                            <HorizontalStackLayout Spacing="12">
+                                <ic:FluentIcon
+                                    Icon="DocumentSearch"
+                                    IconVariant="Regular"
+                                    FontSize="20"
+                                    ForegroundColor="{StaticResource Primary}"/>
+                                <VerticalStackLayout Spacing="2"
+                                                     VerticalOptions="Center">
+                                    <Label Text="Deck Audit"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           TextColor="{StaticResource Gray900}"/>
+                                    <Label Text="Verify deck integrity for all deck configurations"
+                                           FontSize="12"
+                                           TextColor="{StaticResource Gray500}"/>
+                                </VerticalStackLayout>
+                            </HorizontalStackLayout>
+
+                            <Button Text="Run Deck Audit"
+                                    Command="{Binding RunDeckAuditCommand}"
+                                    BackgroundColor="{StaticResource Primary}"
+                                    TextColor="{StaticResource White}"
+                                    FontSize="14"
+                                    FontAttributes="Bold"
+                                    HeightRequest="40"
+                                    CornerRadius="20"
+                                    HorizontalOptions="Start"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Audit Results -->
+                    <VerticalStackLayout Spacing="8"
+                                         IsVisible="{Binding HasAuditResults}"
+                                         BindableLayout.ItemsSource="{Binding AuditResults}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="viewmodels:DeckAuditResult">
+                                <Border BackgroundColor="{StaticResource White}"
+                                        StrokeThickness="0"
+                                        Padding="16,12"
+                                        StrokeShape="RoundRectangle 10">
+                                    <Border.Shadow>
+                                        <Shadow Brush="{StaticResource Gray300}"
+                                                Opacity="0.2"
+                                                Radius="4"
+                                                Offset="0,1"/>
+                                    </Border.Shadow>
+                                    <VerticalStackLayout Spacing="8">
+                                        <Grid ColumnDefinitions="Auto,*,Auto"
+                                              RowDefinitions="Auto,Auto"
+                                              ColumnSpacing="12"
+                                              RowSpacing="4">
+
+                                            <!-- Pass/Fail Icon -->
+                                            <Border Grid.Column="0"
+                                                    Grid.RowSpan="2"
+                                                    HeightRequest="36"
+                                                    WidthRequest="36"
+                                                    StrokeThickness="0"
+                                                    StrokeShape="RoundRectangle 18"
+                                                    VerticalOptions="Center">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Style.Triggers>
+                                                            <DataTrigger TargetType="Border"
+                                                                         Binding="{Binding Passed}"
+                                                                         Value="True">
+                                                                <Setter Property="BackgroundColor"
+                                                                        Value="#E8F5E9"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Border"
+                                                                         Binding="{Binding Passed}"
+                                                                         Value="False">
+                                                                <Setter Property="BackgroundColor"
+                                                                        Value="#FFEBEE"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <ic:FluentIcon FontSize="18"
+                                                               HorizontalOptions="Center"
+                                                               VerticalOptions="Center">
+                                                    <ic:FluentIcon.Style>
+                                                        <Style TargetType="ic:FluentIcon">
+                                                            <Style.Triggers>
+                                                                <DataTrigger TargetType="ic:FluentIcon"
+                                                                             Binding="{Binding Passed}"
+                                                                             Value="True">
+                                                                    <Setter Property="Icon"
+                                                                            Value="CheckmarkCircle"/>
+                                                                    <Setter Property="ForegroundColor"
+                                                                            Value="#4CAF50"/>
+                                                                </DataTrigger>
+                                                                <DataTrigger TargetType="ic:FluentIcon"
+                                                                             Binding="{Binding Passed}"
+                                                                             Value="False">
+                                                                    <Setter Property="Icon"
+                                                                            Value="ErrorCircle"/>
+                                                                    <Setter Property="ForegroundColor"
+                                                                            Value="#F44336"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ic:FluentIcon.Style>
+                                                </ic:FluentIcon>
+                                            </Border>
+
+                                            <!-- Deck Info -->
+                                            <Label Grid.Column="1"
+                                                   Grid.Row="0"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{StaticResource Gray900}"
+                                                   VerticalOptions="End">
+                                                <Label.Text>
+                                                    <MultiBinding StringFormat="{}{0} Deck(s)">
+                                                        <Binding Path="NumberOfDecks"/>
+                                                    </MultiBinding>
+                                                </Label.Text>
+                                            </Label>
+
+                                            <Label Grid.Column="1"
+                                                   Grid.Row="1"
+                                                   FontSize="12"
+                                                   TextColor="{StaticResource Gray500}"
+                                                   VerticalOptions="Start">
+                                                <Label.Text>
+                                                    <MultiBinding StringFormat="Expected: {0} | Actual: {1}">
+                                                        <Binding Path="ExpectedTotal"/>
+                                                        <Binding Path="ActualTotal"/>
+                                                    </MultiBinding>
+                                                </Label.Text>
+                                            </Label>
+
+                                            <!-- Status Text -->
+                                            <Label Grid.Column="2"
+                                                   Grid.RowSpan="2"
+                                                   FontSize="12"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center">
+                                                <Label.Style>
+                                                    <Style TargetType="Label">
+                                                        <Style.Triggers>
+                                                            <DataTrigger TargetType="Label"
+                                                                         Binding="{Binding Passed}"
+                                                                         Value="True">
+                                                                <Setter Property="Text"
+                                                                        Value="PASS"/>
+                                                                <Setter Property="TextColor"
+                                                                        Value="#4CAF50"/>
+                                                            </DataTrigger>
+                                                            <DataTrigger TargetType="Label"
+                                                                         Binding="{Binding Passed}"
+                                                                         Value="False">
+                                                                <Setter Property="Text"
+                                                                        Value="FAIL"/>
+                                                                <Setter Property="TextColor"
+                                                                        Value="#F44336"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Label.Style>
+                                            </Label>
+                                        </Grid>
+
+                                        <!-- Error List (only shown when failed) -->
+                                        <VerticalStackLayout Spacing="4"
+                                                             IsVisible="{Binding Passed, Converter={StaticResource InverseBoolConverter}}"
+                                                             Margin="48,4,0,0"
+                                                             BindableLayout.ItemsSource="{Binding Errors}">
+                                            <BindableLayout.ItemTemplate>
+                                                <DataTemplate x:DataType="x:String">
+                                                    <Label Text="{Binding .}"
+                                                           FontSize="11"
+                                                           TextColor="#F44336"
+                                                           FontFamily="Consolas"/>
+                                                </DataTemplate>
+                                            </BindableLayout.ItemTemplate>
+                                        </VerticalStackLayout>
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+    </Grid>
+</ContentPage>

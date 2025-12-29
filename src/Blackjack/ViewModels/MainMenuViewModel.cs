@@ -16,6 +16,12 @@ namespace Blackjack.ViewModels
         private readonly BankrollService _bankrollService;
         private readonly GameSettings _settings;
 
+        // Debug menu access - tap logo 10 times
+        private int _logoTapCount;
+        private DateTime _lastLogoTapTime = DateTime.MinValue;
+        private const int RequiredTapsForDebug = 10;
+        private const int TapTimeoutSeconds = 3;
+
         /// <summary>
         /// Indicates if there is a saved bankroll.
         /// </summary>
@@ -226,6 +232,44 @@ namespace Blackjack.ViewModels
 #if WINDOWS
             Application.Current?.Quit();
 #endif
+        }
+
+        /// <summary>
+        /// Command triggered when the logo is tapped.
+        /// After 10 taps within the timeout period, navigates to the hidden debug menu.
+        /// </summary>
+        [RelayCommand]
+        private async Task LogoTapped()
+        {
+            if (IsBusy)
+                return;
+
+            DateTime now = DateTime.Now;
+
+            // Reset counter if too much time has passed since last tap
+            if ((now - _lastLogoTapTime).TotalSeconds > TapTimeoutSeconds)
+            {
+                _logoTapCount = 0;
+            }
+
+            _lastLogoTapTime = now;
+            _logoTapCount++;
+
+            // Check if we've reached the required tap count
+            if (_logoTapCount >= RequiredTapsForDebug)
+            {
+                _logoTapCount = 0; // Reset for next time
+
+                try
+                {
+                    IsBusy = true;
+                    await Shell.Current.GoToAsync(nameof(DebugPage));
+                }
+                finally
+                {
+                    IsBusy = false;
+                }
+            }
         }
     }
 }
