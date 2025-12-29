@@ -118,5 +118,14 @@ namespace Blackjack.Models
             InitializeShoe();
             Shuffle();
         }
+
+        /// <summary>
+        /// Returns a read-only copy of the current cards for audit/testing purposes.
+        /// </summary>
+        /// <returns>A read-only list of all cards currently in the deck.</returns>
+        public IReadOnlyList<Card> GetCardsForAudit()
+        {
+            return _cards.AsReadOnly();
+        }
     }
 }
