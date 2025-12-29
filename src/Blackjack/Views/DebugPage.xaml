@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:Blackjack.ViewModels"
+             xmlns:ic="clr-namespace:FluentIcons.Maui;assembly=FluentIcons.Maui"
+             x:Class="Blackjack.Views.DebugPage"
+             x:DataType="viewmodels:DebugViewModel"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Background Gradient -->
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush StartPoint="0,0"
+                                 EndPoint="0,1">
+                <GradientStop Color="{StaticResource Tertiary}"
+                              Offset="0.0"/>
+                <GradientStop Color="{StaticResource White}"
+                              Offset="1.0"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+
+        <!-- Main Layout: Header | Content -->
+        <Grid RowDefinitions="Auto,*"
+              Padding="20">
+
+            <!-- Header Row -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="Auto,*,Auto"
+                  Margin="0,0,0,15">
+
+                <!-- Back Button -->
+                <Border Grid.Column="0"
+                        Stroke="{StaticResource Gray300}"
+                        StrokeThickness="1"
+                        BackgroundColor="{StaticResource White}"
+                        HeightRequest="40"
+                        WidthRequest="40"
+                        StrokeShape="RoundRectangle 20"
+                        VerticalOptions="Center">
+                    <Grid>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoBackCommand}"/>
+                        </Grid.GestureRecognizers>
+                        <ic:FluentIcon
+                            Icon="ArrowLeft"
+                            IconVariant="Regular"
+                            FontSize="20"
+                            ForegroundColor="{StaticResource Gray600}"/>
+                    </Grid>
+                </Border>
+
+                <!-- Title -->
+                <HorizontalStackLayout Grid.Column="1"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       Spacing="10">
+                    <ic:FluentIcon
+                        Icon="Bug"
+                        IconVariant="Regular"
+                        FontSize="24"
+                        ForegroundColor="{StaticResource Primary}"/>
+                    <Label Text="Debug Menu"
+                           FontSize="24"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource Primary}"
+                           VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+
+                <!-- Placeholder for symmetry -->
+                <BoxView Grid.Column="2"
+                         WidthRequest="40"
+                         HeightRequest="40"
+                         Color="Transparent"/>
+            </Grid>
+
+            <!-- Content Area -->
+            <ScrollView Grid.Row="1"
+                        VerticalScrollBarVisibility="Default">
+                <VerticalStackLayout Spacing="12"
+                                     Padding="0,10">
+
+                    <!-- Info Section -->
+                    <Border BackgroundColor="{StaticResource Tertiary}"
+                            StrokeThickness="0"
+                            Padding="20,16"
+                            StrokeShape="RoundRectangle 12">
+                        <HorizontalStackLayout Spacing="12">
+                            <ic:FluentIcon
+                                Icon="Wrench"
+                                IconVariant="Regular"
+                                FontSize="20"
+                                ForegroundColor="{StaticResource Primary}"/>
+                            <VerticalStackLayout Spacing="4"
+                                                 VerticalOptions="Center">
+                                <Label Text="Debug Options"
+                                       FontSize="14"
+                                       FontAttributes="Bold"
+                                       TextColor="{StaticResource Primary}"/>
+                                <Label Text="Debug options will be added here."
+                                       FontSize="12"
+                                       TextColor="{StaticResource Gray600}"/>
+                            </VerticalStackLayout>
+                        </HorizontalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+        </Grid>
+    </Grid>
+</ContentPage>
