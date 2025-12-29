@@ -111,18 +111,16 @@ namespace Blackjack.ViewModels
             }
 
             // Check each rank/suit combination
-            // Use Enum.GetNames to get distinct rank names, then parse back to enum
-            // This avoids issues with duplicate enum values (Ten, Jack, Queen, King all = 10)
+            // Use Enum.GetNames to get distinct rank names
             foreach (string rankName in Enum.GetNames<Rank>())
             {
-                Rank rank = Enum.Parse<Rank>(rankName);
                 foreach (Suit suit in Enum.GetValues<Suit>())
                 {
-                    // Compare by enum name to handle duplicate values correctly
-                    int count = cards.Count(c => c.Rank.ToString() == rankName && c.Suit == suit);
+                    // Use RankName property which stores the actual rank name correctly
+                    int count = cards.Count(c => c.RankName == rankName && c.Suit == suit);
                     if (count != numberOfDecks)
                     {
-                        result.Errors.Add($"{rank} of {suit}: expected {numberOfDecks}, got {count}");
+                        result.Errors.Add($"{rankName} of {suit}: expected {numberOfDecks}, got {count}");
                     }
                 }
             }
