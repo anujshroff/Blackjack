@@ -6,7 +6,7 @@ A classic casino blackjack experience built with .NET MAUI. Play against the dea
 
 | Platform | Status |
 |----------|--------|
-| **Google Play Store** | 🔜 Coming Soon |
+| **Google Play Store** | [📱 Available Now](https://play.google.com/store/apps/details?id=com.anujshroff.blackjack) |
 
 ## Privacy & Philosophy
 
