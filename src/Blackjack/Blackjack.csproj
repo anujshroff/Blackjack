@@ -59,7 +59,7 @@
 		<PackageReference Include="FluentIcons.Maui" Version="2.0.320" />
 		<PackageReference Include="Microsoft.Maui.Controls" Version="10.0.41" />
 		<PackageReference Include="Microsoft.Maui.Essentials" Version="10.0.41" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.3" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.4" />
 	</ItemGroup>
 
 	<ItemGroup>
