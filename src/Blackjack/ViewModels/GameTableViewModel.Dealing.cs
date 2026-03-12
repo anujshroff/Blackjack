@@ -25,7 +25,7 @@ namespace Blackjack.ViewModels
             {
                 GameMessage = "Shuffling deck...";
                 _deck.Reset();
-                await Task.Delay(1000);
+                await Task.Delay(1000, _cts.Token);
             }
 
             // Note: Cards are already cleared in ConfirmBet(), no need to clear again
@@ -63,7 +63,7 @@ namespace Blackjack.ViewModels
 
                     // Update UI to show the new card
                     OnPropertyChanged(nameof(Players));
-                    await Task.Delay(400);
+                    await Task.Delay(400, _cts.Token);
                 }
             }
 
@@ -76,7 +76,7 @@ namespace Blackjack.ViewModels
                 DealerCards.Add(dealerUpCard);
                 DealerTotal = dealerUpCard.Rank == Rank.Ace ? "A" : dealerUpCard.Value.ToString();
                 OnPropertyChanged(nameof(DealerCards));
-                await Task.Delay(400);
+                await Task.Delay(400, _cts.Token);
             }
 
             // Second card to each player
@@ -95,7 +95,7 @@ namespace Blackjack.ViewModels
 
                     // Update UI to show the new card
                     OnPropertyChanged(nameof(Players));
-                    await Task.Delay(400);
+                    await Task.Delay(400, _cts.Token);
                 }
             }
 
@@ -108,11 +108,11 @@ namespace Blackjack.ViewModels
                 DealerCards.Add(dealerHoleCard); // Add to collection but UI will show face-down
                 DealerHoleCardFaceDown = true;
                 OnPropertyChanged(nameof(DealerCards));
-                await Task.Delay(400);
+                await Task.Delay(400, _cts.Token);
             }
 
             // Small delay to let UI update before checking for blackjack
-            await Task.Delay(200);
+            await Task.Delay(200, _cts.Token);
 
             // Check for dealer blackjack
             await CheckDealerBlackjack();

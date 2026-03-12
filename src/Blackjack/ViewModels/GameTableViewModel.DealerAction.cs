@@ -28,7 +28,7 @@ namespace Blackjack.ViewModels
 
             // Reveal dealer's hole card (always reveal, even if no standing hands)
             GameMessage = "Dealer revealing hole card...";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             DealerHoleCardFaceDown = false;
             Dealer.RevealHoleCard();
@@ -39,7 +39,7 @@ namespace Blackjack.ViewModels
             OnPropertyChanged(nameof(DealerTotal));
 
             GameMessage = $"Dealer has {DealerTotal}";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             // If no standing hands (all busted or blackjack), skip to settlement
             if (!anyStandingHands)
@@ -53,7 +53,7 @@ namespace Blackjack.ViewModels
             while (Dealer.ShouldHit())
             {
                 GameMessage = "Dealer hits...";
-                await Task.Delay(800);
+                await Task.Delay(800, _cts.Token);
 
                 var card = _deck.DealCard();
                 if (card != null)
@@ -67,13 +67,13 @@ namespace Blackjack.ViewModels
                     OnPropertyChanged(nameof(DealerTotal));
 
                     GameMessage = $"Dealer draws {card.Rank} of {card.Suit} - Total: {DealerTotal}";
-                    await Task.Delay(1000);
+                    await Task.Delay(1000, _cts.Token);
 
                     // Check for bust
                     if (Dealer.Hand.IsBusted)
                     {
                         GameMessage = $"Dealer busts with {DealerTotal}!";
-                        await Task.Delay(1500);
+                        await Task.Delay(1500, _cts.Token);
                         break;
                     }
                 }
@@ -83,7 +83,7 @@ namespace Blackjack.ViewModels
             if (!Dealer.Hand.IsBusted)
             {
                 GameMessage = $"Dealer stands with {DealerTotal}";
-                await Task.Delay(1500);
+                await Task.Delay(1500, _cts.Token);
             }
 
             // Settle all hands
