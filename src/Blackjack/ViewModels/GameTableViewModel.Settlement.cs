@@ -18,7 +18,7 @@ namespace Blackjack.ViewModels
             }
 
             GameMessage = "Settling hands...";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             foreach (var player in Players.Where(p => p.IsActive))
             {
@@ -33,7 +33,7 @@ namespace Blackjack.ViewModels
                         (hand.Status == HandStatus.Won && hand.IsBlackjack))
                     {
                         GameMessage = $"{player.Name}: Already paid";
-                        await Task.Delay(500);
+                        await Task.Delay(500, _cts.Token);
                         continue;
                     }
 
@@ -65,7 +65,7 @@ namespace Blackjack.ViewModels
                     };
 
                     GameMessage = resultMessage;
-                    await Task.Delay(800);
+                    await Task.Delay(800, _cts.Token);
                 }
             }
 
@@ -83,7 +83,7 @@ namespace Blackjack.ViewModels
         private async Task StartNewRound()
         {
             GameMessage = "Round complete.";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             // Check if any players are bankrupt
             foreach (var player in Players.Where(p => p.IsActive && !p.IsHuman))
@@ -92,7 +92,7 @@ namespace Blackjack.ViewModels
                 {
                     player.IsActive = false;
                     GameMessage = $"{player.Name} leaves the table (insufficient funds)";
-                    await Task.Delay(800);
+                    await Task.Delay(800, _cts.Token);
                 }
             }
 
@@ -101,7 +101,7 @@ namespace Blackjack.ViewModels
             if (humanPlayer.Bankroll < Settings.TableMinimum)
             {
                 GameMessage = $"Game Over! You're out of funds. Final bankroll: ${humanPlayer.Bankroll:N0}";
-                await Task.Delay(3000);
+                await Task.Delay(3000, _cts.Token);
 
                 // Return to main menu
                 await Shell.Current.GoToAsync("//MainMenuPage");
@@ -113,7 +113,7 @@ namespace Blackjack.ViewModels
             {
                 GameMessage = "Shuffling deck...";
                 _deck.Reset();
-                await Task.Delay(1500);
+                await Task.Delay(1500, _cts.Token);
             }
 
             // Reset for new round (keep cards visible until next deal)
