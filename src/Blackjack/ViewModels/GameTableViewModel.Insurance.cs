@@ -14,36 +14,43 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanInsure))]
         private async Task Insurance()
         {
-            var humanPlayer = Players[HumanPlayerPosition - 1];
-            var hand = humanPlayer.Hands[0];
-            decimal insuranceCost = hand.Bet / 2;
-
-            // Validate player has enough bankroll
-            if (humanPlayer.Bankroll < insuranceCost)
+            try
             {
-                GameMessage = "Insufficient funds for insurance";
-                await Task.Delay(1000);
-                return;
+                var humanPlayer = Players[HumanPlayerPosition - 1];
+                var hand = humanPlayer.Hands[0];
+                decimal insuranceCost = hand.Bet / 2;
+
+                // Validate player has enough bankroll
+                if (humanPlayer.Bankroll < insuranceCost)
+                {
+                    GameMessage = "Insufficient funds for insurance";
+                    await Task.Delay(1000, _cts.Token);
+                    return;
+                }
+
+                // Deduct insurance cost from bankroll
+                humanPlayer.Bankroll -= insuranceCost;
+                PlayerBankroll = humanPlayer.Bankroll;
+
+                // Track the insurance bet
+                _insuranceBets[HumanPlayerPosition] = insuranceCost;
+
+                // Force UI update for player display
+                OnPropertyChanged(nameof(PlayerBankroll));
+                OnPropertyChanged(nameof(Players));
+
+                // Disable buttons and mark decision made
+                CanInsure = false;
+                _awaitingHumanInsuranceDecision = false;
+                _playersDecidedInsurance.Add(HumanPlayerPosition);
+
+                GameMessage = $"Insurance taken for ${insuranceCost:N0} - Bankroll: ${PlayerBankroll:N0}";
+                await Task.Delay(1000, _cts.Token);
             }
-
-            // Deduct insurance cost from bankroll
-            humanPlayer.Bankroll -= insuranceCost;
-            PlayerBankroll = humanPlayer.Bankroll;
-
-            // Track the insurance bet
-            _insuranceBets[HumanPlayerPosition] = insuranceCost;
-
-            // Force UI update for player display
-            OnPropertyChanged(nameof(PlayerBankroll));
-            OnPropertyChanged(nameof(Players));
-
-            // Disable buttons and mark decision made
-            CanInsure = false;
-            _awaitingHumanInsuranceDecision = false;
-            _playersDecidedInsurance.Add(HumanPlayerPosition);
-
-            GameMessage = $"Insurance taken for ${insuranceCost:N0} - Bankroll: ${PlayerBankroll:N0}";
-            await Task.Delay(1000);
+            catch (OperationCanceledException)
+            {
+                // Navigation away from page - silently stop
+            }
         }
 
         /// <summary>
@@ -52,24 +59,31 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanEvenMoney))]
         private async Task EvenMoney()
         {
-            var humanPlayer = Players[HumanPlayerPosition - 1];
-            var hand = humanPlayer.Hands[0];
+            try
+            {
+                var humanPlayer = Players[HumanPlayerPosition - 1];
+                var hand = humanPlayer.Hands[0];
 
-            // Pay 1:1 immediately
-            decimal payout = Services.GameRules.CalculateEvenMoneyPayout(hand.Bet);
-            humanPlayer.Bankroll += payout;
-            PlayerBankroll = humanPlayer.Bankroll;
+                // Pay 1:1 immediately
+                decimal payout = Services.GameRules.CalculateEvenMoneyPayout(hand.Bet);
+                humanPlayer.Bankroll += payout;
+                PlayerBankroll = humanPlayer.Bankroll;
 
-            // Mark hand as settled
-            hand.Status = HandStatus.Won;
+                // Mark hand as settled
+                hand.Status = HandStatus.Won;
 
-            // Disable buttons and mark decision made
-            CanEvenMoney = false;
-            _awaitingHumanInsuranceDecision = false;
-            _playersDecidedInsurance.Add(HumanPlayerPosition);
+                // Disable buttons and mark decision made
+                CanEvenMoney = false;
+                _awaitingHumanInsuranceDecision = false;
+                _playersDecidedInsurance.Add(HumanPlayerPosition);
 
-            GameMessage = $"Even Money accepted - Paid ${payout:N0}";
-            await Task.Delay(1000);
+                GameMessage = $"Even Money accepted - Paid ${payout:N0}";
+                await Task.Delay(1000, _cts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                // Navigation away from page - silently stop
+            }
         }
 
         /// <summary>
@@ -94,7 +108,7 @@ namespace Blackjack.ViewModels
 
                 // Then proceed to player actions
                 GameMessage = "Player actions will begin...";
-                await Task.Delay(500);
+                await Task.Delay(500, _cts.Token);
                 CurrentPhase = GamePhase.PlayerActions;
                 await StartPlayerActions();
                 return;
@@ -117,7 +131,7 @@ namespace Blackjack.ViewModels
         private async Task OfferInsuranceToPlayers()
         {
             GameMessage = "Dealer showing Ace - Insurance available";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             // Clear previous insurance decisions
             _insuranceBets.Clear();
@@ -174,7 +188,7 @@ namespace Blackjack.ViewModels
                         $"Even Money? (auto-decline in {secondsRemaining}s)" :
                         $"Insurance? ${displayInsuranceCost:N0} (auto-decline in {secondsRemaining}s)";
 
-                    await Task.Delay(1000);
+                    await Task.Delay(1000, _cts.Token);
                     secondsRemaining--;
                 }
 
@@ -185,7 +199,7 @@ namespace Blackjack.ViewModels
                     CanEvenMoney = false;
                     _awaitingHumanInsuranceDecision = false;
                     GameMessage = humanHasBlackjack ? "Even Money declined" : "Insurance declined";
-                    await Task.Delay(500);
+                    await Task.Delay(500, _cts.Token);
                 }
             }
 
@@ -217,7 +231,7 @@ namespace Blackjack.ViewModels
             }
 
             GameMessage = "Dealer checking for Blackjack...";
-            await Task.Delay(1000);
+            await Task.Delay(1000, _cts.Token);
 
             if (Dealer.HasBlackjack)
             {
@@ -227,7 +241,7 @@ namespace Blackjack.ViewModels
                 DealerTotal = Dealer.Hand.TotalValue.ToString();
 
                 GameMessage = "Dealer has Blackjack!";
-                await Task.Delay(1500);
+                await Task.Delay(1500, _cts.Token);
 
                 // Settle all hands and start new round (handles bankruptcy, shuffle, etc.)
                 await SettleHandsForDealerBlackjack();
@@ -243,17 +257,17 @@ namespace Blackjack.ViewModels
                     var player = Players[insuranceBet.Key - 1];
                     // Insurance bet already deducted, just note it's lost
                     GameMessage = $"{player.Name} loses insurance bet";
-                    await Task.Delay(300);
+                    await Task.Delay(300, _cts.Token);
                 }
 
-                await Task.Delay(1000);
+                await Task.Delay(1000, _cts.Token);
 
                 // Settle any player blackjacks that haven't been settled yet (via even money)
                 await SettlePlayerBlackjacks();
 
                 // Proceed to player actions
                 CurrentPhase = GamePhase.PlayerActions;
-                await Task.Delay(500);
+                await Task.Delay(500, _cts.Token);
                 await StartPlayerActions();
             }
         }
@@ -292,7 +306,7 @@ namespace Blackjack.ViewModels
                         }
 
                         GameMessage = $"{player.Name} insurance pays ${payout:N0}";
-                        await Task.Delay(500);
+                        await Task.Delay(500, _cts.Token);
                     }
                     continue;
                 }
@@ -302,7 +316,7 @@ namespace Blackjack.ViewModels
                 {
                     payout += _gameRules.CalculateInsurancePayout(insuranceBet);
                     GameMessage = $"{player.Name} insurance pays ${payout:N0}";
-                    await Task.Delay(500);
+                    await Task.Delay(500, _cts.Token);
                 }
 
                 if (hand.IsBlackjack)
@@ -328,7 +342,7 @@ namespace Blackjack.ViewModels
                     PlayerBankroll = player.Bankroll;
                 }
 
-                await Task.Delay(800);
+                await Task.Delay(800, _cts.Token);
             }
 
             // Show human player's summary after all hands are settled
@@ -378,13 +392,13 @@ namespace Blackjack.ViewModels
 
                     // Show payout message
                     GameMessage = $"{player.Name}: Blackjack! Paid ${payout:N0}";
-                    await Task.Delay(1000);
+                    await Task.Delay(1000, _cts.Token);
                 }
             }
 
             if (anyBlackjacks)
             {
-                await Task.Delay(500);
+                await Task.Delay(500, _cts.Token);
             }
         }
     }

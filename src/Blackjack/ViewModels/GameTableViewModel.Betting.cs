@@ -81,67 +81,74 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanConfirmBet))]
         private async Task ConfirmBet()
         {
-            // Validate bet one more time
-            if (CurrentBet < Settings.TableMinimum)
+            try
             {
-                GameMessage = $"Minimum bet is ${Settings.TableMinimum:N0}";
-                return;
-            }
+                // Validate bet one more time
+                if (CurrentBet < Settings.TableMinimum)
+                {
+                    GameMessage = $"Minimum bet is ${Settings.TableMinimum:N0}";
+                    return;
+                }
 
-            if (CurrentBet > Settings.TableMaximum)
+                if (CurrentBet > Settings.TableMaximum)
+                {
+                    GameMessage = $"Maximum bet is ${Settings.TableMaximum:N0}";
+                    return;
+                }
+
+                if (CurrentBet > PlayerBankroll)
+                {
+                    GameMessage = "Insufficient funds!";
+                    return;
+                }
+
+                // Hide betting UI
+                IsBetting = false;
+                GameMessage = "Clearing table...";
+
+                // Clear all cards from previous round
+                DealerCards.Clear();
+                Dealer?.ClearHand();
+                DealerHoleCardFaceDown = true;
+                DealerTotal = "--";
+
+                // Clear all player hands
+                foreach (var player in Players.Where(p => p.IsActive))
+                {
+                    player.ClearHands();
+                }
+
+                // Notify UI to show cleared state
+                OnPropertyChanged(nameof(DealerCards));
+                OnPropertyChanged(nameof(Players));
+
+                // Brief delay to show cleared table
+                await Task.Delay(300, _cts.Token);
+
+                // Deduct bet from bankroll
+                PlayerBankroll -= CurrentBet;
+
+                // Update player's bankroll and bet in the model
+                var humanPlayer = Players[HumanPlayerPosition - 1];
+                humanPlayer.Bankroll = PlayerBankroll;
+                humanPlayer.Hands[0].Bet = CurrentBet;
+
+                GameMessage = "Processing bets...";
+
+                // Place AI bets
+                await PlaceAIBets();
+
+                // Transition to dealing phase
+                CurrentPhase = GamePhase.Dealing;
+                GameMessage = "All bets placed. Dealing cards...";
+
+                // Deal initial cards
+                await DealInitialCards();
+            }
+            catch (OperationCanceledException)
             {
-                GameMessage = $"Maximum bet is ${Settings.TableMaximum:N0}";
-                return;
+                // Navigation away from page - silently stop
             }
-
-            if (CurrentBet > PlayerBankroll)
-            {
-                GameMessage = "Insufficient funds!";
-                return;
-            }
-
-            // Hide betting UI
-            IsBetting = false;
-            GameMessage = "Clearing table...";
-
-            // Clear all cards from previous round
-            DealerCards.Clear();
-            Dealer?.ClearHand();
-            DealerHoleCardFaceDown = true;
-            DealerTotal = "--";
-
-            // Clear all player hands
-            foreach (var player in Players.Where(p => p.IsActive))
-            {
-                player.ClearHands();
-            }
-
-            // Notify UI to show cleared state
-            OnPropertyChanged(nameof(DealerCards));
-            OnPropertyChanged(nameof(Players));
-
-            // Brief delay to show cleared table
-            await Task.Delay(300);
-
-            // Deduct bet from bankroll
-            PlayerBankroll -= CurrentBet;
-
-            // Update player's bankroll and bet in the model
-            var humanPlayer = Players[HumanPlayerPosition - 1];
-            humanPlayer.Bankroll = PlayerBankroll;
-            humanPlayer.Hands[0].Bet = CurrentBet;
-
-            GameMessage = "Processing bets...";
-
-            // Place AI bets
-            await PlaceAIBets();
-
-            // Transition to dealing phase
-            CurrentPhase = GamePhase.Dealing;
-            GameMessage = "All bets placed. Dealing cards...";
-
-            // Deal initial cards
-            await DealInitialCards();
         }
 
         /// <summary>
@@ -167,7 +174,7 @@ namespace Blackjack.ViewModels
                     if (success)
                     {
                         GameMessage = $"{player.Name} bets ${betAmount:N0}";
-                        await Task.Delay(300); // Brief delay for realism
+                        await Task.Delay(300, _cts.Token); // Brief delay for realism
                     }
                 }
                 else
@@ -175,7 +182,7 @@ namespace Blackjack.ViewModels
                     // AI is bankrupt or can't afford minimum
                     player.IsActive = false;
                     GameMessage = $"{player.Name} is sitting out (insufficient funds)";
-                    await Task.Delay(300);
+                    await Task.Delay(300, _cts.Token);
                 }
             }
         }

@@ -903,10 +903,11 @@ namespace Blackjack.Views
         {
             base.OnDisappearing();
 
-            // Unsubscribe from ViewModel events
+            // Unsubscribe from ViewModel events and cancel all pending async operations
             if (BindingContext is GameTableViewModel viewModel)
             {
                 viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+                viewModel.CancelAllOperations();
             }
         }
     }

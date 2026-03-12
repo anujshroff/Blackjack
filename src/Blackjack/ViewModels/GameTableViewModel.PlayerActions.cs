@@ -14,37 +14,44 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanHit))]
         private async Task Hit()
         {
-            if (!ActivePlayerPosition.HasValue || _deck == null)
-                return;
-
-            var player = Players[ActivePlayerPosition.Value - 1];
-            var hand = player.Hands[_currentHandIndex];
-
-            // Deal one card
-            var card = _deck.DealCard();
-            if (card != null)
+            try
             {
-                hand.AddCard(card);
-                GameMessage = $"{player.Name} hits - receives {card.Rank} of {card.Suit}";
-
-                // Notify UI to update
-                OnPropertyChanged(nameof(Players));
-                await Task.Delay(500);
-
-                // Check for bust
-                if (hand.IsBusted)
-                {
-                    hand.Status = HandStatus.Busted;
-                    GameMessage = $"{player.Name} busts with {hand.TotalValue}!";
-                    await Task.Delay(1000);
-
-                    // Move to next hand or player
-                    await MoveToNextPlayerOrHand();
+                if (!ActivePlayerPosition.HasValue || _deck == null)
                     return;
-                }
 
-                // Update available actions
-                UpdateAvailableActions();
+                var player = Players[ActivePlayerPosition.Value - 1];
+                var hand = player.Hands[_currentHandIndex];
+
+                // Deal one card
+                var card = _deck.DealCard();
+                if (card != null)
+                {
+                    hand.AddCard(card);
+                    GameMessage = $"{player.Name} hits - receives {card.Rank} of {card.Suit}";
+
+                    // Notify UI to update
+                    OnPropertyChanged(nameof(Players));
+                    await Task.Delay(500, _cts.Token);
+
+                    // Check for bust
+                    if (hand.IsBusted)
+                    {
+                        hand.Status = HandStatus.Busted;
+                        GameMessage = $"{player.Name} busts with {hand.TotalValue}!";
+                        await Task.Delay(1000, _cts.Token);
+
+                        // Move to next hand or player
+                        await MoveToNextPlayerOrHand();
+                        return;
+                    }
+
+                    // Update available actions
+                    UpdateAvailableActions();
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                // Navigation away from page - silently stop
             }
         }
 
@@ -54,19 +61,26 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanStand))]
         private async Task Stand()
         {
-            if (!ActivePlayerPosition.HasValue)
-                return;
+            try
+            {
+                if (!ActivePlayerPosition.HasValue)
+                    return;
 
-            var player = Players[ActivePlayerPosition.Value - 1];
-            var hand = player.Hands[_currentHandIndex];
+                var player = Players[ActivePlayerPosition.Value - 1];
+                var hand = player.Hands[_currentHandIndex];
 
-            // Mark hand as standing
-            hand.Status = HandStatus.Standing;
-            GameMessage = $"{player.Name} stands with {hand.TotalValue}";
-            await Task.Delay(800);
+                // Mark hand as standing
+                hand.Status = HandStatus.Standing;
+                GameMessage = $"{player.Name} stands with {hand.TotalValue}";
+                await Task.Delay(800, _cts.Token);
 
-            // Move to next hand or player
-            await MoveToNextPlayerOrHand();
+                // Move to next hand or player
+                await MoveToNextPlayerOrHand();
+            }
+            catch (OperationCanceledException)
+            {
+                // Navigation away from page - silently stop
+            }
         }
 
         /// <summary>
@@ -75,62 +89,69 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanDouble))]
         private async Task DoubleDown()
         {
-            if (!ActivePlayerPosition.HasValue || _deck == null)
-                return;
-
-            var player = Players[ActivePlayerPosition.Value - 1];
-            var hand = player.Hands[_currentHandIndex];
-
-            // Validate bankroll
-            if (player.Bankroll < hand.Bet)
+            try
             {
-                GameMessage = "Insufficient funds to double down";
-                await Task.Delay(1000);
-                return;
-            }
+                if (!ActivePlayerPosition.HasValue || _deck == null)
+                    return;
 
-            // Deduct additional bet
-            player.Bankroll -= hand.Bet;
-            hand.Bet *= 2;
-            hand.IsDoubledDown = true;
+                var player = Players[ActivePlayerPosition.Value - 1];
+                var hand = player.Hands[_currentHandIndex];
 
-            // Update human player display if applicable
-            if (player.IsHuman)
-            {
-                PlayerBankroll = player.Bankroll;
-            }
-
-            GameMessage = $"{player.Name} doubles down - bet now ${hand.Bet:N0}";
-            await Task.Delay(800);
-
-            // Deal exactly one card
-            var card = _deck.DealCard();
-            if (card != null)
-            {
-                hand.AddCard(card);
-                GameMessage = $"{player.Name} receives {card.Rank} of {card.Suit}";
-
-                // Notify UI to update
-                OnPropertyChanged(nameof(Players));
-                await Task.Delay(500);
-
-                // Check for bust
-                if (hand.IsBusted)
+                // Validate bankroll
+                if (player.Bankroll < hand.Bet)
                 {
-                    hand.Status = HandStatus.Busted;
-                    GameMessage = $"{player.Name} busts with {hand.TotalValue}!";
-                }
-                else
-                {
-                    hand.Status = HandStatus.Standing;
-                    GameMessage = $"{player.Name} stands with {hand.TotalValue}";
+                    GameMessage = "Insufficient funds to double down";
+                    await Task.Delay(1000, _cts.Token);
+                    return;
                 }
 
-                await Task.Delay(1000);
-            }
+                // Deduct additional bet
+                player.Bankroll -= hand.Bet;
+                hand.Bet *= 2;
+                hand.IsDoubledDown = true;
 
-            // Automatically move to next hand or player
-            await MoveToNextPlayerOrHand();
+                // Update human player display if applicable
+                if (player.IsHuman)
+                {
+                    PlayerBankroll = player.Bankroll;
+                }
+
+                GameMessage = $"{player.Name} doubles down - bet now ${hand.Bet:N0}";
+                await Task.Delay(800, _cts.Token);
+
+                // Deal exactly one card
+                var card = _deck.DealCard();
+                if (card != null)
+                {
+                    hand.AddCard(card);
+                    GameMessage = $"{player.Name} receives {card.Rank} of {card.Suit}";
+
+                    // Notify UI to update
+                    OnPropertyChanged(nameof(Players));
+                    await Task.Delay(500, _cts.Token);
+
+                    // Check for bust
+                    if (hand.IsBusted)
+                    {
+                        hand.Status = HandStatus.Busted;
+                        GameMessage = $"{player.Name} busts with {hand.TotalValue}!";
+                    }
+                    else
+                    {
+                        hand.Status = HandStatus.Standing;
+                        GameMessage = $"{player.Name} stands with {hand.TotalValue}";
+                    }
+
+                    await Task.Delay(1000, _cts.Token);
+                }
+
+                // Automatically move to next hand or player
+                await MoveToNextPlayerOrHand();
+            }
+            catch (OperationCanceledException)
+            {
+                // Navigation away from page - silently stop
+            }
         }
 
         /// <summary>
@@ -139,103 +160,110 @@ namespace Blackjack.ViewModels
         [RelayCommand(CanExecute = nameof(CanSplit))]
         private async Task Split()
         {
-            if (!ActivePlayerPosition.HasValue || _deck == null)
-                return;
-
-            var player = Players[ActivePlayerPosition.Value - 1];
-            var hand = player.Hands[_currentHandIndex];
-
-            // Validate can split
-            if (!hand.IsPair || player.Hands.Count >= 4)
+            try
             {
-                GameMessage = "Cannot split this hand";
-                await Task.Delay(1000);
-                return;
-            }
+                if (!ActivePlayerPosition.HasValue || _deck == null)
+                    return;
 
-            // Validate bankroll
-            if (player.Bankroll < hand.Bet)
-            {
-                GameMessage = "Insufficient funds to split";
-                await Task.Delay(1000);
-                return;
-            }
+                var player = Players[ActivePlayerPosition.Value - 1];
+                var hand = player.Hands[_currentHandIndex];
 
-            // Deduct bet for second hand
-            player.Bankroll -= hand.Bet;
-
-            // Update human player display if applicable
-            if (player.IsHuman)
-            {
-                PlayerBankroll = player.Bankroll;
-            }
-
-            // Split the pair
-            var card1 = hand.Cards[0];
-            var card2 = hand.Cards[1];
-            bool isSplittingAces = card1.Rank == Rank.Ace;
-
-            // Clear original hand and add first card back
-            hand.Cards.Clear();
-            hand.AddCard(card1);
-            hand.HandIndex = 0;
-            hand.IsFromSplit = true;  // Mark as split hand (not eligible for blackjack payout)
-
-            // Create second hand with second card
-            var newHand = new Hand
-            {
-                Bet = hand.Bet,
-                Status = HandStatus.Active,
-                HandIndex = 1,
-                NeedsSecondCard = true,  // Mark as waiting for second card
-                IsFromSplit = true  // Mark as split hand (not eligible for blackjack payout)
-            };
-            newHand.AddCard(card2);
-            player.Hands.Insert(_currentHandIndex + 1, newHand);
-
-            GameMessage = $"{player.Name} splits {card1.Rank}s";
-            await Task.Delay(800);
-
-            // Deal one card to first hand only
-            var newCard1 = _deck.DealCard();
-            if (newCard1 != null)
-            {
-                hand.AddCard(newCard1);
-                GameMessage = $"First hand receives {newCard1.Rank} of {newCard1.Suit}";
-                await Task.Delay(600);
-            }
-
-            // Notify UI to update
-            OnPropertyChanged(nameof(Players));
-
-            // Special rule: Split Aces get only one card each and auto-stand
-            if (isSplittingAces)
-            {
-                // Deal second card to second hand for aces
-                var newCard2 = _deck.DealCard();
-                if (newCard2 != null)
+                // Validate can split
+                if (!hand.IsPair || player.Hands.Count >= 4)
                 {
-                    newHand.AddCard(newCard2);
-                    newHand.NeedsSecondCard = false;
-                    GameMessage = $"Second hand receives {newCard2.Rank} of {newCard2.Suit}";
-                    await Task.Delay(600);
+                    GameMessage = "Cannot split this hand";
+                    await Task.Delay(1000, _cts.Token);
+                    return;
                 }
 
-                hand.Status = HandStatus.Standing;
-                newHand.Status = HandStatus.Standing;
-                GameMessage = $"{player.Name} - Split Aces complete";
-                await Task.Delay(1000);
+                // Validate bankroll
+                if (player.Bankroll < hand.Bet)
+                {
+                    GameMessage = "Insufficient funds to split";
+                    await Task.Delay(1000, _cts.Token);
+                    return;
+                }
 
-                // Skip both hands, move to next player
-                _currentHandIndex = player.Hands.Count;
-                await MoveToNextPlayerOrHand();
+                // Deduct bet for second hand
+                player.Bankroll -= hand.Bet;
+
+                // Update human player display if applicable
+                if (player.IsHuman)
+                {
+                    PlayerBankroll = player.Bankroll;
+                }
+
+                // Split the pair
+                var card1 = hand.Cards[0];
+                var card2 = hand.Cards[1];
+                bool isSplittingAces = card1.Rank == Rank.Ace;
+
+                // Clear original hand and add first card back
+                hand.Cards.Clear();
+                hand.AddCard(card1);
+                hand.HandIndex = 0;
+                hand.IsFromSplit = true;  // Mark as split hand (not eligible for blackjack payout)
+
+                // Create second hand with second card
+                var newHand = new Hand
+                {
+                    Bet = hand.Bet,
+                    Status = HandStatus.Active,
+                    HandIndex = 1,
+                    NeedsSecondCard = true,  // Mark as waiting for second card
+                    IsFromSplit = true  // Mark as split hand (not eligible for blackjack payout)
+                };
+                newHand.AddCard(card2);
+                player.Hands.Insert(_currentHandIndex + 1, newHand);
+
+                GameMessage = $"{player.Name} splits {card1.Rank}s";
+                await Task.Delay(800, _cts.Token);
+
+                // Deal one card to first hand only
+                var newCard1 = _deck.DealCard();
+                if (newCard1 != null)
+                {
+                    hand.AddCard(newCard1);
+                    GameMessage = $"First hand receives {newCard1.Rank} of {newCard1.Suit}";
+                    await Task.Delay(600, _cts.Token);
+                }
+
+                // Notify UI to update
+                OnPropertyChanged(nameof(Players));
+
+                // Special rule: Split Aces get only one card each and auto-stand
+                if (isSplittingAces)
+                {
+                    // Deal second card to second hand for aces
+                    var newCard2 = _deck.DealCard();
+                    if (newCard2 != null)
+                    {
+                        newHand.AddCard(newCard2);
+                        newHand.NeedsSecondCard = false;
+                        GameMessage = $"Second hand receives {newCard2.Rank} of {newCard2.Suit}";
+                        await Task.Delay(600, _cts.Token);
+                    }
+
+                    hand.Status = HandStatus.Standing;
+                    newHand.Status = HandStatus.Standing;
+                    GameMessage = $"{player.Name} - Split Aces complete";
+                    await Task.Delay(1000, _cts.Token);
+
+                    // Skip both hands, move to next player
+                    _currentHandIndex = player.Hands.Count;
+                    await MoveToNextPlayerOrHand();
+                }
+                else
+                {
+                    // Continue playing first hand
+                    GameMessage = $"{player.Name} - Playing first hand";
+                    await Task.Delay(500, _cts.Token);
+                    UpdateAvailableActions();
+                }
             }
-            else
+            catch (OperationCanceledException)
             {
-                // Continue playing first hand
-                GameMessage = $"{player.Name} - Playing first hand";
-                await Task.Delay(500);
-                UpdateAvailableActions();
+                // Navigation away from page - silently stop
             }
         }
 
@@ -260,7 +288,7 @@ namespace Blackjack.ViewModels
                 CanSplit = false;
 
                 GameMessage = "All players settled. Dealer's turn...";
-                await Task.Delay(1500);
+                await Task.Delay(1500, _cts.Token);
 
                 CurrentPhase = GamePhase.DealerAction;
                 await ProcessDealerTurn();
@@ -305,7 +333,7 @@ namespace Blackjack.ViewModels
                     if (nextHand.NeedsSecondCard && _deck != null)
                     {
                         GameMessage = $"Dealing second card to hand {_currentHandIndex + 1}...";
-                        await Task.Delay(500);
+                        await Task.Delay(500, _cts.Token);
 
                         var card = _deck.DealCard();
                         if (card != null)
@@ -314,14 +342,14 @@ namespace Blackjack.ViewModels
                             nextHand.NeedsSecondCard = false;
                             GameMessage = $"{currentPlayer.Name} - Hand {_currentHandIndex + 1} receives {card.Rank} of {card.Suit}";
                             OnPropertyChanged(nameof(Players));
-                            await Task.Delay(600);
+                            await Task.Delay(600, _cts.Token);
                         }
                     }
 
                     GameMessage = currentPlayer.IsHuman
                         ? $"Playing hand {_currentHandIndex + 1} of {currentPlayer.Hands.Count}"
                         : $"{currentPlayer.Name} - Playing hand {_currentHandIndex + 1}";
-                    await Task.Delay(500);
+                    await Task.Delay(500, _cts.Token);
 
                     // Update viewed hand index to show the current hand in UI
                     ViewedHandIndex = _currentHandIndex;
@@ -376,7 +404,7 @@ namespace Blackjack.ViewModels
                 CanSplit = false;
 
                 GameMessage = "All players finished. Dealer's turn...";
-                await Task.Delay(1500);
+                await Task.Delay(1500, _cts.Token);
 
                 // Process dealer turn
                 CurrentPhase = GamePhase.DealerAction;
@@ -458,7 +486,7 @@ namespace Blackjack.ViewModels
                 if (hand.NeedsSecondCard)
                 {
                     GameMessage = $"Dealing second card to hand {_currentHandIndex + 1}...";
-                    await Task.Delay(500);
+                    await Task.Delay(500, _cts.Token);
 
                     var secondCard = _deck.DealCard();
                     if (secondCard != null)
@@ -467,7 +495,7 @@ namespace Blackjack.ViewModels
                         hand.NeedsSecondCard = false;
                         GameMessage = $"{player.Name} - Hand {_currentHandIndex + 1} receives {secondCard.Rank} of {secondCard.Suit}";
                         OnPropertyChanged(nameof(Players));
-                        await Task.Delay(600);
+                        await Task.Delay(600, _cts.Token);
                     }
                 }
 
@@ -477,7 +505,7 @@ namespace Blackjack.ViewModels
 
                 // Show thinking message
                 GameMessage = $"{player.Name} thinking...";
-                await Task.Delay(800);
+                await Task.Delay(800, _cts.Token);
 
                 // Get recommended action from Basic Strategy
                 var recommendedAction = _basicStrategy.GetRecommendedAction(hand, Dealer.UpCard);
@@ -495,13 +523,13 @@ namespace Blackjack.ViewModels
                                 hand.AddCard(card);
                                 GameMessage = $"{player.Name} hits - receives {card.Rank} of {card.Suit} (Total: {hand.TotalValue})";
                                 OnPropertyChanged(nameof(Players));
-                                await Task.Delay(600);
+                                await Task.Delay(600, _cts.Token);
 
                                 if (hand.IsBusted)
                                 {
                                     hand.Status = HandStatus.Busted;
                                     GameMessage = $"{player.Name} busts with {hand.TotalValue}!";
-                                    await Task.Delay(1000);
+                                    await Task.Delay(1000, _cts.Token);
                                     actionComplete = true;
                                 }
                                 else
@@ -519,7 +547,7 @@ namespace Blackjack.ViewModels
                         case Services.PlayerAction.Stand:
                             hand.Status = HandStatus.Standing;
                             GameMessage = $"{player.Name} stands with {hand.TotalValue}";
-                            await Task.Delay(800);
+                            await Task.Delay(800, _cts.Token);
                             actionComplete = true;
                             break;
 
@@ -531,7 +559,7 @@ namespace Blackjack.ViewModels
                                 hand.Bet *= 2;
                                 hand.IsDoubledDown = true;
                                 GameMessage = $"{player.Name} doubles down - bet now ${hand.Bet:N0}";
-                                await Task.Delay(800);
+                                await Task.Delay(800, _cts.Token);
 
                                 var doubleCard = _deck.DealCard();
                                 if (doubleCard != null)
@@ -539,7 +567,7 @@ namespace Blackjack.ViewModels
                                     hand.AddCard(doubleCard);
                                     GameMessage = $"{player.Name} receives {doubleCard.Rank} of {doubleCard.Suit} (Total: {hand.TotalValue})";
                                     OnPropertyChanged(nameof(Players));
-                                    await Task.Delay(600);
+                                    await Task.Delay(600, _cts.Token);
 
                                     if (hand.IsBusted)
                                     {
@@ -551,7 +579,7 @@ namespace Blackjack.ViewModels
                                         hand.Status = HandStatus.Standing;
                                         GameMessage = $"{player.Name} stands with {hand.TotalValue}";
                                     }
-                                    await Task.Delay(1000);
+                                    await Task.Delay(1000, _cts.Token);
                                 }
                                 actionComplete = true;
                             }
@@ -589,7 +617,7 @@ namespace Blackjack.ViewModels
                                 player.Hands.Insert(_currentHandIndex + 1, newHand);
 
                                 GameMessage = $"{player.Name} splits {card1.Rank}s";
-                                await Task.Delay(800);
+                                await Task.Delay(800, _cts.Token);
 
                                 // Deal one card to first hand only
                                 var newCard1 = _deck.DealCard();
@@ -597,7 +625,7 @@ namespace Blackjack.ViewModels
                                 {
                                     hand.AddCard(newCard1);
                                     GameMessage = $"First hand receives {newCard1.Rank} of {newCard1.Suit}";
-                                    await Task.Delay(600);
+                                    await Task.Delay(600, _cts.Token);
                                 }
 
                                 OnPropertyChanged(nameof(Players));
@@ -611,13 +639,13 @@ namespace Blackjack.ViewModels
                                         newHand.AddCard(newCard2);
                                         newHand.NeedsSecondCard = false;
                                         GameMessage = $"Second hand receives {newCard2.Rank} of {newCard2.Suit}";
-                                        await Task.Delay(600);
+                                        await Task.Delay(600, _cts.Token);
                                     }
 
                                     hand.Status = HandStatus.Standing;
                                     newHand.Status = HandStatus.Standing;
                                     GameMessage = $"{player.Name} - Split Aces complete";
-                                    await Task.Delay(1000);
+                                    await Task.Delay(1000, _cts.Token);
                                     actionComplete = true;
                                 }
                                 else

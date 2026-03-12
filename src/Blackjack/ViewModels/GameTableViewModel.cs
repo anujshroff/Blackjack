@@ -191,6 +191,12 @@ namespace Blackjack.ViewModels
         private Services.BasicStrategy? _basicStrategy;
 
         /// <summary>
+        /// Cancellation token source used to cancel all pending async operations
+        /// when the user navigates away from the game table.
+        /// </summary>
+        private CancellationTokenSource _cts = new();
+
+        /// <summary>
         /// Bankroll service for persisting player bankroll.
         /// </summary>
         private readonly BankrollService _bankrollService;
@@ -448,6 +454,18 @@ namespace Blackjack.ViewModels
                 CardsRemaining = _deck.CardsRemaining;
                 CardsUntilReshuffle = _deck.CardsUntilReshuffle;
             }
+        }
+
+        /// <summary>
+        /// Cancels all pending async operations (delays, AI turns, dealing, etc.).
+        /// Called when the user navigates away from the game table to prevent
+        /// stale operations from executing after the page is gone.
+        /// </summary>
+        public void CancelAllOperations()
+        {
+            _cts.Cancel();
+            _cts.Dispose();
+            _cts = new CancellationTokenSource();
         }
     }
 }
